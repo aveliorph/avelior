@@ -1,0 +1,357 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AVELIOR — Your Identity. One Tap.</title>
+  <meta name="theme-color" content="#101510">
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      margin: 0; background: #101510; color: #f4f1e8;
+      font: 16px Arial, sans-serif; min-height: 100vh;
+    }
+    header {
+      padding: 24px 7%; border-bottom: 1px solid #30372f;
+      display: flex; justify-content: space-between; align-items: center;
+    }
+    .brand { letter-spacing: 5px; font-size: 22px; color: #d8c69a; }
+    main { width: min(680px, 92%); margin: 48px auto; }
+    .card {
+      border: 1px solid #343d32; border-radius: 16px;
+      padding: 26px; margin: 18px 0; background: #171d17;
+    }
+    h1 { font-size: clamp(30px, 6vw, 48px); margin-bottom: 12px; }
+    h2 { color: #d8c69a; }
+    p { line-height: 1.65; color: #c5c9c0; }
+    label { display: block; margin: 16px 0 7px; color: #e6e2d8; }
+    input, textarea {
+      width: 100%; padding: 13px; border-radius: 8px;
+      border: 1px solid #485044; background: #101510;
+      color: white; font: inherit;
+    }
+    textarea { min-height: 100px; resize: vertical; }
+    button {
+      padding: 12px 17px; margin: 10px 6px 0 0;
+      border: 0; border-radius: 8px; cursor: pointer;
+      background: #d8c69a; color: #141810; font-weight: bold;
+    }
+    button.secondary { background: #30392f; color: white; }
+    a { color: #d8c69a; overflow-wrap: anywhere; }
+    .muted { color: #9ca597; font-size: 14px; }
+    #status { overflow-wrap: anywhere; }
+    .hidden { display: none; }
+    .profile-name { font-size: 30px; }
+    .actions { display: flex; flex-wrap: wrap; gap: 6px; }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="brand">AVELIOR</div>
+    <span class="muted">YOUR IDENTITY. ONE TAP.</span>
+  </header>
+
+  <main>
+    <section id="intro">
+      <p class="muted">DIGITAL IDENTITY, REFINED.</p>
+      <h1>Your identity.<br>One tap.</h1>
+      <p>Create a digital profile for your AVELIOR NFC card.
+        Share your introduction and selected contact links in one place.</p>
+    </section>
+
+    <p id="status" role="status">Connecting to AVELIOR...</p>
+
+    <section id="auth" class="card hidden">
+      <h2>Customer access</h2>
+      <form id="authForm">
+        <label for="email">Email</label>
+        <input id="email" type="email" autocomplete="email" required>
+        <label for="password">Password</label>
+        <input id="password" type="password"
+          autocomplete="current-password" minlength="8" required>
+        <label for="newUsername">Username (for registration)</label>
+        <input id="newUsername" autocomplete="username"
+          pattern="[a-z0-9_]{3,30}"
+          placeholder="e.g. juan_reyes">
+        <div class="actions">
+          <button type="submit" id="loginBtn">Log in</button>
+          <button type="button" class="secondary" id="signupBtn">
+            Create account
+          </button>
+        </div>
+      </form>
+      <p class="muted">Use a unique password. Registration may require
+        email confirmation.</p>
+    </section>
+
+    <section id="dashboard" class="card hidden">
+      <h2>Your dashboard</h2>
+      <p>Edit the information you want people to see on your public profile.</p>
+      <form id="profileForm">
+        <label for="username">Public username</label>
+        <input id="username" pattern="[a-z0-9_]{3,30}" required>
+        <label for="fullName">Display name</label>
+        <input id="fullName" maxlength="100">
+        <label for="headline">Headline</label>
+        <input id="headline" maxlength="120"
+          placeholder="e.g. Designer | Entrepreneur">
+        <label for="bio">About you</label>
+        <textarea id="bio" maxlength="1000"></textarea>
+        <label for="website">Website URL</label>
+        <input id="website" type="url" placeholder="https://example.com">
+        <label for="instagram">Instagram URL</label>
+        <input id="instagram" type="url"
+          placeholder="https://instagram.com/username">
+        <label for="linkedin">LinkedIn URL</label>
+        <input id="linkedin" type="url"
+          placeholder="https://linkedin.com/in/username">
+        <button type="submit">Save profile</button>
+      </form>
+      <p id="publicLink"></p>
+      <div class="actions">
+        <button type="button" class="secondary" id="copyBtn">
+          Copy public link
+        </button>
+        <button type="button" class="secondary" id="logoutBtn">
+          Log out
+        </button>
+      </div>
+    </section>
+
+    <section id="publicProfile" class="card hidden">
+      <p class="muted">AVELIOR DIGITAL PROFILE</p>
+      <h1 id="publicName" class="profile-name"></h1>
+      <h2 id="publicHeadline"></h2>
+      <p id="publicBio"></p>
+      <div id="publicLinks"></div>
+      <p class="muted">Powered by AVELIOR</p>
+    </section>
+  </main>
+
+  <script type="module">
+    import { createClient } from
+      "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm";
+
+    const SUPABASE_URL =
+      "https://gqxmwqpdqxyhmazoqrac.supabase.co";
+    const SUPABASE_PUBLISHABLE_KEY =
+      "";
+
+    const $ = id => document.getElementById(id);
+    const client = createClient(
+      SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY
+    );
+
+    const sections = ["auth", "dashboard", "publicProfile"];
+    function show(id) {
+      sections.forEach(s => $(s).classList.toggle("hidden", s !== id));
+    }
+    function status(message) {
+      $("status").textContent = message;
+    }
+    function safeUrl(value) {
+      try {
+        const u = new URL(value);
+        return ["https:", "http:"].includes(u.protocol) ? u.href : null;
+      } catch { return null; }
+    }
+
+    async function loadDashboard(user) {
+      const { data, error } = await client
+        .from("profiles").select("*").eq("id", user.id).maybeSingle();
+
+      if (error) throw error;
+
+      if (!data) {
+        const base = (user.user_metadata?.username ||
+          user.email?.split("@")[0] || "member")
+          .toLowerCase().replace(/[^a-z0-9_]/g, "_").slice(0, 24);
+        $("username").value = base.length >= 3 ? base : "member_" + base;
+        $("fullName").value = user.user_metadata?.full_name || "";
+        $("headline").value = "";
+        $("bio").value = "";
+        $("website").value = "";
+        $("instagram").value = "";
+        $("linkedin").value = "";
+      } else {
+        $("username").value = data.username || "";
+        $("fullName").value = data.full_name || "";
+        $("headline").value = data.headline || "";
+        $("bio").value = data.bio || "";
+        $("website").value = data.website || "";
+        $("instagram").value = data.instagram || "";
+        $("linkedin").value = data.linkedin || "";
+      }
+
+      const link = new URL(location.href);
+      link.search = "";
+      link.hash = "";
+      link.searchParams.set("u", $("username").value);
+      $("publicLink").textContent = "Public profile: " + link.href;
+      show("dashboard");
+      status("You're logged in. Your profile is ready to edit.");
+    }
+
+    async function showPublicProfile(username) {
+      const { data, error } = await client.from("profiles")
+        .select("username,full_name,headline,bio,website,instagram,linkedin")
+        .eq("username", username).maybeSingle();
+
+      if (error) throw error;
+      if (!data) {
+        show("auth");
+        status("Profile not found. Check the username or try again later.");
+        return;
+      }
+
+      $("publicName").textContent = data.full_name || data.username;
+      $("publicHeadline").textContent = data.headline || "";
+      $("publicBio").textContent = data.bio || "";
+
+      const links = $("publicLinks");
+      links.replaceChildren();
+      for (const [label, value] of [
+        ["Website", data.website],
+        ["Instagram", data.instagram],
+        ["LinkedIn", data.linkedin]
+      ]) {
+        const href = safeUrl(value || "");
+        if (!href) continue;
+        const p = document.createElement("p");
+        const a = document.createElement("a");
+        a.href = href;
+        a.target = "_blank";
+        a.rel = "noopener noreferrer";
+        a.textContent = label + " ↗";
+        p.append(a);
+        links.append(p);
+      }
+
+      show("publicProfile");
+      status("Public profile");
+    }
+
+    $("authForm").addEventListener("submit", async event => {
+      event.preventDefault();
+      try {
+        status("Logging in...");
+        const { error } = await client.auth.signInWithPassword({
+          email: $("email").value.trim(),
+          password: $("password").value
+        });
+        if (error) throw error;
+        await refresh();
+      } catch (e) {
+        status(e.message || "Login failed.");
+      }
+    });
+
+    $("signupBtn").addEventListener("click", async () => {
+      try {
+        const username = $("newUsername").value.trim();
+        if (!/^[a-z0-9_]{3,30}$/.test(username)) {
+          throw new Error("Enter a username with 3–30 lowercase letters, numbers or underscores.");
+        }
+        status("Creating account...");
+        const { data, error } = await client.auth.signUp({
+          email: $("email").value.trim(),
+          password: $("password").value,
+          options: { data: { username } }
+        });
+        if (error) throw error;
+
+        if (data.session) {
+          await loadDashboard(data.user);
+        } else {
+          status("Account request received. Check your email to confirm, then log in.");
+        }
+      } catch (e) {
+        status(e.message || "Sign-up failed.");
+      }
+    });
+
+    $("profileForm").addEventListener("submit", async event => {
+      event.preventDefault();
+      try {
+        const { data: { user } } = await client.auth.getUser();
+        if (!user) throw new Error("Please log in again.");
+
+        const username = $("username").value.trim();
+        if (!/^[a-z0-9_]{3,30}$/.test(username)) {
+          throw new Error("Username must be 3–30 lowercase letters, numbers or underscores.");
+        }
+
+        const { error } = await client.from("profiles").upsert({
+          id: user.id,
+          username,
+          full_name: $("fullName").value.trim(),
+          headline: $("headline").value.trim(),
+          bio: $("bio").value.trim(),
+          website: $("website").value.trim() || null,
+          instagram: $("instagram").value.trim() || null,
+          linkedin: $("linkedin").value.trim() || null,
+          updated_at: new Date().toISOString()
+        }, { onConflict: "id" });
+
+        if (error) throw error;
+        status("Profile saved successfully.");
+        const link = new URL(location.href);
+        link.search = "";
+        link.hash = "";
+        link.searchParams.set("u", username);
+        $("publicLink").textContent = "Public profile: " + link.href;
+      } catch (e) {
+        status(e.message || "Could not save profile.");
+      }
+    });
+
+    $("copyBtn").addEventListener("click", async () => {
+      const text = $("publicLink").textContent.replace("Public profile: ", "");
+      try {
+        await navigator.clipboard.writeText(text);
+        status("Public profile link copied.");
+      } catch {
+        status("Copy unavailable. Select and copy the link shown above.");
+      }
+    });
+
+    $("logoutBtn").addEventListener("click", async () => {
+      const { error } = await client.auth.signOut();
+      if (error) return status(error.message);
+      show("auth");
+      status("Logged out.");
+    });
+
+    async function refresh() {
+      const username = new URLSearchParams(location.search).get("u");
+      if (username) return showPublicProfile(username);
+
+      const { data: { session } } = await client.auth.getSession();
+      if (session?.user) return loadDashboard(session.user);
+      show("auth");
+      status("Welcome to AVELIOR. Log in or create your account.");
+    }
+
+    client.auth.onAuthStateChange((event, session) => {
+      if (event === "SIGNED_OUT") {
+        show("auth");
+        status("Logged out.");
+      }
+    });
+
+    try {
+      if (SUPABASE_PUBLISHABLE_KEY ===
+          "sb_publishable__wh7bVqUNfktiaomD1aOvQ__XJav_Mf") {
+        show("auth");
+        status("Setup needed: add your Supabase publishable key in index.html.");
+      } else {
+        await refresh();
+      }
+    } catch (e) {
+      show("auth");
+      status(e.message || "Connection failed. Check your Supabase setup.");
+    }
+  </script>
+</body>
+</html>
