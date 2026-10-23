@@ -340,19 +340,20 @@
       }
     });
 
-if (
-  !SUPABASE_PUBLISHABLE_KEY ||
-  SUPABASE_PUBLISHABLE_KEY === "sb_publishable__wh7bVqUNfktiaomD1aOvQ__XJav_Mf"
-) {
-        show("auth");
-        status("Setup needed: add your Supabase publishable key in index.html.");
-      } else {
-        await refresh();
-      }
-    } catch (e) {
-      show("auth");
-      status(e.message || "Connection failed. Check your Supabase setup.");
-    }
+try {
+  if (
+    !SUPABASE_PUBLISHABLE_KEY ||
+    SUPABASE_PUBLISHABLE_KEY === "sb_publishable__wh7bVqUNfktiaomD1aOvQ__XJav_Mf"
+  ) {
+    show("auth");
+    status("Setup needed: add your Supabase publishable key in index.html.");
+  } else {
+    await refresh();
+  }
+} catch (e) {
+  show("auth");
+  status(e.message || "Connection failed. Check your Supabase setup.");
+}
   </script>
 </body>
 </html>
