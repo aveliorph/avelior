@@ -43,6 +43,16 @@
     #status { overflow-wrap: anywhere; }
     .hidden { display: none; }
     .profile-name { font-size: 30px; }
+    
+.profile-avatar {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  object-fit: cover;
+  margin: 12px 0;
+  border: 2px solid #d8c69a;
+}
+
     .actions { display: flex; flex-wrap: wrap; gap: 6px; }
   </style>
 </head>
@@ -91,22 +101,30 @@
       <form id="profileForm">
         <label for="username">Public username</label>
         <input id="username" pattern="[a-z0-9_]{3,30}" required>
-        <label for="fullName">Display name</label>
-        <input id="fullName" maxlength="100">
-        <label for="headline">Headline</label>
-        <input id="headline" maxlength="120"
-          placeholder="e.g. Designer | Entrepreneur">
-        <label for="bio">About you</label>
-        <textarea id="bio" maxlength="1000"></textarea>
-        <label for="website">Website URL</label>
-        <input id="website" type="url" placeholder="https://example.com">
-        <label for="instagram">Instagram URL</label>
-        <input id="instagram" type="url"
-          placeholder="https://instagram.com/username">
-        <label for="linkedin">LinkedIn URL</label>
-        <input id="linkedin" type="url"
-          placeholder="https://linkedin.com/in/username">
-        <button type="submit">Save profile</button>
+        
+<label for="fullName">Display name</label>
+<input id="fullName" maxlength="100">
+
+<label for="avatarFile">Profile picture</label>
+<input id="avatarFile" type="file" accept="image/png,image/jpeg,image/webp">
+<button type="button" id="uploadAvatarBtn">Upload picture</button>
+<p class="muted">PNG, JPG, or WebP. Maximum 2 MB.</p>
+
+<label for="headline">Headline</label>
+<input id="headline" maxlength="120"
+  placeholder="e.g. Designer | Entrepreneur">
+<label for="bio">About you</label>
+<textarea id="bio" maxlength="1000"></textarea>
+<label for="website">Website URL</label>
+<input id="website" type="url" placeholder="https://example.com">
+<label for="instagram">Instagram URL</label>
+<input id="instagram" type="url"
+  placeholder="https://instagram.com/username">
+<label for="facebook">Facebook URL</label>
+<input id="facebook" type="url"
+  placeholder="https://www.facebook.com/username">
+<button type="submit">Save profile</button>
+
       </form>
       <p id="publicLink"></p>
       <div class="actions">
@@ -119,13 +137,15 @@
       </div>
     </section>
 
-    <section id="publicProfile" class="card hidden">
-      <p class="muted">AVELIOR DIGITAL PROFILE</p>
-      <h1 id="publicName" class="profile-name"></h1>
-      <h2 id="publicHeadline"></h2>
-      <p id="publicBio"></p>
-      <div id="publicLinks"></div>
-      <p class="muted">Powered by AVELIOR</p>
+   
+        <img id="publicAvatar" alt="Profile picture"
+          class="profile-avatar hidden">
+        <h1 id="publicName" class="profile-name"></h1>
+        <h2 id="publicHeadline"></h2>
+        <p id="publicBio"></p>
+        <div id="publicLinks"></div>
+        <p class="muted">Powered by AVELIOR</p>
+
     </section>
   </main>
 
@@ -173,7 +193,7 @@
         $("bio").value = "";
         $("website").value = "";
         $("instagram").value = "";
-        $("linkedin").value = "";
+        $("facebook").value = "";
       } else {
         $("username").value = data.username || "";
         $("fullName").value = data.full_name || "";
@@ -181,7 +201,7 @@
         $("bio").value = data.bio || "";
         $("website").value = data.website || "";
         $("instagram").value = data.instagram || "";
-        $("linkedin").value = data.linkedin || "";
+        $("facebook").value = data.facebook || "";
       }
 
       const link = new URL(location.href);
@@ -195,7 +215,7 @@
 
     async function showPublicProfile(username) {
       const { data, error } = await client.from("profiles")
-        .select("username,full_name,headline,bio,website,instagram,linkedin")
+        .select("username,full_name,headline,bio,website,instagram,facebook,avatar_url")
         .eq("username", username).maybeSingle();
 
       if (error) throw error;
@@ -206,16 +226,28 @@
       }
 
       $("publicName").textContent = data.full_name || data.username;
+      
+      const avatar = $("publicAvatar");
+      if (data.avatar_url) {
+        avatar.src = data.avatar_url;
+        avatar.classList.remove("hidden");
+      } else {
+        avatar.removeAttribute("src");
+        avatar.classList.add("hidden");
+      }
+
       $("publicHeadline").textContent = data.headline || "";
       $("publicBio").textContent = data.bio || "";
 
       const links = $("publicLinks");
       links.replaceChildren();
-      for (const [label, value] of [
-        ["Website", data.website],
-        ["Instagram", data.instagram],
-        ["LinkedIn", data.linkedin]
-      ]) {
+      
+for (const [label, value] of [
+  ["Website", data.website],
+  ["Instagram", data.instagram],
+  ["Facebook", data.facebook]
+]) {
+
         const href = safeUrl(value || "");
         if (!href) continue;
         const p = document.createElement("p");
@@ -289,9 +321,9 @@
           headline: $("headline").value.trim(),
           bio: $("bio").value.trim(),
           website: $("website").value.trim() || null,
-          instagram: $("instagram").value.trim() || null,
-          linkedin: $("linkedin").value.trim() || null,
-          updated_at: new Date().toISOString()
+         instagram: $("instagram").value.trim() || null,
+facebook: $("facebook").value.trim() || null,
+updated_at: new Date().toISOString()
         }, { onConflict: "id" });
 
         if (error) throw error;
@@ -301,10 +333,67 @@
         link.hash = "";
         link.searchParams.set("u", username);
         $("publicLink").textContent = "Public profile: " + link.href;
+    
       } catch (e) {
         status(e.message || "Could not save profile.");
       }
     });
+
+    $("uploadAvatarBtn").addEventListener("click", async () => {
+      try {
+        const file = $("avatarFile").files[0];
+        if (!file) throw new Error("Please choose a picture first.");
+
+        if (file.size > 2 * 1024 * 1024) {
+          throw new Error("Picture must be 2 MB or smaller.");
+        }
+
+        if (!["image/jpeg", "image/png", "image/webp"].includes(file.type)) {
+          throw new Error("Please choose a JPG, PNG, or WebP picture.");
+        }
+
+        const { data: { user } } = await client.auth.getUser();
+        if (!user) throw new Error("Please log in again.");
+
+        const username = $("username").value.trim();
+        if (!/^[a-z0-9_]{3,30}$/.test(username)) {
+          throw new Error("Enter a valid username and save your profile first.");
+        }
+
+        status("Uploading picture...");
+
+        const path = `${user.id}/${Date.now()}-${file.name.replace(/[^a-zA-Z0-9._-]/g, "_")}`;
+
+        const { error: uploadError } = await client.storage
+          .from("profile-pictures")
+          .upload(path, file, {
+            contentType: file.type,
+            upsert: false
+          });
+
+        if (uploadError) throw uploadError;
+
+        const { data: publicData } = client.storage
+          .from("profile-pictures")
+          .getPublicUrl(path);
+
+        const { error: saveError } = await client
+          .from("profiles")
+          .upsert({
+            id: user.id,
+            username,
+            avatar_url: publicData.publicUrl,
+            updated_at: new Date().toISOString()
+          }, { onConflict: "id" });
+
+        if (saveError) throw saveError;
+
+        status("Profile picture uploaded successfully!");
+      } catch (e) {
+        status(e.message || "Picture upload failed.");
+      }
+    });
+
 
     $("copyBtn").addEventListener("click", async () => {
       const text = $("publicLink").textContent.replace("Public profile: ", "");
