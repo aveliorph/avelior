@@ -172,9 +172,17 @@
     );
 
     const sections = ["auth", "dashboard", "publicProfile"];
-    function show(id) {
-      sections.forEach(s => $(s).classList.toggle("hidden", s !== id));
-    }
+   function show(id) {
+  sections.forEach(s => $(s).classList.toggle("hidden", s !== id));
+
+  const founder = $("founderSection");
+  if (founder) {
+    founder.classList.toggle(
+      "hidden",
+      id === "publicProfile" || id === "dashboard"
+    );
+  }
+}
     function status(message) {
       $("status").textContent = message;
     }
@@ -449,36 +457,11 @@ try {
   status(e.message || "Connection failed. Check your Supabase setup.");
 }
   </script>
-  <section class="founder-section" style="
-  text-align: center;
-  padding: 50px 20px;
-  margin: 40px auto 20px;
-  max-width: 700px;
-  border-top: 1px solid rgba(180, 150, 95, 0.35);
-">
-  <p style="
-    letter-spacing: 4px;
-    font-size: 11px;
-    color: #b89b62;
-  ">THE MIND BEHIND AVELIOR</p>
-
-  <h2 style="
-    font-size: 30px;
-    margin: 15px 0 8px;
-  ">Kyle Gonzales</h2>
-
-  <p style="font-size: 13px; opacity: 0.7;">
-    Founder &amp; Creator of AVELIOR
-  </p>
-
-  <p style="
-    max-width: 420px;
-    margin: 20px auto 0;
-    line-height: 1.8;
-    opacity: 0.8;
-  ">
-    Building a more seamless way to share your digital identity.
-  </p>
+  <section id="founderSection" class="card">
+  <p class="muted">THE MIND BEHIND AVELIOR</p>
+  <h2>Kyle Gonzales</h2>
+  <p>Founder &amp; Creator of AVELIOR</p>
+  <p>Building a more seamless way to share your digital identity.</p>
 </section>
 </body>
 </html>
