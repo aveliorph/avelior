@@ -341,10 +341,7 @@
     });
 
 try {
-  if (
-    !SUPABASE_PUBLISHABLE_KEY ||
-    SUPABASE_PUBLISHABLE_KEY === "sb_publishable__wh7bVqUNfktiaomD1aOvQ__XJav_Mf"
-  ) {
+ if (!SUPABASE_PUBLISHABLE_KEY) {
     show("auth");
     status("Setup needed: add your Supabase publishable key in index.html.");
   } else {
