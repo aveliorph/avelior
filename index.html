@@ -5,7 +5,11 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>AVELIOR — Your Identity. One Tap.</title>
-  <meta name="theme-color" content="#080808">
+
+  
+<link rel="manifest" href="./manifest.json">
+<meta name="theme-color" content="#080808">
+
   <style>
   
 * { box-sizing: border-box; }
@@ -958,6 +962,17 @@ try {
     Building a more seamless way to share your digital identity.
   </p>
 </section>
+
+<script>
+if ("serviceWorker" in navigator) {
+  window.addEventListener("load", () => {
+    navigator.serviceWorker.register("./service-worker.js")
+      .catch((error) => {
+        console.error("Service worker registration failed:", error);
+      });
+  });
+}
+</script>
 
 </body>
 </html>
