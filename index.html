@@ -252,7 +252,7 @@
 <hr>
 
 <h3>Custom Links</h3>
-<p>Add more links to your public profile in the next step.</p>
+<p>Add links to your public profile, such as TikTok, YouTube, or other websites.</p>
 <div id="customLinksEditor"></div>
 <button type="button" id="addCustomLinkBtn">+ Add Link</button>
 <button type="submit">Save profile</button>
@@ -376,6 +376,7 @@ async function loadDashboard(user) {
     $("website").value = "";
     $("instagram").value = "";
     $("facebook").value = "";
+    $("customLinksEditor").replaceChildren();
   } else {
     $("username").value = data.username || "";
     $("fullName").value = data.full_name || "";
@@ -384,6 +385,11 @@ async function loadDashboard(user) {
     $("website").value = data.website || "";
     $("instagram").value = data.instagram || "";
     $("facebook").value = data.facebook || "";
+    $("customLinksEditor").replaceChildren();
+
+(data.custom_links || []).forEach(link => {
+  addCustomLink(link.name || "", link.url || "");
+});
   }
 
   $("phone").value = contacts?.phone || "";
@@ -406,7 +412,7 @@ async function loadDashboard(user) {
 
 async function showPublicProfile(username) {
   const { data, error } = await client.from("profiles")
-    .select("id,username,full_name,headline,bio,website,instagram,facebook,avatar_url")
+    .select("id,username,full_name,headline,bio,website,instagram,facebook,avatar_url,custom_links")
     .eq("username", username)
     .maybeSingle();
 
@@ -475,6 +481,9 @@ async function showPublicProfile(username) {
   addLink("Website", data.website);
   addLink("Instagram", data.instagram);
   addLink("Facebook", data.facebook);
+  (data.custom_links || []).forEach(link => {
+  addLink(link.name, link.url);
+});
 
   if (contact?.phone) {
     addLink("Call me", contact.phone, "phone");
@@ -563,8 +572,16 @@ $("profileForm").addEventListener("submit", async event => {
       bio: $("bio").value.trim(),
       website: $("website").value.trim() || null,
       instagram: $("instagram").value.trim() || null,
-      facebook: $("facebook").value.trim() || null,
-      updated_at: new Date().toISOString()
+     facebook: $("facebook").value.trim() || null,
+
+custom_links: Array.from(
+  $("customLinksEditor").querySelectorAll(".custom-link-row")
+).map(row => ({
+  name: row.querySelector(".custom-link-name").value.trim(),
+  url: row.querySelector(".custom-link-url").value.trim()
+})).filter(link => link.name && safeUrl(link.url)),
+
+updated_at: new Date().toISOString()
     }, { onConflict: "id" });
 
     if (error) throw error;
@@ -596,24 +613,29 @@ $("profileForm").addEventListener("submit", async event => {
 });
 
 
-$("addCustomLinkBtn").addEventListener("click", () => {
+function addCustomLink(name = "", url = "") {
   const editor = $("customLinksEditor");
 
   const row = document.createElement("div");
+  row.className = "custom-link-row";
   row.style.margin = "12px 0";
   row.style.padding = "12px";
   row.style.border = "1px solid #485044";
   row.style.borderRadius = "8px";
 
-  const name = document.createElement("input");
-  name.type = "text";
-  name.placeholder = "Link name (e.g. TikTok)";
-  name.maxLength = 40;
-  name.style.marginBottom = "8px";
+  const nameInput = document.createElement("input");
+  nameInput.type = "text";
+  nameInput.className = "custom-link-name";
+  nameInput.placeholder = "Link name (e.g. TikTok)";
+  nameInput.maxLength = 40;
+  nameInput.value = name;
+  nameInput.style.marginBottom = "8px";
 
-  const url = document.createElement("input");
-  url.type = "url";
-  url.placeholder = "https://example.com";
+  const urlInput = document.createElement("input");
+  urlInput.type = "url";
+  urlInput.className = "custom-link-url";
+  urlInput.placeholder = "https://www.tiktok.com/@username";
+  urlInput.value = url;
 
   const remove = document.createElement("button");
   remove.type = "button";
@@ -621,11 +643,13 @@ $("addCustomLinkBtn").addEventListener("click", () => {
   remove.textContent = "Remove link";
   remove.addEventListener("click", () => row.remove());
 
-  row.append(name, url, remove);
+  row.append(nameInput, urlInput, remove);
   editor.appendChild(row);
-});
+}
 
-  
+$("addCustomLinkBtn").addEventListener("click", () => {
+  addCustomLink();
+});
 
     $("uploadAvatarBtn").addEventListener("click", async () => {
       try {
