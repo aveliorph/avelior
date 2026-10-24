@@ -5,68 +5,176 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>AVELIOR — Your Identity. One Tap.</title>
-  <meta name="theme-color" content="#101510">
+  <meta name="theme-color" content="#080808">
   <style>
-    * { box-sizing: border-box; }
-    body {
-      margin: 0; background: #101510; color: #f4f1e8;
-      font: 16px Arial, sans-serif; min-height: 100vh;
-    }
-    header {
-      padding: 24px 7%; border-bottom: 1px solid #30372f;
-      display: flex; justify-content: space-between; align-items: center;
-    }
-    .brand { letter-spacing: 5px; font-size: 22px; color: #d8c69a; }
-    main { width: min(680px, 92%); margin: 48px auto; }
-    .card {
-      border: 1px solid #343d32; border-radius: 16px;
-      padding: 26px; margin: 18px 0; background: #171d17;
-    }
-    h1 { font-size: clamp(30px, 6vw, 48px); margin-bottom: 12px; }
-    h2 { color: #d8c69a; }
-    p { line-height: 1.65; color: #c5c9c0; }
-    label { display: block; margin: 16px 0 7px; color: #e6e2d8; }
-    input, textarea {
-      width: 100%; padding: 13px; border-radius: 8px;
-      border: 1px solid #485044; background: #101510;
-      color: white; font: inherit;
-    }
-    textarea { min-height: 100px; resize: vertical; }
-    button {
-      padding: 12px 17px; margin: 10px 6px 0 0;
-      border: 0; border-radius: 8px; cursor: pointer;
-      background: #d8c69a; color: #141810; font-weight: bold;
-    }
-    button.secondary { background: #30392f; color: white; }
-    a { color: #d8c69a; overflow-wrap: anywhere; }
-    .muted { color: #9ca597; font-size: 14px; }
-    #status { overflow-wrap: anywhere; }
-   .hidden {
+  
+* { box-sizing: border-box; }
+
+:root {
+  color-scheme: dark;
+  --bg: #080808;
+  --surface: #141414;
+  --surface-soft: #1b1b1b;
+  --text: #f5f5f5;
+  --muted: #a6a6a6;
+  --border: #363636;
+  --accent: #d7d7d7;
+}
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font: 16px Arial, sans-serif;
+  min-height: 100vh;
+}
+
+header {
+  padding: 24px 7%;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+}
+
+.brand {
+  letter-spacing: 5px;
+  font-size: 22px;
+  color: var(--text);
+}
+
+main {
+  width: min(680px, 92%);
+  margin: 48px auto;
+}
+
+.card {
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 26px;
+  margin: 18px 0;
+  background: var(--surface);
+}
+
+h1 {
+  font-size: clamp(30px, 6vw, 48px);
+  margin-bottom: 12px;
+}
+
+h2, h3 {
+  color: var(--text);
+}
+
+p {
+  line-height: 1.65;
+  color: #c2c2c2;
+}
+
+label {
+  display: block;
+  margin: 16px 0 7px;
+  color: #e5e5e5;
+}
+
+input, textarea {
+  width: 100%;
+  padding: 13px;
+  border-radius: 8px;
+  border: 1px solid #414141;
+  background: #0c0c0c;
+  color: #fff;
+  font: inherit;
+}
+
+input:focus, textarea:focus {
+  outline: 1px solid #bdbdbd;
+  border-color: #bdbdbd;
+}
+
+input[type="checkbox"] {
+  width: auto;
+  accent-color: #fff;
+}
+
+input[type="file"] {
+  max-width: 100%;
+}
+
+textarea {
+  min-height: 100px;
+  resize: vertical;
+}
+
+button {
+  padding: 12px 17px;
+  margin: 10px 6px 0 0;
+  border: 1px solid #fff;
+  border-radius: 8px;
+  cursor: pointer;
+  background: #fff;
+  color: #080808;
+  font-weight: bold;
+}
+
+button.secondary {
+  background: #1b1b1b;
+  color: #fff;
+  border-color: #484848;
+}
+
+button:hover {
+  opacity: 0.85;
+}
+
+a {
+  color: #e0e0e0;
+  overflow-wrap: anywhere;
+}
+
+.muted {
+  color: var(--muted);
+  font-size: 14px;
+}
+
+#status {
+  overflow-wrap: anywhere;
+}
+
+.hidden {
   display: none !important;
 }
-    .profile-name { font-size: 30px; }
-    
+
+.profile-name {
+  font-size: 30px;
+}
+
 .profile-avatar {
   width: 120px;
   height: 120px;
   border-radius: 50%;
   object-fit: cover;
   margin: 12px 0;
-  border: 2px solid #d8c69a;
+  border: 2px solid #d0d0d0;
 }
 
-    .actions { display: flex; flex-wrap: wrap; gap: 6px; }
-    /* AVELIOR — Premium Public Profile */
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+/* Premium public profile */
 
 #publicProfile {
   max-width: 520px;
   margin: 40px auto;
   padding: 36px 24px;
   text-align: center;
-  border: 1px solid rgba(184, 155, 98, 0.3);
+  border: 1px solid #363636;
   border-radius: 24px;
-  background: linear-gradient(180deg, #182017, #0c100c);
-  box-shadow: 0 18px 55px rgba(0, 0, 0, 0.25);
+  background: linear-gradient(160deg, #1b1b1b, #090909);
+  box-shadow: 0 18px 55px rgba(0, 0, 0, 0.4);
 }
 
 #publicProfile .profile-avatar {
@@ -74,7 +182,7 @@
   height: 112px;
   object-fit: cover;
   border-radius: 50%;
-  border: 2px solid #b89b62;
+  border: 2px solid #bdbdbd;
   padding: 3px;
   margin: 0 auto 18px;
 }
@@ -86,8 +194,8 @@
 }
 
 #publicProfile #publicHeadline {
-  margin: 0 0 16px;
-  color: #b89b62;
+  margin: 8px 0 16px;
+  color: #d0d0d0;
   font-size: 14px;
   font-weight: 500;
 }
@@ -96,8 +204,9 @@
   max-width: 380px;
   margin: 0 auto 24px;
   line-height: 1.8;
-  opacity: 0.82;
+  opacity: 0.9;
   overflow-wrap: anywhere;
+  white-space: pre-wrap;
 }
 
 #publicProfile #publicLinks {
@@ -108,17 +217,20 @@
 
 #publicProfile #publicLinks a {
   display: block;
-  padding: 13px 16px;
-  border: 1px solid rgba(184, 155, 98, 0.55);
+  width: 100%;
+  padding: 15px 18px;
+  border: 1px solid #484848;
   border-radius: 12px;
-  color: #e8d8b1;
+  color: #f5f5f5;
   text-decoration: none;
+  font-size: 14px;
+  letter-spacing: 0.3px;
   transition: background 0.2s ease, border-color 0.2s ease;
 }
 
 #publicProfile #publicLinks a:hover {
-  background: rgba(184, 155, 98, 0.1);
-  border-color: #b89b62;
+  background: #252525;
+  border-color: #bdbdbd;
 }
 
 #publicProfile .muted {
@@ -126,10 +238,9 @@
   font-size: 10px;
   letter-spacing: 2px;
   text-transform: uppercase;
-  opacity: 0.55;
+  opacity: 0.65;
 }
 
-/* Public profile refinements */
 #publicProfile .profile-brand {
   font-size: 15px;
   letter-spacing: 5px;
@@ -140,32 +251,45 @@
   margin: 0;
 }
 
-#publicProfile #publicLinks a {
-  width: 100%;
-  padding: 15px 18px;
-  border-radius: 12px;
-  font-size: 14px;
-  letter-spacing: 0.3px;
-}
-
-#publicProfile #publicHeadline {
-  margin-top: 8px;
-}
-
-#publicProfile #publicBio {
-  white-space: pre-wrap;
-}
-
 #publicProfile #publicLinks:empty {
   display: none;
 }
 
+#founderSection {
+  color: #fff;
+  border-top-color: #363636 !important;
+}
+
+#founderSection h2 {
+  color: #fff;
+}
+
+#founderSection p {
+  color: #b8b8b8 !important;
+}
+
+hr {
+  border: 0;
+  border-top: 1px solid #363636;
+  margin: 24px 0;
+}
+
 @media (max-width: 480px) {
+  header {
+    padding: 20px 5%;
+  }
+
+  header .muted {
+    font-size: 10px;
+    text-align: right;
+  }
+
   #publicProfile {
     padding: 30px 18px;
     margin: 24px auto;
   }
 }
+
   </style>
 </head>
 <body>
