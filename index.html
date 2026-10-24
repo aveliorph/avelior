@@ -529,11 +529,13 @@ contactSection.style.textAlign = "left";
   addContactLink("☎  Call me", contact.phone, "phone");
   addContactLink("✉  Email me", contact.contact_email, "email");
 
-  $("publicProfile").insertBefore(
+   $("publicProfile").insertBefore(
     contactSection,
     $("publicProfile").lastElementChild
   );
 }
+
+  show("publicProfile");
 }
 
   
