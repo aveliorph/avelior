@@ -41,7 +41,9 @@
     a { color: #d8c69a; overflow-wrap: anywhere; }
     .muted { color: #9ca597; font-size: 14px; }
     #status { overflow-wrap: anywhere; }
-    .hidden { display: none; }
+   .hidden {
+  display: none !important;
+}
     .profile-name { font-size: 30px; }
     
 .profile-avatar {
@@ -325,13 +327,13 @@ function show(id) {
     statusMessage.classList.toggle("hidden", id === "publicProfile");
   }
 
-  const founder = $("founderSection");
-  if (founder) {
-    founder.classList.toggle(
-      "hidden",
-      id === "publicProfile" || id === "dashboard"
-    );
-  }
+ 
+const founder = $("founderSection");
+if (founder) {
+  const isHomepage = !new URLSearchParams(location.search).has("u");
+  founder.classList.toggle("hidden", !(id === "auth" && isHomepage));
+}
+
 }
 
     function status(message) {
@@ -801,7 +803,7 @@ try {
 
   </script>
 
-<section id="founderSection" style="
+<section id="founderSection" class="hidden" style="
   text-align: center;
   padding: 50px 20px;
   margin: 40px auto 20px;
