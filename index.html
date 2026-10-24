@@ -487,7 +487,7 @@ if (oldContactSection) oldContactSection.remove();
   addLink(link.name, link.url);
 });
 
- if (contact?.phone || contact?.contact_email) {
+if (contact?.phone || contact?.contact_email) {
  const contactSection = document.createElement("div");
 contactSection.id = "publicContactSection";
 contactSection.style.marginTop = "32px";
@@ -779,17 +779,24 @@ $("addCustomLinkBtn").addEventListener("click", () => {
       }
     });
 
+
 try {
- if (!SUPABASE_PUBLISHABLE_KEY) {
+  status("Connecting to AVELIOR...");
+
+  if (!SUPABASE_PUBLISHABLE_KEY) {
     show("auth");
-    status("Setup needed: add your Supabase publishable key in index.html.");
+    status("Missing Supabase publishable key.");
   } else {
+    console.log("AVELIOR startup: calling refresh()");
     await refresh();
+    console.log("AVELIOR startup: refresh completed");
   }
 } catch (e) {
+  console.error("AVELIOR startup error:", e);
   show("auth");
-  status(e.message || "Connection failed. Check your Supabase setup.");
+  status("Startup error: " + (e?.message || String(e)));
 }
+
   </script>
 
 <section id="founderSection" style="
