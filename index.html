@@ -127,6 +127,37 @@
   opacity: 0.55;
 }
 
+/* Public profile refinements */
+#publicProfile .profile-brand {
+  font-size: 15px;
+  letter-spacing: 5px;
+  margin-bottom: 34px;
+}
+
+#publicProfile #publicLinks p {
+  margin: 0;
+}
+
+#publicProfile #publicLinks a {
+  width: 100%;
+  padding: 15px 18px;
+  border-radius: 12px;
+  font-size: 14px;
+  letter-spacing: 0.3px;
+}
+
+#publicProfile #publicHeadline {
+  margin-top: 8px;
+}
+
+#publicProfile #publicBio {
+  white-space: pre-wrap;
+}
+
+#publicProfile #publicLinks:empty {
+  display: none;
+}
+
 @media (max-width: 480px) {
   #publicProfile {
     padding: 30px 18px;
@@ -219,6 +250,7 @@
    
      
     <section id="publicProfile" class="card hidden">
+        <div class="brand profile-brand">A V E L I O R</div>
       <img id="publicAvatar" alt="Profile picture"
         class="profile-avatar hidden">
       <h1 id="publicName" class="profile-name"></h1>
@@ -245,8 +277,31 @@
     );
 
     const sections = ["auth", "dashboard", "publicProfile"];
-   function show(id) {
-  sections.forEach(s => $(s).classList.toggle("hidden", s !== id));
+ 
+function show(id) {
+  sections.forEach(s => {
+    $(s).classList.toggle("hidden", s !== id);
+  });
+
+  // Hide the homepage introduction on the dashboard and public profile
+  const intro = $("intro");
+  if (intro) {
+    intro.classList.toggle(
+      "hidden",
+      id === "publicProfile" || id === "dashboard"
+    );
+  }
+
+  // Hide the main header and status message on a public profile
+  const header = document.querySelector("header");
+  if (header) {
+    header.classList.toggle("hidden", id === "publicProfile");
+  }
+
+  const statusMessage = $("status");
+  if (statusMessage) {
+    statusMessage.classList.toggle("hidden", id === "publicProfile");
+  }
 
   const founder = $("founderSection");
   if (founder) {
@@ -256,6 +311,7 @@
     );
   }
 }
+
     function status(message) {
       $("status").textContent = message;
     }
