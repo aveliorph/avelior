@@ -344,167 +344,261 @@ function show(id) {
       } catch { return null; }
     }
 
-    async function loadDashboard(user) {
-      const { data, error } = await client
-        .from("profiles").select("*").eq("id", user.id).maybeSingle();
+   
+async function loadDashboard(user) {
+  const { data, error } = await client
+    .from("profiles")
+    .select("*")
+    .eq("id", user.id)
+    .maybeSingle();
 
-      if (error) throw error;
+  if (error) throw error;
 
-      if (!data) {
-        const base = (user.user_metadata?.username ||
-          user.email?.split("@")[0] || "member")
-          .toLowerCase().replace(/[^a-z0-9_]/g, "_").slice(0, 24);
-        $("username").value = base.length >= 3 ? base : "member_" + base;
-        $("fullName").value = user.user_metadata?.full_name || "";
-        $("headline").value = "";
-        $("bio").value = "";
-        $("website").value = "";
-        $("instagram").value = "";
-        $("facebook").value = "";
-      } else {
-        $("username").value = data.username || "";
-        $("fullName").value = data.full_name || "";
-        $("headline").value = data.headline || "";
-        $("bio").value = data.bio || "";
-        $("website").value = data.website || "";
-        $("instagram").value = data.instagram || "";
-        $("facebook").value = data.facebook || "";
-      }
+  const { data: contacts, error: contactError } = await client
+    .from("profile_contacts")
+    .select("phone,contact_email,show_phone,show_email")
+    .eq("user_id", user.id)
+    .maybeSingle();
 
-      const link = new URL(location.href);
-      link.search = "";
-      link.hash = "";
-      link.searchParams.set("u", $("username").value);
-      $("publicLink").textContent = "Public profile: " + link.href;
-      show("dashboard");
-      status("You're logged in. Your profile is ready to edit.");
-    }
+  if (contactError) throw contactError;
 
-    async function showPublicProfile(username) {
-      const { data, error } = await client.from("profiles")
-        .select("username,full_name,headline,bio,website,instagram,facebook,avatar_url")
-        .eq("username", username).maybeSingle();
+  if (!data) {
+    const base = (user.user_metadata?.username ||
+      user.email?.split("@")[0] || "member")
+      .toLowerCase()
+      .replace(/[^a-z0-9_]/g, "_")
+      .slice(0, 24);
 
-      if (error) throw error;
-      if (!data) {
-        show("auth");
-        status("Profile not found. Check the username or try again later.");
-        return;
-      }
+    $("username").value = base.length >= 3 ? base : "member_" + base;
+    $("fullName").value = user.user_metadata?.full_name || "";
+    $("headline").value = "";
+    $("bio").value = "";
+    $("website").value = "";
+    $("instagram").value = "";
+    $("facebook").value = "";
+  } else {
+    $("username").value = data.username || "";
+    $("fullName").value = data.full_name || "";
+    $("headline").value = data.headline || "";
+    $("bio").value = data.bio || "";
+    $("website").value = data.website || "";
+    $("instagram").value = data.instagram || "";
+    $("facebook").value = data.facebook || "";
+  }
 
-      $("publicName").textContent = data.full_name || data.username;
-      
-      const avatar = $("publicAvatar");
-      if (data.avatar_url) {
-        avatar.src = data.avatar_url;
-        avatar.classList.remove("hidden");
-      } else {
-        avatar.removeAttribute("src");
-        avatar.classList.add("hidden");
-      }
+  $("phone").value = contacts?.phone || "";
+  $("contactEmail").value = contacts?.contact_email || "";
+  $("showPhone").checked = contacts?.show_phone === true;
+  $("showEmail").checked = contacts?.show_email === true;
 
-      $("publicHeadline").textContent = data.headline || "";
-      $("publicBio").textContent = data.bio || "";
+  const link = new URL(location.href);
+  link.search = "";
+  link.hash = "";
+  link.searchParams.set("u", $("username").value);
 
-      const links = $("publicLinks");
-      links.replaceChildren();
-      
-for (const [label, value] of [
-  ["Website", data.website],
-  ["Instagram", data.instagram],
-  ["Facebook", data.facebook]
-]) {
+  $("publicLink").textContent = "Public profile: " + link.href;
+  show("dashboard");
+  status("You're logged in. Your profile is ready to edit.");
+}
 
-        const href = safeUrl(value || "");
-        if (!href) continue;
-        const p = document.createElement("p");
-        const a = document.createElement("a");
-        a.href = href;
-        a.target = "_blank";
-        a.rel = "noopener noreferrer";
-        a.textContent = label + " ↗";
-        p.append(a);
-        links.append(p);
-      }
 
-      show("publicProfile");
-      status("Public profile");
-    }
-
-    $("authForm").addEventListener("submit", async event => {
-      event.preventDefault();
-      try {
-        status("Logging in...");
-        const { error } = await client.auth.signInWithPassword({
-          email: $("email").value.trim(),
-          password: $("password").value
-        });
-        if (error) throw error;
-        await refresh();
-      } catch (e) {
-        status(e.message || "Login failed.");
-      }
-    });
-
-    $("signupBtn").addEventListener("click", async () => {
-      try {
-        const username = $("newUsername").value.trim();
-        if (!/^[a-z0-9_]{3,30}$/.test(username)) {
-          throw new Error("Enter a username with 3–30 lowercase letters, numbers or underscores.");
-        }
-        status("Creating account...");
-        const { data, error } = await client.auth.signUp({
-          email: $("email").value.trim(),
-          password: $("password").value,
-          options: { data: { username } }
-        });
-        if (error) throw error;
-
-        if (data.session) {
-          await loadDashboard(data.user);
-        } else {
-          status("Account request received. Check your email to confirm, then log in.");
-        }
-      } catch (e) {
-        status(e.message || "Sign-up failed.");
-      }
-    });
-
-    $("profileForm").addEventListener("submit", async event => {
-      event.preventDefault();
-      try {
-        const { data: { user } } = await client.auth.getUser();
-        if (!user) throw new Error("Please log in again.");
-
-        const username = $("username").value.trim();
-        if (!/^[a-z0-9_]{3,30}$/.test(username)) {
-          throw new Error("Username must be 3–30 lowercase letters, numbers or underscores.");
-        }
-
-        const { error } = await client.from("profiles").upsert({
-          id: user.id,
-          username,
-          full_name: $("fullName").value.trim(),
-          headline: $("headline").value.trim(),
-          bio: $("bio").value.trim(),
-          website: $("website").value.trim() || null,
-         instagram: $("instagram").value.trim() || null,
-facebook: $("facebook").value.trim() || null,
-updated_at: new Date().toISOString()
-        }, { onConflict: "id" });
-
-        if (error) throw error;
-        status("Profile saved successfully.");
-        const link = new URL(location.href);
-        link.search = "";
-        link.hash = "";
-        link.searchParams.set("u", username);
-        $("publicLink").textContent = "Public profile: " + link.href;
     
-      } catch (e) {
-        status(e.message || "Could not save profile.");
-      }
+
+async function showPublicProfile(username) {
+  const { data, error } = await client.from("profiles")
+    .select("id,username,full_name,headline,bio,website,instagram,facebook,avatar_url")
+    .eq("username", username)
+    .maybeSingle();
+
+  if (error) throw error;
+
+  if (!data) {
+    show("auth");
+    status("Profile not found. Check the username or try again later.");
+    return;
+  }
+
+  const { data: contacts, error: contactError } = await client
+    .rpc("get_public_profile_contact", {
+      p_username: username
     });
+
+  if (contactError) throw contactError;
+
+  const contact = Array.isArray(contacts) ? contacts[0] : contacts;
+
+  $("publicName").textContent = data.full_name || data.username;
+
+  const avatar = $("publicAvatar");
+  if (data.avatar_url) {
+    avatar.src = data.avatar_url;
+    avatar.classList.remove("hidden");
+  } else {
+    avatar.removeAttribute("src");
+    avatar.classList.add("hidden");
+  }
+
+  $("publicHeadline").textContent = data.headline || "";
+  $("publicBio").textContent = data.bio || "";
+
+  const links = $("publicLinks");
+  links.replaceChildren();
+
+  const addLink = (label, value, type = "url") => {
+    if (!value) return;
+
+    let href;
+    if (type === "phone") {
+      href = "tel:" + value.replace(/[^\d+]/g, "");
+    } else if (type === "email") {
+      href = "mailto:" + value.trim();
+    } else {
+      href = safeUrl(value);
+    }
+
+    if (!href) return;
+
+    const p = document.createElement("p");
+    const a = document.createElement("a");
+    a.href = href;
+
+    if (type === "url") {
+      a.target = "_blank";
+      a.rel = "noopener noreferrer";
+    }
+
+    a.textContent = label + (type === "url" ? " ↗" : "");
+    p.append(a);
+    links.append(p);
+  };
+
+  addLink("Website", data.website);
+  addLink("Instagram", data.instagram);
+  addLink("Facebook", data.facebook);
+
+  if (contact?.phone) {
+    addLink("Call me", contact.phone, "phone");
+  }
+
+  if (contact?.contact_email) {
+    addLink("Email me", contact.contact_email, "email");
+  }
+
+  show("publicProfile");
+  status("Public profile");
+}
+
+
+  
+$("authForm").addEventListener("submit", async event => {
+  event.preventDefault();
+
+  try {
+    status("Logging in...");
+
+    const { error } = await client.auth.signInWithPassword({
+      email: $("email").value.trim(),
+      password: $("password").value
+    });
+
+    if (error) throw error;
+    await refresh();
+  } catch (e) {
+    status(e.message || "Login failed.");
+  }
+});
+
+$("signupBtn").addEventListener("click", async () => {
+  try {
+    const username = $("newUsername").value.trim();
+
+    if (!/^[a-z0-9_]{3,30}$/.test(username)) {
+      throw new Error(
+        "Enter a username with 3–30 lowercase letters, numbers or underscores."
+      );
+    }
+
+    status("Creating account...");
+
+    const { data, error } = await client.auth.signUp({
+      email: $("email").value.trim(),
+      password: $("password").value,
+      options: { data: { username } }
+    });
+
+    if (error) throw error;
+
+    if (data.session) {
+      await loadDashboard(data.user);
+    } else {
+      status("Account created. Check your email to confirm, then log in.");
+    }
+  } catch (e) {
+    status(e.message || "Sign-up failed.");
+  }
+});
+
+$("profileForm").addEventListener("submit", async event => {
+  event.preventDefault();
+
+  try {
+    const { data: { user } } = await client.auth.getUser();
+
+    if (!user) {
+      throw new Error("Please log in again.");
+    }
+
+    const username = $("username").value.trim();
+
+    if (!/^[a-z0-9_]{3,30}$/.test(username)) {
+      throw new Error(
+        "Username must be 3–30 lowercase letters, numbers or underscores."
+      );
+    }
+
+    status("Saving profile...");
+
+    const { error } = await client.from("profiles").upsert({
+      id: user.id,
+      username,
+      full_name: $("fullName").value.trim(),
+      headline: $("headline").value.trim(),
+      bio: $("bio").value.trim(),
+      website: $("website").value.trim() || null,
+      instagram: $("instagram").value.trim() || null,
+      facebook: $("facebook").value.trim() || null,
+      updated_at: new Date().toISOString()
+    }, { onConflict: "id" });
+
+    if (error) throw error;
+
+    const { error: contactError } = await client
+      .from("profile_contacts")
+      .upsert({
+        user_id: user.id,
+        phone: $("phone").value.trim() || null,
+        contact_email: $("contactEmail").value.trim() || null,
+        show_phone: $("showPhone").checked,
+        show_email: $("showEmail").checked,
+        updated_at: new Date().toISOString()
+      }, { onConflict: "user_id" });
+
+    if (contactError) throw contactError;
+
+    const link = new URL(location.href);
+    link.search = "";
+    link.hash = "";
+    link.searchParams.set("u", username);
+
+    $("publicLink").textContent = "Public profile: " + link.href;
+
+    status("Profile saved successfully.");
+  } catch (e) {
+    status(e.message || "Could not save profile.");
+  }
+});
+
+  
 
     $("uploadAvatarBtn").addEventListener("click", async () => {
       try {
