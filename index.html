@@ -543,10 +543,7 @@ $("profileForm").addEventListener("submit", async event => {
 
   try {
     const { data: { user } } = await client.auth.getUser();
-
-    if (!user) {
-      throw new Error("Please log in again.");
-    }
+    if (!user) throw new Error("Please log in again.");
 
     const username = $("username").value.trim();
 
@@ -596,6 +593,36 @@ $("profileForm").addEventListener("submit", async event => {
   } catch (e) {
     status(e.message || "Could not save profile.");
   }
+});
+
+
+$("addCustomLinkBtn").addEventListener("click", () => {
+  const editor = $("customLinksEditor");
+
+  const row = document.createElement("div");
+  row.style.margin = "12px 0";
+  row.style.padding = "12px";
+  row.style.border = "1px solid #485044";
+  row.style.borderRadius = "8px";
+
+  const name = document.createElement("input");
+  name.type = "text";
+  name.placeholder = "Link name (e.g. TikTok)";
+  name.maxLength = 40;
+  name.style.marginBottom = "8px";
+
+  const url = document.createElement("input");
+  url.type = "url";
+  url.placeholder = "https://example.com";
+
+  const remove = document.createElement("button");
+  remove.type = "button";
+  remove.className = "secondary";
+  remove.textContent = "Remove link";
+  remove.addEventListener("click", () => row.remove());
+
+  row.append(name, url, remove);
+  editor.appendChild(row);
 });
 
   
