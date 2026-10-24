@@ -449,6 +449,8 @@ async function showPublicProfile(username) {
 
   const links = $("publicLinks");
   links.replaceChildren();
+  const oldContactSection = $("publicContactSection");
+if (oldContactSection) oldContactSection.remove();
 
   const addLink = (label, value, type = "url") => {
     if (!value) return;
@@ -485,18 +487,54 @@ async function showPublicProfile(username) {
   addLink(link.name, link.url);
 });
 
-  if (contact?.phone) {
-    addLink("Call me", contact.phone, "phone");
-  }
+ if (contact?.phone || contact?.contact_email) {
+ const contactSection = document.createElement("div");
+contactSection.id = "publicContactSection";
+contactSection.style.marginTop = "32px";
+contactSection.style.paddingTop = "20px";
+contactSection.style.borderTop = "1px solid rgba(184, 155, 98, 0.3)";
+contactSection.style.textAlign = "left";
 
-  if (contact?.contact_email) {
-    addLink("Email me", contact.contact_email, "email");
-  }
+  const heading = document.createElement("h3");
+  heading.textContent = "GET IN TOUCH";
+  heading.style.color = "#b89b62";
+  heading.style.fontSize = "12px";
+  heading.style.letterSpacing = "3px";
+  heading.style.marginBottom = "12px";
 
-  show("publicProfile");
-  status("Public profile");
+  contactSection.appendChild(heading);
+
+  const addContactLink = (label, value, type) => {
+    if (!value) return;
+
+    const p = document.createElement("p");
+    const a = document.createElement("a");
+
+    a.href = type === "phone"
+      ? "tel:" + value.replace(/[^\d+]/g, "")
+      : "mailto:" + value.trim();
+
+    a.textContent = label;
+    a.style.display = "block";
+    a.style.padding = "14px 16px";
+    a.style.marginBottom = "10px";
+    a.style.border = "1px solid rgba(184, 155, 98, 0.55)";
+    a.style.borderRadius = "12px";
+    a.style.textDecoration = "none";
+
+    p.appendChild(a);
+    contactSection.appendChild(p);
+  };
+
+  addContactLink("☎  Call me", contact.phone, "phone");
+  addContactLink("✉  Email me", contact.contact_email, "email");
+
+  $("publicProfile").insertBefore(
+    contactSection,
+    $("publicProfile").lastElementChild
+  );
 }
-
+}
 
   
 $("authForm").addEventListener("submit", async event => {
