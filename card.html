@@ -1,0 +1,139 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#080808">
+  <title>AVELIOR — Digital Identity</title>
+
+  <style>
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      display: grid;
+      place-items: center;
+      padding: 24px;
+      background: #080808;
+      color: #f5f5f5;
+      font-family: Arial, sans-serif;
+    }
+
+    main {
+      width: 100%;
+      max-width: 440px;
+      padding: 36px 24px;
+      text-align: center;
+      background: linear-gradient(145deg, #1b1b1b, #0d0d0d);
+      border: 1px solid #363636;
+      border-radius: 22px;
+    }
+
+    .brand {
+      letter-spacing: 6px;
+      font-size: 17px;
+      margin-bottom: 32px;
+    }
+
+    h1 { font-size: 25px; }
+
+    p {
+      color: #aaa;
+      line-height: 1.7;
+      overflow-wrap: anywhere;
+    }
+
+    a {
+      color: #fff;
+      overflow-wrap: anywhere;
+    }
+
+    .loader {
+      width: 26px;
+      height: 26px;
+      margin: 24px auto;
+      border: 2px solid #444;
+      border-top-color: #fff;
+      border-radius: 50%;
+      animation: spin .8s linear infinite;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .loader { animation: none; }
+    }
+  </style>
+</head>
+
+<body>
+  <main>
+    <div class="brand">AVELIOR</div>
+    <h1 id="title">Connecting your identity</h1>
+    <div class="loader" id="loader"></div>
+    <p id="message">Please wait while we find your profile.</p>
+  </main>
+
+  <script type="module">
+    import { createClient } from
+      "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm";
+
+    const SUPABASE_URL =
+      "https://gqxmwqpdqxyhmazoqrac.supabase.co";
+
+    const SUPABASE_PUBLISHABLE_KEY =
+      "sb_publishable__wh7bVqUNfktiaomD1aOvQ__XJav_Mf";
+
+    const client = createClient(
+      SUPABASE_URL,
+      SUPABASE_PUBLISHABLE_KEY
+    );
+
+    const title = document.getElementById("title");
+    const message = document.getElementById("message");
+    const loader = document.getElementById("loader");
+
+    async function openCard() {
+      const cardCode =
+        new URLSearchParams(location.search).get("id")?.trim();
+
+      if (!cardCode || !/^[A-Za-z0-9_-]{1,60}$/.test(cardCode)) {
+        throw new Error("This card link is invalid.");
+      }
+
+      const { data, error } = await client.rpc(
+        "get_public_card_profile",
+        { p_card_code: cardCode }
+      );
+
+      if (error) throw error;
+
+      const result = Array.isArray(data) ? data[0] : null;
+
+      if (!result?.username) {
+        throw new Error(
+          "This card has not been linked yet, or it is unavailable."
+        );
+      }
+
+      title.textContent = "Your identity awaits";
+      message.textContent = "Opening the owner's public profile...";
+      location.replace(
+        "./?u=" + encodeURIComponent(result.username)
+      );
+    }
+
+    openCard().catch(error => {
+      console.error("AVELIOR card lookup failed:", error);
+      loader.hidden = true;
+      title.textContent = "Profile unavailable";
+      message.textContent =
+        error.message || "Unable to load this card right now.";
+    });
+  </script>
+</body>
+</html>
