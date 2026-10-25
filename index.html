@@ -355,14 +355,7 @@ hr {
   placeholder="e.g. Designer | Entrepreneur">
 <label for="bio">About you</label>
 <textarea id="bio" maxlength="1000"></textarea>
-<label for="website">Website URL</label>
-<input id="website" type="url" placeholder="https://example.com">
-<label for="instagram">Instagram URL</label>
-<input id="instagram" type="url"
-  placeholder="https://instagram.com/username">
-<label for="facebook">Facebook URL</label>
-<input id="facebook" type="url"
-  placeholder="https://www.facebook.com/username">
+
         <label for="phone">Contact Number</label>
 <input id="phone" type="tel" placeholder="e.g. 09XXXXXXXXX">
 
@@ -503,19 +496,13 @@ async function loadDashboard(user) {
     $("fullName").value = user.user_metadata?.full_name || "";
     $("headline").value = "";
     $("bio").value = "";
-    $("website").value = "";
-    $("instagram").value = "";
-    $("facebook").value = "";
-    $("customLinksEditor").replaceChildren();
+  $("customLinksEditor").replaceChildren();
   } else {
     $("username").value = data.username || "";
     $("fullName").value = data.full_name || "";
     $("headline").value = data.headline || "";
     $("bio").value = data.bio || "";
-    $("website").value = data.website || "";
-    $("instagram").value = data.instagram || "";
-    $("facebook").value = data.facebook || "";
-    $("customLinksEditor").replaceChildren();
+  $("customLinksEditor").replaceChildren();
 
 (data.custom_links || []).forEach(link => {
   addCustomLink(link.name || "", link.url || "");
@@ -550,7 +537,7 @@ const cacheKey = `avelior-public-profile:${username}`;
 try {
   const { data: profile, error } = await client
     .from("profiles")
-    .select("id,username,full_name,headline,bio,website,instagram,facebook,avatar_url,custom_links")
+    .select("id,username,full_name,headline,bio,avatar_url,custom_links")
     .eq("username", username)
     .maybeSingle();
 
@@ -655,9 +642,6 @@ if (oldContactSection) oldContactSection.remove();
     links.append(p);
   };
 
-  addLink("Website", data.website);
-  addLink("Instagram", data.instagram);
-  addLink("Facebook", data.facebook);
   (data.custom_links || []).forEach(link => {
   addLink(link.name, link.url);
 });
@@ -785,10 +769,7 @@ $("profileForm").addEventListener("submit", async event => {
       full_name: $("fullName").value.trim(),
       headline: $("headline").value.trim(),
       bio: $("bio").value.trim(),
-      website: $("website").value.trim() || null,
-      instagram: $("instagram").value.trim() || null,
-     facebook: $("facebook").value.trim() || null,
-
+    
 custom_links: Array.from(
   $("customLinksEditor").querySelectorAll(".custom-link-row")
 ).map(row => ({
