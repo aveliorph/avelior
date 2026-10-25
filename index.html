@@ -830,11 +830,39 @@ hr {
       <h2>My Cards</h2>
       <p>Manage your card</p>
     </div>
-    <div class="workspace-placeholder">
-      <span class="shortcut-symbol">▣</span>
-      <h3>Your AVELIOR card</h3>
-      <p>Your public profile link can be added to your NFC card using your NFC app.</p>
-    </div>
+
+<div class="workspace-placeholder">
+  <span class="shortcut-symbol">▣</span>
+  <h3>Link your AVELIOR card</h3>
+  <p>Enter the Card ID and activation code provided with your card.</p>
+
+  <form id="claimCardForm">
+    <label for="cardCode">Card ID</label>
+    <input
+      id="cardCode"
+      name="card_code"
+      type="text"
+      placeholder="e.g. AVE-001"
+      required
+    />
+
+    <label for="activationCode">Activation code</label>
+    <input
+      id="activationCode"
+      name="activation_code"
+      type="password"
+      placeholder="Enter activation code"
+      required
+    />
+
+    <button type="submit" id="claimCardButton">
+      Link Card
+    </button>
+
+    <p id="claimCardMessage" role="status"></p>
+  </form>
+</div>
+
   </section>
 
   <!-- MORE -->
@@ -1466,6 +1494,54 @@ $("addCustomLinkBtn").addEventListener("click", () => {
       }
     });
 
+
+$("claimCardForm").addEventListener("submit", async event => {
+  event.preventDefault();
+
+  const button = $("claimCardButton");
+  const message = $("claimCardMessage");
+
+  button.disabled = true;
+  message.textContent = "Linking your card...";
+
+  try {
+    const { data: { session }, error: sessionError } =
+      await client.auth.getSession();
+
+    if (sessionError) throw sessionError;
+    if (!session) throw new Error("Please log in again.");
+
+    const response = await fetch(
+      `${SUPABASE_URL}/functions/v1/link-nfc-card`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "apikey": SUPABASE_PUBLISHABLE_KEY,
+          "Authorization": `Bearer ${session.access_token}`
+        },
+        body: JSON.stringify({
+          card_code: $("cardCode").value.trim(),
+          activation_code: $("activationCode").value.trim()
+        })
+      }
+    );
+
+    const result = await response.json();
+
+    if (!response.ok) {
+      throw new Error(result.error || "Could not link your card.");
+    }
+
+    message.textContent = "Card linked successfully!";
+    $("activationCode").value = "";
+    $("cardCode").value = "";
+  } catch (error) {
+    message.textContent = error.message || "Something went wrong.";
+  } finally {
+    button.disabled = false;
+  }
+});
 
     $("copyBtn").addEventListener("click", async () => {
      const text = $("publicProfileButton").href;
