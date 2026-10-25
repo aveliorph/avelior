@@ -736,10 +736,46 @@ hr {
 
       <p class="identity-label">PUBLIC PROFILE LINK</p>
       <p id="publicLink" class="identity-link"></p>
+      
+<div class="identity-actions">
+  <a
+    id="publicProfileButton"
+    class="identity-view-link"
+    href="#"
+    target="_blank"
+    rel="noopener noreferrer"
+  >View public profile ↗</a>
+
+  <button
+    type="button"
+    class="workspace-secondary"
+    id="copyBtn"
+  >Copy</button>
+</div>
+
+
+    
+      <hr class="workspace-divider">
+
+      <p class="identity-label">PERMANENT CARD LINK</p>
+      <p id="cardPublicLink" class="identity-link">
+        No card linked yet.
+      </p>
 
       <div class="identity-actions">
-        <a id="publicProfileButton" class="identity-view-link" href="#" target="_blank" rel="noopener noreferrer">View public profile ↗</a>
-        <button type="button" class="workspace-secondary" id="copyBtn">Copy</button>
+        <a
+          id="cardProfileButton"
+          class="identity-view-link hidden"
+          href="#"
+          target="_blank"
+          rel="noopener noreferrer"
+        >Open card link ↗</a>
+
+        <button
+          type="button"
+          class="workspace-secondary hidden"
+          id="copyCardLinkBtn"
+        >Copy card link</button>
       </div>
     </div>
 
@@ -1056,6 +1092,44 @@ setDashboardView("overview");
     }
 
    
+async function loadMyCardLink() {
+  const linkText = $("cardPublicLink");
+  const openButton = $("cardProfileButton");
+  const copyButton = $("copyCardLinkBtn");
+
+  linkText.textContent = "Checking your linked cards...";
+  openButton.classList.add("hidden");
+  copyButton.classList.add("hidden");
+  openButton.removeAttribute("href");
+
+  try {
+    const { data, error } = await client.rpc("get_my_nfc_cards");
+
+    if (error) throw error;
+
+    const card = Array.isArray(data) ? data[0] : null;
+
+    if (!card?.card_code) {
+      linkText.textContent = "No card linked yet.";
+      return;
+    }
+
+    const cardUrl = new URL("./card.html", location.href);
+    cardUrl.search = "";
+    cardUrl.hash = "";
+    cardUrl.searchParams.set("id", card.card_code);
+
+    linkText.textContent = cardUrl.href;
+    openButton.href = cardUrl.href;
+
+    openButton.classList.remove("hidden");
+    copyButton.classList.remove("hidden");
+  } catch (error) {
+    console.error("Could not load card link:", error);
+    linkText.textContent = "Unable to load your card link. Please refresh.";
+  }
+}
+
 async function loadDashboard(user) {
   const { data, error } = await client
     .from("profiles")
@@ -1107,11 +1181,15 @@ async function loadDashboard(user) {
   link.hash = "";
   link.searchParams.set("u", $("username").value);
 
- $("dashboardUsername").textContent = "@" + $("username").value;
+
+$("dashboardUsername").textContent = "@" + $("username").value;
 $("publicLink").textContent = link.href;
 $("publicProfileButton").href = link.href;
 
+await loadMyCardLink();
+
 show("dashboard");
+
   status("You're logged in. Your profile is ready to edit.");
 }
 
@@ -1533,9 +1611,11 @@ $("claimCardForm").addEventListener("submit", async event => {
       throw new Error(result.error || "Could not link your card.");
     }
 
-    message.textContent = "Card linked successfully!";
-    $("activationCode").value = "";
-    $("cardCode").value = "";
+   message.textContent = "Card linked successfully!";
+$("activationCode").value = "";
+$("cardCode").value = "";
+
+await loadMyCardLink();
   } catch (error) {
     message.textContent = error.message || "Something went wrong.";
   } finally {
@@ -1552,6 +1632,22 @@ $("claimCardForm").addEventListener("submit", async event => {
         status("Copy unavailable. Select and copy the link shown above.");
       }
     });
+
+$("copyCardLinkBtn").addEventListener("click", async () => {
+  const text = $("cardProfileButton").href;
+
+  if (!text || text === location.href) {
+    status("No card link available.");
+    return;
+  }
+
+  try {
+    await navigator.clipboard.writeText(text);
+    status("Permanent card link copied.");
+  } catch {
+    status("Copy unavailable. Please copy the card link manually.");
+  }
+});
 
     $("logoutBtn").addEventListener("click", async () => {
       const { error } = await client.auth.signOut();
