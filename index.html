@@ -49,7 +49,7 @@ header {
 }
 
 main {
-  width: min(680px, 92%);
+  width: min(1440px, 92%);
   margin: 48px auto;
 }
 
@@ -294,6 +294,226 @@ hr {
   }
 }
 
+/* AVELIOR — Dashboard shell */
+#dashboard.dashboard-shell {
+  width: min(1440px, 100%);
+  margin: 0 auto;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  display: grid;
+  grid-template-columns: 240px minmax(0, 1fr);
+  gap: 32px;
+}
+
+.dashboard-sidebar {
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  background: #101010;
+  padding: 24px 14px;
+  align-self: start;
+  position: sticky;
+  top: 20px;
+}
+
+.sidebar-brand {
+  padding: 0 12px 24px;
+  font-size: 18px;
+  letter-spacing: 4px;
+  font-weight: 700;
+  border-bottom: 1px solid var(--border);
+}
+
+.sidebar-label {
+  margin: 24px 12px 10px;
+  font-size: 10px;
+  letter-spacing: 2px;
+  color: #888;
+}
+
+.dashboard-nav {
+  display: grid;
+  gap: 6px;
+}
+
+.dashboard-nav button {
+  width: 100%;
+  margin: 0;
+  padding: 13px 12px;
+  text-align: left;
+  background: transparent;
+  color: #aaa;
+  border: 1px solid transparent;
+  font-weight: 400;
+  border-radius: 9px;
+  transition: background .2s, color .2s, border-color .2s;
+}
+
+.dashboard-nav button:hover,
+.dashboard-nav button.active {
+  background: #242424;
+  color: #fff;
+  border-color: #383838;
+  opacity: 1;
+}
+
+.dashboard-content {
+  min-width: 0;
+}
+
+.dashboard-topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 28px;
+}
+
+.dashboard-eyebrow {
+  color: #929292;
+  font-size: 11px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+}
+
+.dashboard-heading {
+  font-size: clamp(28px, 4vw, 40px);
+  margin: 10px 0;
+  letter-spacing: -1px;
+}
+
+.dashboard-panel {
+  border: 1px solid var(--border);
+  background: #111;
+  border-radius: 16px;
+  padding: clamp(18px, 3vw, 28px);
+  margin-bottom: 20px;
+  min-width: 0;
+}
+
+.dashboard-panel h2 {
+  margin-top: 0;
+}
+
+.dashboard-panel[hidden] {
+  display: none !important;
+}
+
+.dashboard-stat-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+  margin-bottom: 20px;
+}
+
+.dashboard-stat {
+  border: 1px solid var(--border);
+  background: #151515;
+  padding: 20px;
+  border-radius: 13px;
+  min-width: 0;
+}
+
+.dashboard-stat-label {
+  font-size: 12px;
+  color: #999;
+  margin-bottom: 12px;
+}
+
+.dashboard-stat-value {
+  font-size: 20px;
+  font-weight: 600;
+  overflow-wrap: anywhere;
+}
+
+.dashboard-action {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  text-decoration: none;
+  border-radius: 9px;
+  padding: 12px 16px;
+  margin: 8px 8px 0 0;
+  background: #fff;
+  color: #080808;
+  border: 1px solid #fff;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.dashboard-action.secondary {
+  background: #1a1a1a;
+  color: #fff;
+  border-color: #414141;
+}
+
+.dashboard-action:hover {
+  opacity: .82;
+}
+
+.dashboard-mobile-label {
+  display: none;
+}
+
+@media (max-width: 850px) {
+  #dashboard.dashboard-shell {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+
+  .dashboard-sidebar {
+    position: static;
+    padding: 14px;
+  }
+
+  .sidebar-brand {
+    padding: 4px 6px 16px;
+  }
+
+  .sidebar-label {
+    display: none;
+  }
+
+  .dashboard-nav {
+    display: flex;
+    gap: 8px;
+    overflow-x: auto;
+    padding-top: 12px;
+    scrollbar-width: thin;
+  }
+
+  .dashboard-nav button {
+    flex: 0 0 auto;
+    width: auto;
+    white-space: nowrap;
+    padding: 11px 13px;
+  }
+
+  .dashboard-content {
+    width: 100%;
+  }
+
+  .dashboard-topbar {
+    margin-bottom: 20px;
+  }
+}
+
+@media (max-width: 480px) {
+  .dashboard-stat-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .dashboard-panel {
+    padding: 18px;
+  }
+
+  .dashboard-heading {
+    font-size: 29px;
+  }
+}
+
   </style>
 </head>
 <body>
@@ -335,62 +555,126 @@ hr {
         email confirmation.</p>
     </section>
 
-    <section id="dashboard" class="card hidden">
-      <h2>Your dashboard</h2>
-      <p>Edit the information you want people to see on your public profile.</p>
-      <form id="profileForm">
+  
+<section id="dashboard" class="dashboard-shell hidden">
+  <aside class="dashboard-sidebar">
+    <div class="sidebar-brand">AVELIOR</div>
+    <p class="sidebar-label">WORKSPACE</p>
+
+    <nav class="dashboard-nav">
+      <button type="button" class="active" data-view="overview">Overview</button>
+      <button type="button" data-view="profile">My Profile</button>
+      <button type="button" data-view="links">My Links</button>
+      <button type="button" data-view="notifications">Notifications</button>
+      <button type="button" data-view="support">Contact &amp; Support</button>
+      <button type="button" data-view="privacy">Privacy &amp; Settings</button>
+    </nav>
+
+    <button type="button" class="secondary" id="logoutBtn">Log out</button>
+  </aside>
+
+  <div class="dashboard-content">
+    <div class="dashboard-topbar">
+      <div>
+        <div class="dashboard-eyebrow">YOUR WORKSPACE</div>
+        <h1 class="dashboard-heading" id="viewTitle">Overview</h1>
+        <p id="viewDescription">Manage your AVELIOR digital identity.</p>
+      </div>
+    </div>
+          <p id="dashboardStatus" role="status" aria-live="polite" hidden></p>
+
+    <section class="dashboard-panel" data-panel="overview">
+      <h2>Welcome to AVELIOR</h2>
+      <p>Your digital identity, all in one place.</p>
+
+      <div class="dashboard-stat-grid">
+        <div class="dashboard-stat">
+          <div class="dashboard-stat-label">ACCOUNT</div>
+          <div class="dashboard-stat-value">Active session</div>
+        </div>
+        <div class="dashboard-stat">
+          <div class="dashboard-stat-label">YOUR PROFILE</div>
+          <div class="dashboard-stat-value">Personal identity</div>
+        </div>
+      </div>
+
+      <h3>Your public profile link</h3>
+      <p id="publicLink"></p>
+      <button type="button" class="dashboard-action" data-go="profile">Edit profile</button>
+      <button type="button" class="dashboard-action secondary" data-go="links">Manage links</button>
+      <button type="button" class="dashboard-action secondary" id="copyBtn">Copy public link</button>
+    </section>
+
+    <form id="profileForm">
+      <section class="dashboard-panel" data-panel="profile" hidden>
+        <h2>My Profile</h2>
+        <p>Choose the information people see when they open your profile.</p>
+
         <label for="username">Public username</label>
         <input id="username" pattern="[a-z0-9_]{3,30}" required>
-        
-<label for="fullName">Display name</label>
-<input id="fullName" maxlength="100">
 
-<label for="avatarFile">Profile picture</label>
-<input id="avatarFile" type="file" accept="image/png,image/jpeg,image/webp">
-<button type="button" id="uploadAvatarBtn">Upload picture</button>
-<p class="muted">PNG, JPG, or WebP. Maximum 2 MB.</p>
+        <label for="fullName">Display name</label>
+        <input id="fullName" maxlength="100">
 
-<label for="headline">Headline</label>
-<input id="headline" maxlength="120"
-  placeholder="e.g. Designer | Entrepreneur">
-<label for="bio">About you</label>
-<textarea id="bio" maxlength="1000"></textarea>
+        <label for="avatarFile">Profile picture</label>
+        <input id="avatarFile" type="file" accept="image/png,image/jpeg,image/webp">
+        <button type="button" id="uploadAvatarBtn">Upload picture</button>
+        <p class="muted">PNG, JPG, or WebP. Maximum 2 MB.</p>
+
+        <label for="headline">Headline</label>
+        <input id="headline" maxlength="120" placeholder="e.g. Designer | Entrepreneur">
+
+        <label for="bio">About you</label>
+        <textarea id="bio" maxlength="1000"></textarea>
+      </section>
+
+      <section class="dashboard-panel" data-panel="links" hidden>
+        <h2>My Links</h2>
+        <p>Add your social media accounts and other websites.</p>
+        <div id="customLinksEditor"></div>
+        <button type="button" id="addCustomLinkBtn">+ Add Link</button>
+      </section>
+
+      <section class="dashboard-panel" data-panel="privacy" hidden>
+        <h2>Privacy &amp; Settings</h2>
+        <p>Choose which contact details are visible on your public profile.</p>
 
         <label for="phone">Contact Number</label>
-<input id="phone" type="tel" placeholder="e.g. 09XXXXXXXXX">
+        <input id="phone" type="tel" placeholder="e.g. 09XXXXXXXXX">
 
-<label for="contactEmail">Contact Email</label>
-<input id="contactEmail" type="email" placeholder="Email for public contact">
+        <label for="contactEmail">Contact Email</label>
+        <input id="contactEmail" type="email" placeholder="Email for public contact">
 
-<label>
-  <input id="showPhone" type="checkbox">
-  Show my contact number on my public profile
-</label>
+        <label>
+          <input id="showPhone" type="checkbox">
+          Show my contact number on my public profile
+        </label>
 
-<label>
-  <input id="showEmail" type="checkbox">
-  Show my contact email on my public profile
-</label>
+        <label>
+          <input id="showEmail" type="checkbox">
+          Show my contact email on my public profile
+        </label>
+      </section>
 
-<hr>
-
-<h3>Custom Links</h3>
-<p>Add links to your public profile, such as TikTok, YouTube, or other websites.</p>
-<div id="customLinksEditor"></div>
-<button type="button" id="addCustomLinkBtn">+ Add Link</button>
-<button type="submit">Save profile</button>
-
-      </form>
-      <p id="publicLink"></p>
-      <div class="actions">
-        <button type="button" class="secondary" id="copyBtn">
-          Copy public link
-        </button>
-        <button type="button" class="secondary" id="logoutBtn">
-          Log out
-        </button>
+      <div class="dashboard-panel" data-panel="notifications" hidden>
+        <h2>Notifications</h2>
+        <p>Announcements and account updates will appear here when the notification system is added.</p>
+        <p class="muted">No notification system is connected yet.</p>
       </div>
-    </section>
+
+      <div class="dashboard-panel" data-panel="support" hidden>
+        <h2>Contact &amp; Support</h2>
+        <p>Support requests will be available here in a future update.</p>
+        <p class="muted">The support ticket system has not been connected yet.</p>
+      </div>
+
+      <div class="dashboard-save-row" hidden>
+        <button type="submit" class="dashboard-action">Save changes</button>
+      </div>
+    </form>
+  </div>
+</section>
+
 
    
      
@@ -437,17 +721,21 @@ function show(id) {
     );
   }
 
-  // Hide the main header and status message on a public profile
-  const header = document.querySelector("header");
-  if (header) {
-    header.classList.toggle("hidden", id === "publicProfile");
-  }
-
+// Hide the main header on the dashboard and public profile
+const header = document.querySelector("header");
+if (header) {
+  header.classList.toggle(
+    "hidden",
+    id === "publicProfile" || id === "dashboard"
+  );
+}
   const statusMessage = $("status");
-  if (statusMessage) {
-    statusMessage.classList.toggle("hidden", id === "publicProfile");
-  }
-
+if (statusMessage) {
+  statusMessage.classList.toggle(
+    "hidden",
+    id === "publicProfile" || id === "dashboard"
+  );
+}
  
 const founder = $("founderSection");
 if (founder) {
@@ -457,9 +745,82 @@ if (founder) {
 
 }
 
+const dashboardViews = {
+  overview: {
+    title: "Overview",
+    description: "Manage your AVELIOR digital identity."
+  },
+  profile: {
+    title: "My Profile",
+    description: "Edit your name, picture, headline, and bio."
+  },
+  links: {
+    title: "My Links",
+    description: "Manage the links on your public profile."
+  },
+  notifications: {
+    title: "Notifications",
+    description: "View announcements and account updates."
+  },
+  support: {
+    title: "Contact & Support",
+    description: "Help and support for your AVELIOR account."
+  },
+  privacy: {
+    title: "Privacy & Settings",
+    description: "Manage your public contact information."
+  }
+};
+
+function setDashboardView(view) {
+  const config = dashboardViews[view];
+  if (!config) return;
+
+  document.querySelectorAll("#dashboard [data-panel]").forEach(panel => {
+    panel.hidden = panel.dataset.panel !== view;
+  });
+
+  document.querySelectorAll("#dashboard [data-view]").forEach(button => {
+    const active = button.dataset.view === view;
+    button.classList.toggle("active", active);
+    button.setAttribute("aria-current", active ? "page" : "false");
+  });
+
+  $("viewTitle").textContent = config.title;
+  $("viewDescription").textContent = config.description;
+
+  const saveRow = document.querySelector("#dashboard .dashboard-save-row");
+  if (saveRow) {
+    saveRow.hidden = !["profile", "links", "privacy"].includes(view);
+  }
+}
+
+document.querySelectorAll("#dashboard [data-view]").forEach(button => {
+  button.addEventListener("click", () => {
+    setDashboardView(button.dataset.view);
+  });
+});
+
+document.querySelectorAll("#dashboard [data-go]").forEach(button => {
+  button.addEventListener("click", () => {
+    setDashboardView(button.dataset.go);
+  });
+});
+
+setDashboardView("overview");
+
     function status(message) {
-      $("status").textContent = message;
-    }
+  const dashboard = $("dashboard");
+  const dashboardStatus = $("dashboardStatus");
+  const mainStatus = $("status");
+
+  if (dashboard && !dashboard.classList.contains("hidden")) {
+    dashboardStatus.textContent = message;
+    dashboardStatus.hidden = false;
+  } else {
+    mainStatus.textContent = message;
+  }
+}
     function safeUrl(value) {
       try {
         const u = new URL(value);
