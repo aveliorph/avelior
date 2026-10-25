@@ -541,18 +541,28 @@ async function loadDashboard(user) {
     
 
 async function showPublicProfile(username) {
-  const { data, error } = await client.from("profiles")
+ 
+let data;
+let contact = null;
+
+const cacheKey = `avelior-public-profile:${username}`;
+
+try {
+  const { data: profile, error } = await client
+    .from("profiles")
     .select("id,username,full_name,headline,bio,website,instagram,facebook,avatar_url,custom_links")
     .eq("username", username)
     .maybeSingle();
 
   if (error) throw error;
 
-  if (!data) {
+  if (!profile) {
     show("auth");
     status("Profile not found. Check the username or try again later.");
     return;
   }
+
+  data = profile;
 
   const { data: contacts, error: contactError } = await client
     .rpc("get_public_profile_contact", {
@@ -561,7 +571,42 @@ async function showPublicProfile(username) {
 
   if (contactError) throw contactError;
 
-  const contact = Array.isArray(contacts) ? contacts[0] : contacts;
+  contact = Array.isArray(contacts) ? contacts[0] : contacts;
+
+  try {
+    localStorage.setItem(
+      cacheKey,
+      JSON.stringify({
+        data,
+        contact,
+        cachedAt: new Date().toISOString()
+      })
+    );
+  } catch (storageError) {
+    console.warn("Could not cache profile:", storageError);
+  }
+
+} catch (error) {
+  let cached = null;
+
+  try {
+    cached = JSON.parse(
+      localStorage.getItem(cacheKey) || "null"
+    );
+  } catch (storageError) {
+    console.warn("Could not read cached profile:", storageError);
+  }
+
+  if (!cached?.data) {
+    throw error;
+  }
+
+  data = cached.data;
+  contact = cached.contact || null;
+
+  console.log("Showing cached AVELIOR profile offline.");
+}
+
 
   $("publicName").textContent = data.full_name || data.username;
 
