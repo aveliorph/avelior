@@ -513,6 +513,143 @@ hr {
     font-size: 29px;
   }
 }
+    
+/* AVELIOR — Refined black & white dashboard */
+
+#dashboard.dashboard-shell {
+  width: 100%;
+  max-width: 1440px;
+  grid-template-columns: 220px minmax(0, 1fr);
+  gap: 24px;
+}
+
+.dashboard-sidebar {
+  background: #0c0c0c;
+  border-color: #292929;
+  border-radius: 14px;
+}
+
+.sidebar-brand {
+  color: #fff;
+  letter-spacing: 5px;
+}
+
+.dashboard-panel {
+  background: #111;
+  border-color: #303030;
+  border-radius: 14px;
+}
+
+.dashboard-stat,
+#dashboard [data-go] {
+  background: #141414;
+  border: 1px solid #303030;
+  border-radius: 12px;
+  transition: border-color .2s, background .2s;
+}
+
+#dashboard [data-go]:hover,
+.dashboard-stat:hover {
+  background: #191919;
+  border-color: #666;
+}
+
+.dashboard-action {
+  background: #fff;
+  color: #080808;
+  border-color: #fff;
+}
+
+.dashboard-action.secondary {
+  background: #151515;
+  color: #fff;
+  border-color: #404040;
+}
+
+.dashboard-nav button.active,
+.dashboard-nav button:hover {
+  background: #202020;
+  border-color: #393939;
+  color: #fff;
+}
+
+#dashboard input:focus,
+#dashboard textarea:focus {
+  outline: 1px solid #aaa;
+  border-color: #aaa;
+}
+
+/* Phone and tablet layout */
+@media (max-width: 850px) {
+  #dashboard.dashboard-shell {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 16px;
+  }
+
+  .dashboard-sidebar {
+    position: static;
+    padding: 14px;
+  }
+
+  .dashboard-nav {
+    display: flex;
+    overflow-x: auto;
+    gap: 7px;
+  }
+
+  .dashboard-nav button {
+    flex: 0 0 auto;
+    white-space: nowrap;
+  }
+
+  .dashboard-content {
+    min-width: 0;
+    width: 100%;
+  }
+
+  .dashboard-topbar {
+    margin-bottom: 18px;
+  }
+
+  .dashboard-panel {
+    padding: 18px;
+  }
+}
+
+@media (max-width: 480px) {
+  main {
+    width: 94%;
+    margin: 20px auto;
+  }
+
+  #dashboard.dashboard-shell {
+    gap: 12px;
+  }
+
+  .dashboard-heading {
+    font-size: 29px;
+    letter-spacing: -.5px;
+  }
+
+  .dashboard-stat-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+  }
+
+  .dashboard-stat {
+    padding: 14px;
+  }
+
+  .dashboard-stat-value {
+    font-size: 16px;
+  }
+
+  .dashboard-action {
+    max-width: 100%;
+    white-space: normal;
+  }
+}
+
 
   </style>
 </head>
@@ -583,50 +720,129 @@ hr {
     </div>
           <p id="dashboardStatus" role="status" aria-live="polite" hidden></p>
 
-    <section class="dashboard-panel" data-panel="overview">
-      <h2>Welcome to AVELIOR</h2>
-      <p>Your digital identity, all in one place.</p>
+   <section class="dashboard-panel dashboard-overview" data-panel="overview">
+  <p class="dashboard-eyebrow">YOUR WORKSPACE</p>
 
-      <div class="dashboard-stat-grid">
-        <div class="dashboard-stat">
-          <div class="dashboard-stat-label">ACCOUNT</div>
-          <div class="dashboard-stat-value">Active session</div>
-        </div>
-        <div class="dashboard-stat">
-          <div class="dashboard-stat-label">YOUR PROFILE</div>
-          <div class="dashboard-stat-value">Personal identity</div>
-        </div>
+  <h2 class="dashboard-welcome">Welcome back.</h2>
+  <p>Your digital identity, all in one place.</p>
+
+  <div class="overview-profile-card">
+    <div class="overview-profile-heading">
+      <div class="overview-profile-icon">♙</div>
+
+      <div class="overview-profile-info">
+        <h3>Your Profile</h3>
+        <p>Your public digital identity</p>
       </div>
 
-      <h3>Your public profile link</h3>
-      <p id="publicLink"></p>
-      <button type="button" class="dashboard-action" data-go="profile">Edit profile</button>
-      <button type="button" class="dashboard-action secondary" data-go="links">Manage links</button>
-      <button type="button" class="dashboard-action secondary" id="copyBtn">Copy public link</button>
-    </section>
+      <span class="overview-arrow">↗</span>
+    </div>
 
-    <form id="profileForm">
-      <section class="dashboard-panel" data-panel="profile" hidden>
-        <h2>My Profile</h2>
-        <p>Choose the information people see when they open your profile.</p>
+    <div class="overview-profile-status">
+      <span>◉</span>
+      <span>Profile status: Active</span>
+    </div>
 
-        <label for="username">Public username</label>
-        <input id="username" pattern="[a-z0-9_]{3,30}" required>
+    <a
+      id="publicProfileButton"
+      class="dashboard-action overview-public-button"
+      href="#"
+      target="_blank"
+      rel="noopener noreferrer"
+    >
+      View public profile ↗
+    </a>
+  </div>
 
-        <label for="fullName">Display name</label>
-        <input id="fullName" maxlength="100">
+  <div class="overview-shortcuts">
+    <button type="button" class="overview-shortcut" data-go="profile">
+      <span class="shortcut-icon">♙</span>
+      <strong>My Profile</strong>
+      <span>Edit your identity</span>
+    </button>
 
-        <label for="avatarFile">Profile picture</label>
-        <input id="avatarFile" type="file" accept="image/png,image/jpeg,image/webp">
-        <button type="button" id="uploadAvatarBtn">Upload picture</button>
-        <p class="muted">PNG, JPG, or WebP. Maximum 2 MB.</p>
+    <button type="button" class="overview-shortcut" data-go="links">
+      <span class="shortcut-icon">↗</span>
+      <strong>My Links</strong>
+      <span>Manage your links</span>
+    </button>
 
-        <label for="headline">Headline</label>
-        <input id="headline" maxlength="120" placeholder="e.g. Designer | Entrepreneur">
+    <button type="button" class="overview-shortcut" data-go="privacy">
+      <span class="shortcut-icon">◇</span>
+      <strong>Privacy</strong>
+      <span>Control visibility</span>
+    </button>
 
-        <label for="bio">About you</label>
-        <textarea id="bio" maxlength="1000"></textarea>
-      </section>
+    <button type="button" class="overview-shortcut" data-go="privacy">
+      <span class="shortcut-icon">⚙</span>
+      <strong>Settings</strong>
+      <span>Manage account</span>
+    </button>
+  </div>
+
+  <div class="overview-link-row">
+    <p class="muted">YOUR PUBLIC LINK</p>
+    <p id="publicLink"></p>
+    <button type="button" class="dashboard-action secondary" id="copyBtn">
+      Copy public link
+    </button>
+  </div>
+</section>
+
+      <form id="profileForm">
+        <section class="dashboard-panel" data-panel="profile" hidden>
+          <h2>My Profile</h2>
+          <p>Edit the information shown on your public AVELIOR profile.</p>
+
+          <label for="username">Username</label>
+          <input
+            id="username"
+            type="text"
+            pattern="[a-z0-9_]{3,30}"
+            minlength="3"
+            maxlength="30"
+            required
+          >
+
+          <label for="fullName">Full Name</label>
+          <input
+            id="fullName"
+            type="text"
+            maxlength="100"
+            placeholder="Your display name"
+          >
+
+          <label for="headline">Headline</label>
+          <input
+            id="headline"
+            type="text"
+            maxlength="120"
+            placeholder="A short introduction"
+          >
+
+          <label for="bio">About Me</label>
+          <textarea
+            id="bio"
+            maxlength="1000"
+            placeholder="Tell people a little about yourself"
+          ></textarea>
+
+          <label for="avatarFile">Profile Picture</label>
+          <input
+            id="avatarFile"
+            type="file"
+            accept="image/jpeg,image/png,image/webp"
+          >
+
+          <button
+            type="button"
+            id="uploadAvatarBtn"
+            class="dashboard-action secondary"
+          >
+            Upload Picture
+          </button>
+        </section>
+      </form>
 
       <section class="dashboard-panel" data-panel="links" hidden>
         <h2>My Links</h2>
@@ -662,6 +878,7 @@ hr {
         <p class="muted">No notification system is connected yet.</p>
       </div>
 
+    
       <div class="dashboard-panel" data-panel="support" hidden>
         <h2>Contact &amp; Support</h2>
         <p>Support requests will be available here in a future update.</p>
@@ -669,11 +886,11 @@ hr {
       </div>
 
       <div class="dashboard-save-row" hidden>
-        <button type="submit" class="dashboard-action">Save changes</button>
+        <button type="button" class="dashboard-action" id="saveChangesBtn">Save changes</button>
       </div>
-    </form>
   </div>
 </section>
+
 
 
    
@@ -1169,7 +1386,9 @@ updated_at: new Date().toISOString()
   }
 });
 
-
+$("saveChangesBtn").addEventListener("click", () => {
+  $("profileForm").requestSubmit();
+});
 function addCustomLink(name = "", url = "") {
   const editor = $("customLinksEditor");
 
