@@ -6,7 +6,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#080808">
   <title>AVELIOR — Digital Identity</title>
-
   <style>
     * { box-sizing: border-box; }
 
@@ -45,37 +44,28 @@
       overflow-wrap: anywhere;
     }
 
-    a {
-      color: #fff;
-      overflow-wrap: anywhere;
+    a { color: #fff; }
+
+    .button {
+      display: inline-block;
+      margin-top: 14px;
+      padding: 13px 18px;
+      border-radius: 8px;
+      background: #f5f5f5;
+      color: #080808;
+      text-decoration: none;
+      font-weight: bold;
     }
 
-    .loader {
-      width: 26px;
-      height: 26px;
-      margin: 24px auto;
-      border: 2px solid #444;
-      border-top-color: #fff;
-      border-radius: 50%;
-      animation: spin .8s linear infinite;
-    }
-
-    @keyframes spin {
-      to { transform: rotate(360deg); }
-    }
-
-    @media (prefers-reduced-motion: reduce) {
-      .loader { animation: none; }
-    }
+    .hidden { display: none; }
   </style>
 </head>
-
 <body>
   <main>
     <div class="brand">AVELIOR</div>
     <h1 id="title">Connecting your identity</h1>
-    <div class="loader" id="loader"></div>
     <p id="message">Please wait while we find your profile.</p>
+    <p id="actions"></p>
   </main>
 
   <script type="module">
@@ -95,14 +85,23 @@
 
     const title = document.getElementById("title");
     const message = document.getElementById("message");
-    const loader = document.getElementById("loader");
+    const actions = document.getElementById("actions");
+
+    function showUnavailable(heading, detail) {
+      title.textContent = heading;
+      message.textContent = detail;
+    }
 
     async function openCard() {
       const cardCode =
         new URLSearchParams(location.search).get("id")?.trim();
 
       if (!cardCode || !/^[A-Za-z0-9_-]{1,60}$/.test(cardCode)) {
-        throw new Error("This card link is invalid.");
+        showUnavailable(
+          "Invalid card link",
+          "Please check the link or contact AVELIOR support."
+        );
+        return;
       }
 
       const { data, error } = await client.rpc(
@@ -110,29 +109,43 @@
         { p_card_code: cardCode }
       );
 
-      if (error) throw error;
+      if (error) {
+        console.error("Card lookup failed:", error);
+        showUnavailable(
+          "Unable to connect",
+          "Please check your internet connection and try again."
+        );
+        return;
+      }
 
       const result = Array.isArray(data) ? data[0] : null;
 
       if (!result?.username) {
-        throw new Error(
-          "This card has not been linked yet, or it is unavailable."
+        showUnavailable(
+          "Your AVELIOR card is not linked yet",
+          "The card owner must activate this card from their AVELIOR account. If you purchased this card, use the activation instructions provided with it."
         );
+
+        const link = document.createElement("a");
+        link.className = "button";
+        link.href = "./";
+        link.textContent = "Go to AVELIOR";
+        actions.replaceChildren(link);
+        return;
       }
 
-      title.textContent = "Your identity awaits";
-      message.textContent = "Opening the owner's public profile...";
-      location.replace(
-        "./?u=" + encodeURIComponent(result.username)
-      );
+      title.textContent = "Opening your profile";
+      message.textContent = "Taking you to the card owner's public profile.";
+
+      location.replace("./?u=" + encodeURIComponent(result.username));
     }
 
     openCard().catch(error => {
-      console.error("AVELIOR card lookup failed:", error);
-      loader.hidden = true;
-      title.textContent = "Profile unavailable";
-      message.textContent =
-        error.message || "Unable to load this card right now.";
+      console.error("Unexpected card error:", error);
+      showUnavailable(
+        "Something went wrong",
+        "Please try again later."
+      );
     });
   </script>
 </body>
