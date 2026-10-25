@@ -1092,11 +1092,13 @@ setDashboardView("overview");
     }
 
    
+
 async function loadMyCardLink() {
   const linkText = $("cardPublicLink");
   const openButton = $("cardProfileButton");
   const copyButton = $("copyCardLinkBtn");
 
+  linkText.replaceChildren();
   linkText.textContent = "Checking your linked cards...";
   openButton.classList.add("hidden");
   copyButton.classList.add("hidden");
@@ -1107,26 +1109,51 @@ async function loadMyCardLink() {
 
     if (error) throw error;
 
-    const card = Array.isArray(data) ? data[0] : null;
+    const cards = (Array.isArray(data) ? data : [])
+      .filter(card => card?.card_code)
+      .sort((a, b) => a.card_code.localeCompare(b.card_code));
 
-    if (!card?.card_code) {
+    if (cards.length === 0) {
       linkText.textContent = "No card linked yet.";
       return;
     }
 
-    const cardUrl = new URL("./card.html", location.href);
-    cardUrl.search = "";
-    cardUrl.hash = "";
-    cardUrl.searchParams.set("id", card.card_code);
+    linkText.replaceChildren();
 
-    linkText.textContent = cardUrl.href;
-    openButton.href = cardUrl.href;
+    cards.forEach((card, index) => {
+      const cardUrl = new URL("./card.html", location.href);
+      cardUrl.search = "";
+      cardUrl.hash = "";
+      cardUrl.searchParams.set("id", card.card_code);
+
+      const row = document.createElement("div");
+      row.style.marginBottom = "14px";
+
+      const label = document.createElement("p");
+      label.style.marginBottom = "5px";
+      label.style.color = "#aaa";
+      label.textContent = card.card_code;
+
+      const link = document.createElement("a");
+      link.href = cardUrl.href;
+      link.textContent = cardUrl.href;
+      link.target = "_blank";
+      link.rel = "noopener noreferrer";
+
+      row.append(label, link);
+      linkText.appendChild(row);
+
+      if (index === 0) {
+        openButton.href = cardUrl.href;
+      }
+    });
 
     openButton.classList.remove("hidden");
     copyButton.classList.remove("hidden");
   } catch (error) {
-    console.error("Could not load card link:", error);
-    linkText.textContent = "Unable to load your card link. Please refresh.";
+    console.error("Could not load card links:", error);
+    linkText.textContent =
+      "Unable to load your card links. Please refresh.";
   }
 }
 
