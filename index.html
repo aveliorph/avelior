@@ -993,6 +993,176 @@ hr {
   }
 }
 
+/* AVELIOR Live Profile Preview */
+.live-preview-section {
+  margin: 24px 0 32px;
+  padding: 20px;
+  border: 1px solid #353535;
+  border-radius: 16px;
+  background: #0b0b0b;
+}
+
+.live-preview-heading {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.live-preview-heading h3 {
+  margin: 0 0 8px;
+}
+
+.live-preview-heading p {
+  margin: 0;
+  color: #999;
+  font-size: 13px;
+}
+
+#previewSaveStatus {
+  color: #c8c8c8;
+  font-size: 11px;
+}
+
+.preview-controls {
+  display: flex;
+  gap: 8px;
+  margin: 18px 0;
+}
+
+.preview-mode {
+  margin: 0;
+  background: #171717;
+  color: #ddd;
+  border-color: #444;
+}
+
+.preview-mode.active {
+  background: #f5f5f5;
+  color: #080808;
+}
+
+.preview-stage {
+  margin: 0 auto;
+  padding: 18px;
+  border: 1px solid #333;
+  border-radius: 18px;
+  background: #151515;
+  transition: max-width 0.2s ease;
+}
+
+.preview-stage.mobile-mode {
+  max-width: 340px;
+}
+
+.preview-stage.desktop-mode {
+  max-width: 100%;
+}
+
+.preview-card {
+  padding: 26px 18px;
+  border: 1px solid #363636;
+  border-radius: 18px;
+  background: linear-gradient(160deg, #202020, #090909);
+  text-align: center;
+  overflow-wrap: anywhere;
+}
+
+.preview-brand {
+  margin-bottom: 26px;
+  font-size: 12px;
+  letter-spacing: 4px;
+}
+
+.preview-avatar-placeholder,
+.preview-avatar {
+  width: 86px;
+  height: 86px;
+  margin: 0 auto 16px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.preview-avatar-placeholder {
+  display: grid;
+  place-items: center;
+  border: 1px solid #555;
+  background: #242424;
+  font-size: 28px;
+}
+
+.preview-card h3 {
+  margin: 10px 0;
+  font-size: 25px;
+}
+
+.preview-card > p {
+  white-space: pre-wrap;
+}
+
+#previewHeadline {
+  color: #ddd;
+  font-size: 13px;
+}
+
+#previewBio {
+  color: #aaa;
+  font-size: 13px;
+  line-height: 1.7;
+}
+
+.preview-links {
+  display: grid;
+  gap: 9px;
+  margin-top: 20px;
+}
+
+.preview-link-item {
+  padding: 12px;
+  border: 1px solid #444;
+  border-radius: 9px;
+  color: #eee;
+  font-size: 13px;
+  overflow-wrap: anywhere;
+}
+
+.preview-footer {
+  margin-top: 26px;
+  color: #888;
+  font-size: 9px;
+  letter-spacing: 2px;
+}
+
+.preview-completeness {
+  margin-top: 22px;
+}
+
+#previewCompletenessText {
+  font-size: 13px;
+}
+
+.preview-progress-track {
+  height: 6px;
+  overflow: hidden;
+  border-radius: 10px;
+  background: #292929;
+}
+
+#previewProgressBar {
+  width: 0;
+  height: 100%;
+  background: #ddd;
+  transition: width 0.2s ease;
+}
+
+.preview-completeness ul {
+  padding-left: 20px;
+  color: #aaa;
+  font-size: 12px;
+  line-height: 2;
+}
+
 
   </style>
 </head>
@@ -1124,6 +1294,51 @@ hr {
       <h2>Your Profile</h2>
       <p>Edit your details</p>
     </div>
+
+<div class="live-preview-section">
+  <div class="live-preview-heading">
+    <div>
+      <h3>Live Profile Preview</h3>
+      <p>See how your profile looks before sharing.</p>
+    </div>
+    <span id="previewSaveStatus">Unsaved changes</span>
+  </div>
+
+  <div class="preview-controls">
+    <button type="button" class="preview-mode active" data-preview="mobile">
+      Mobile
+    </button>
+    <button type="button" class="preview-mode" data-preview="desktop">
+      Desktop
+    </button>
+  </div>
+
+  <div id="livePreviewStage" class="preview-stage mobile-mode">
+    <div id="livePreviewCard" class="preview-card">
+      <div class="preview-brand">A V E L I O R</div>
+      <div class="preview-avatar-placeholder" id="previewAvatarPlaceholder">A</div>
+      <img id="previewAvatar" class="preview-avatar" alt="Profile preview" hidden>
+      <h3 id="previewName">Your Name</h3>
+      <p id="previewHeadline">Your headline appears here</p>
+      <p id="previewBio">Your bio will appear here.</p>
+      <div id="previewLinks" class="preview-links"></div>
+      <div class="preview-footer">POWERED BY AVELIOR</div>
+    </div>
+  </div>
+
+  <div class="preview-completeness">
+    <p id="previewCompletenessText">Profile completeness: 0/4</p>
+    <div class="preview-progress-track">
+      <div id="previewProgressBar"></div>
+    </div>
+    <ul>
+      <li id="checkName">○ Display name added</li>
+      <li id="checkHeadline">○ Headline added</li>
+      <li id="checkBio">○ Bio added</li>
+      <li id="checkLinks">○ At least one link added</li>
+    </ul>
+  </div>
+</div>
 
     <label for="username">Username</label>
     <input id="username" type="text" pattern="[a-z0-9_]{3,30}" minlength="3" maxlength="30" required>
@@ -1646,7 +1861,8 @@ async function loadDashboard(user) {
   $("contactEmail").value = contacts?.contact_email || "";
   $("showPhone").checked = contacts?.show_phone === true;
   $("showEmail").checked = contacts?.show_email === true;
-
+updateLivePreview(false);
+$("previewSaveStatus").textContent = "Saved profile";
   const link = new URL(location.href);
   link.search = "";
   link.hash = "";
@@ -1995,7 +2211,8 @@ $("profileForm").addEventListener("submit", async event => {
       "success",
       "Profile saved"
     );
-
+$("previewSaveStatus").textContent = "Saved profile";
+    
   } catch (e) {
     loadingToast?.dismiss();
 
@@ -2010,9 +2227,89 @@ $("profileForm").addEventListener("submit", async event => {
   }
 });
 
+
+function updateLivePreview(markUnsaved = true) {
+  const name = $("fullName").value.trim();
+  const headline = $("headline").value.trim();
+  const bio = $("bio").value.trim();
+
+  $("previewName").textContent = name || "Your Name";
+  $("previewHeadline").textContent =
+    headline || "Your headline appears here";
+  $("previewBio").textContent =
+    bio || "Your bio will appear here.";
+
+  const linksContainer = $("previewLinks");
+  linksContainer.replaceChildren();
+
+  document.querySelectorAll(".custom-link-row").forEach(row => {
+    const linkName = row.querySelector(".custom-link-name")?.value.trim();
+    const linkUrl = row.querySelector(".custom-link-url")?.value.trim();
+
+    if (linkName && linkUrl) {
+      const item = document.createElement("div");
+      item.className = "preview-link-item";
+      item.textContent = linkName;
+      linksContainer.appendChild(item);
+    }
+  });
+
+  const checks = [
+    ["checkName", Boolean(name), "Display name added"],
+    ["checkHeadline", Boolean(headline), "Headline added"],
+    ["checkBio", Boolean(bio), "Bio added"],
+    [
+      "checkLinks",
+      linksContainer.children.length > 0,
+      "At least one link added"
+    ]
+  ];
+
+  checks.forEach(([id, complete, label]) => {
+    $(id).textContent = `${complete ? "✓" : "○"} ${label}`;
+  });
+
+  const completed = checks.filter(check => check[1]).length;
+
+  $("previewCompletenessText").textContent =
+    `Profile completeness: ${completed}/4`;
+
+  $("previewProgressBar").style.width = `${completed * 25}%`;
+
+  if (markUnsaved) {
+    $("previewSaveStatus").textContent = "Unsaved changes";
+  }
+}
+
+["fullName", "headline", "bio"].forEach(id => {
+  $(id).addEventListener("input", () => updateLivePreview());
+});
+
+$("customLinksEditor").addEventListener("input", () => updateLivePreview());
+$("customLinksEditor").addEventListener("change", () => updateLivePreview());
+
+document.querySelectorAll("[data-preview]").forEach(button => {
+  button.addEventListener("click", () => {
+    document.querySelectorAll("[data-preview]").forEach(item => {
+      item.classList.remove("active");
+    });
+
+    button.classList.add("active");
+
+    const stage = $("livePreviewStage");
+    stage.classList.toggle(
+      "mobile-mode",
+      button.dataset.preview === "mobile"
+    );
+    stage.classList.toggle(
+      "desktop-mode",
+      button.dataset.preview === "desktop"
+    );
+  });
+});
+
 function addCustomLink(name = "", url = "") {
   const editor = $("customLinksEditor");
-
   const row = document.createElement("div");
   row.className = "custom-link-row";
   row.style.margin = "12px 0";
@@ -2038,15 +2335,50 @@ function addCustomLink(name = "", url = "") {
   remove.type = "button";
   remove.className = "secondary";
   remove.textContent = "Remove link";
-  remove.addEventListener("click", () => row.remove());
+
+  remove.addEventListener("click", () => {
+    row.remove();
+    updateLivePreview();
+  });
 
   row.append(nameInput, urlInput, remove);
   editor.appendChild(row);
+  updateLivePreview();
 }
+
+updateLivePreview(false);
 
 $("addCustomLinkBtn").addEventListener("click", () => {
   addCustomLink();
 });
+    
+$("avatarFile").addEventListener("change", () => {
+  const file = $("avatarFile").files[0];
+
+  if (!file) return;
+
+  if (!["image/jpeg", "image/png", "image/webp"].includes(file.type)) {
+    notify("Please choose a JPG, PNG, or WebP picture.", "error");
+    return;
+  }
+
+  if (file.size > 2 * 1024 * 1024) {
+    notify("Picture must be 2 MB or smaller.", "error");
+    return;
+  }
+
+  const reader = new FileReader();
+
+  reader.onload = () => {
+    $("previewAvatar").src = reader.result;
+    $("previewAvatar").hidden = false;
+    $("previewAvatarPlaceholder").hidden = true;
+    $("previewSaveStatus").textContent = "Unsaved changes";
+  };
+
+  reader.readAsDataURL(file);
+});
+
 
     $("uploadAvatarBtn").addEventListener("click", async () => {
       try {
