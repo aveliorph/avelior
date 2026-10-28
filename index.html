@@ -1668,6 +1668,10 @@ function setDashboardView(view) {
     $("workspaceFeatureTitle").textContent = config.title;
     $("workspaceFeatureDescription").textContent = config.description;
   }
+
+  if (view === "analytics") {
+    void loadAnalytics();
+  }
 }
 
 document.querySelectorAll("#dashboard [data-page]").forEach(button => {
@@ -1780,7 +1784,27 @@ function notify(message, type = "success", title = "") {
     }
 
    
+async function trackAnalyticsEvent(
+  username,
+  eventType,
+  linkName = null,
+  linkUrl = null
+) {
+  try {
+    const { error } = await client.rpc("track_analytics_event", {
+      p_username: username,
+      p_event_type: eventType,
+      p_link_name: linkName,
+      p_link_url: linkUrl
+    });
 
+    if (error) {
+      console.warn("Analytics tracking failed:", error.message);
+    }
+  } catch (error) {
+    console.warn("Analytics tracking failed:", error);
+  }
+}
 
 async function loadMyCardLink() {
   const list = $("myCardsList");
@@ -1969,6 +1993,7 @@ async function showPublicProfile(username) {
  
 let data;
 let contact = null;
+let loadedFromNetwork = false;
 
 const cacheKey = `avelior-public-profile:${username}`;
 
@@ -1997,6 +2022,8 @@ try {
   if (contactError) throw contactError;
 
   contact = Array.isArray(contacts) ? contacts[0] : contacts;
+
+  loadedFromNetwork = true;
 
   try {
     localStorage.setItem(
@@ -2052,10 +2079,12 @@ try {
   const oldContactSection = $("publicContactSection");
 if (oldContactSection) oldContactSection.remove();
 
+
   const addLink = (label, value, type = "url") => {
     if (!value) return;
 
     let href;
+
     if (type === "phone") {
       href = "tel:" + value.replace(/[^\d+]/g, "");
     } else if (type === "email") {
@@ -2068,11 +2097,49 @@ if (oldContactSection) oldContactSection.remove();
 
     const p = document.createElement("p");
     const a = document.createElement("a");
+
     a.href = href;
 
     if (type === "url") {
       a.target = "_blank";
       a.rel = "noopener noreferrer";
+
+      a.addEventListener("click", () => {
+        void trackAnalyticsEvent(
+  username,
+  "link_click",
+  label,
+  value
+);
+      });
+
+      if ("IntersectionObserver" in window) {
+        let recorded = false;
+
+        const observer = new IntersectionObserver(entries => {
+          for (const entry of entries) {
+            if (
+              !recorded &&
+              entry.isIntersecting &&
+              entry.intersectionRatio >= 0.5
+            ) {
+              recorded = true;
+              observer.disconnect();
+
+            void trackAnalyticsEvent(
+  username,
+  "link_view",
+  label,
+  value
+);
+            }
+          }
+        }, {
+          threshold: [0.5]
+        });
+
+        observer.observe(a);
+      }
     }
 
     a.textContent = label + (type === "url" ? " ↗" : "");
@@ -2133,9 +2200,377 @@ contactSection.style.textAlign = "left";
 }
 
   show("publicProfile");
+
+  if (loadedFromNetwork) {
+    void trackAnalyticsEvent(username, "profile_view");
+  }
 }
 
   
+
+/* =========================
+   AVELIOR ANALYTICS LOGIC
+========================= */
+
+let analyticsRange = "7";
+let analyticsLoading = false;
+
+function formatAnalyticsNumber(value) {
+  return Number(value || 0).toLocaleString();
+}
+
+function getAnalyticsCutoff(range) {
+  if (range === "all") return null;
+
+  const cutoff = new Date();
+  cutoff.setDate(cutoff.getDate() - Number(range));
+  return cutoff;
+}
+
+function setAnalyticsStatus(message) {
+  const element = $("analyticsStatus");
+  if (element) element.textContent = message;
+}
+
+function renderAnalyticsChart(events, range) {
+  const canvas = $("analyticsChart");
+  const labelsElement = $("analyticsChartLabels");
+
+  if (!canvas || !labelsElement) return;
+
+  const context = canvas.getContext("2d");
+  if (!context) return;
+
+  const width = Math.max(canvas.clientWidth, 280);
+  const height = 190;
+  const pixelRatio = window.devicePixelRatio || 1;
+
+  canvas.width = width * pixelRatio;
+  canvas.height = height * pixelRatio;
+  canvas.style.height = height + "px";
+
+  context.setTransform(pixelRatio, 0, 0, pixelRatio, 0, 0);
+  context.clearRect(0, 0, width, height);
+
+  const now = new Date();
+  let buckets = [];
+
+  if (range === "all") {
+    // All-time chart: monthly activity for the past 12 months.
+    for (let i = 11; i >= 0; i--) {
+      const date = new Date(
+        now.getFullYear(),
+        now.getMonth() - i,
+        1
+      );
+
+      buckets.push({
+        key: `${date.getFullYear()}-${date.getMonth()}`,
+        label: date.toLocaleDateString(undefined, {
+          month: "short"
+        }),
+        profileViews: 0,
+        linkViews: 0,
+        linkClicks: 0
+      });
+    }
+  } else {
+    const days = Number(range);
+
+    for (let i = days - 1; i >= 0; i--) {
+      const date = new Date(now);
+      date.setDate(now.getDate() - i);
+
+      const key = [
+        date.getFullYear(),
+        String(date.getMonth() + 1).padStart(2, "0"),
+        String(date.getDate()).padStart(2, "0")
+      ].join("-");
+
+      buckets.push({
+        key,
+        label: date.toLocaleDateString(undefined, {
+          month: "short",
+          day: "numeric"
+        }),
+        profileViews: 0,
+        linkViews: 0,
+        linkClicks: 0
+      });
+    }
+  }
+
+  const bucketMap = new Map(
+    buckets.map(bucket => [bucket.key, bucket])
+  );
+
+  events.forEach(event => {
+    const date = new Date(event.created_at);
+    let key;
+
+    if (range === "all") {
+      key = `${date.getFullYear()}-${date.getMonth()}`;
+    } else {
+      key = [
+        date.getFullYear(),
+        String(date.getMonth() + 1).padStart(2, "0"),
+        String(date.getDate()).padStart(2, "0")
+      ].join("-");
+    }
+
+    const bucket = bucketMap.get(key);
+    if (!bucket) return;
+
+    if (event.event_type === "profile_view") {
+      bucket.profileViews++;
+    } else if (event.event_type === "link_view") {
+      bucket.linkViews++;
+    } else if (event.event_type === "link_click") {
+      bucket.linkClicks++;
+    }
+  });
+
+  const maxValue = Math.max(
+    1,
+    ...buckets.map(bucket =>
+      bucket.profileViews + bucket.linkClicks
+    )
+  );
+
+  const padding = { top: 12, right: 8, bottom: 12, left: 8 };
+  const chartWidth = width - padding.left - padding.right;
+  const chartHeight = height - padding.top - padding.bottom;
+  const step = chartWidth / Math.max(buckets.length - 1, 1);
+
+  // Subtle horizontal grid lines.
+  context.strokeStyle = "#303030";
+  context.lineWidth = 1;
+
+  for (let i = 0; i < 4; i++) {
+    const y = padding.top + (chartHeight / 3) * i;
+    context.beginPath();
+    context.moveTo(padding.left, y);
+    context.lineTo(width - padding.right, y);
+    context.stroke();
+  }
+
+  function drawLine(getValue, strokeStyle) {
+    context.beginPath();
+    context.strokeStyle = strokeStyle;
+    context.lineWidth = 2;
+    context.lineJoin = "round";
+    context.lineCap = "round";
+
+    buckets.forEach((bucket, index) => {
+      const value = getValue(bucket);
+      const x = padding.left + step * index;
+      const y =
+        padding.top +
+        chartHeight -
+        (value / maxValue) * chartHeight;
+
+      if (index === 0) context.moveTo(x, y);
+      else context.lineTo(x, y);
+    });
+
+    context.stroke();
+  }
+
+  drawLine(bucket => bucket.profileViews, "#f5f5f5");
+  drawLine(bucket => bucket.linkClicks, "#888888");
+
+  // Keep labels readable on smaller screens.
+  labelsElement.replaceChildren();
+
+  const labelIndexes = new Set([
+    0,
+    Math.floor((buckets.length - 1) / 2),
+    buckets.length - 1
+  ]);
+
+  buckets.forEach((bucket, index) => {
+    if (!labelIndexes.has(index)) return;
+
+    const label = document.createElement("span");
+    label.textContent = bucket.label;
+    labelsElement.appendChild(label);
+  });
+
+  labelsElement.style.justifyContent = "space-between";
+  labelsElement.style.marginTop = "8px";
+}
+
+function renderTopAnalyticsLinks(events) {
+  const container = $("analyticsTopLinks");
+  if (!container) return;
+
+  const counts = new Map();
+
+  events.forEach(event => {
+    if (event.event_type !== "link_click") return;
+
+    const name = event.link_name || "Unnamed link";
+    const url = event.link_url || "";
+    const key = `${name}\n${url}`;
+
+    const existing = counts.get(key) || {
+      name,
+      url,
+      clicks: 0
+    };
+
+    existing.clicks++;
+    counts.set(key, existing);
+  });
+
+  const topLinks = [...counts.values()]
+    .sort((a, b) => b.clicks - a.clicks)
+    .slice(0, 5);
+
+  container.replaceChildren();
+
+  if (topLinks.length === 0) {
+    const empty = document.createElement("p");
+    empty.textContent = "No link clicks recorded for this period yet.";
+    container.appendChild(empty);
+    return;
+  }
+
+  topLinks.forEach(link => {
+    const row = document.createElement("div");
+    row.className = "analytics-link-row";
+
+    const name = document.createElement("span");
+    name.className = "analytics-link-name";
+    name.textContent = link.name;
+
+    const count = document.createElement("span");
+    count.className = "analytics-link-count";
+    count.textContent =
+      `${formatAnalyticsNumber(link.clicks)} clicks`;
+
+    row.append(name, count);
+    container.appendChild(row);
+  });
+}
+
+async function loadAnalytics() {
+  if (analyticsLoading) return;
+
+  analyticsLoading = true;
+  setAnalyticsStatus("Loading analytics from Supabase...");
+
+  try {
+    const {
+      data: { user },
+      error: userError
+    } = await client.auth.getUser();
+
+    if (userError) throw userError;
+    if (!user) throw new Error("Please log in to view analytics.");
+
+    let query = client
+      .from("analytics_events")
+      .select("event_type, link_name, link_url, created_at")
+      .eq("profile_id", user.id)
+      .order("created_at", { ascending: true });
+
+    const cutoff = getAnalyticsCutoff(analyticsRange);
+
+    if (cutoff) {
+      query = query.gte("created_at", cutoff.toISOString());
+    }
+
+    const { data, error } = await query;
+
+    if (error) throw error;
+
+    const events = Array.isArray(data) ? data : [];
+
+    const profileViews = events.filter(
+      event => event.event_type === "profile_view"
+    ).length;
+
+    const linkViews = events.filter(
+      event => event.event_type === "link_view"
+    ).length;
+
+    const linkClicks = events.filter(
+      event => event.event_type === "link_click"
+    ).length;
+
+    const ctr = linkViews > 0
+      ? (linkClicks / linkViews) * 100
+      : 0;
+
+    $("analyticsProfileViews").textContent =
+      formatAnalyticsNumber(profileViews);
+
+    $("analyticsLinkViews").textContent =
+      formatAnalyticsNumber(linkViews);
+
+    $("analyticsLinkClicks").textContent =
+      formatAnalyticsNumber(linkClicks);
+
+    $("analyticsCtr").textContent = `${ctr.toFixed(1)}%`;
+
+    renderAnalyticsChart(events, analyticsRange);
+    renderTopAnalyticsLinks(events);
+
+    setAnalyticsStatus(
+      events.length === 0
+        ? "No analytics events recorded for this period yet. Open your public profile and interact with its links to begin collecting data."
+        : `Showing ${formatAnalyticsNumber(events.length)} recorded events for ${
+            analyticsRange === "all"
+              ? "all time"
+              : `the last ${analyticsRange} days`
+          }.`
+    );
+  } catch (error) {
+    console.error("Could not load analytics:", error);
+
+    setAnalyticsStatus(
+      error.message ||
+      "Could not load analytics. Check your Supabase table and permissions."
+    );
+
+    $("analyticsProfileViews").textContent = "—";
+    $("analyticsLinkViews").textContent = "—";
+    $("analyticsLinkClicks").textContent = "—";
+    $("analyticsCtr").textContent = "—";
+
+    $("analyticsTopLinks").replaceChildren();
+
+    const message = document.createElement("p");
+    message.textContent = "Analytics could not be loaded.";
+    $("analyticsTopLinks").appendChild(message);
+  } finally {
+    analyticsLoading = false;
+  }
+}
+
+// Date-range filter buttons.
+document.querySelectorAll("[data-analytics-range]").forEach(button => {
+  button.addEventListener("click", async () => {
+    analyticsRange = button.dataset.analyticsRange;
+
+    document.querySelectorAll("[data-analytics-range]").forEach(item => {
+      item.setAttribute(
+        "aria-pressed",
+        String(item === button)
+      );
+    });
+
+    await loadAnalytics();
+  });
+});
+
+// Redraw the chart if the window size changes.
+window.addEventListener("resize", () => {
+  if (!$("analyticsPanel").hidden) {
+    void loadAnalytics();
+  }
+});
 
 $("authForm").addEventListener("submit", async event => {
   event.preventDefault();
