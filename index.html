@@ -992,6 +992,212 @@ hr {
   }
 }
 
+/* AVELIOR ANALYTICS — monochrome design */
+#analyticsPanel {
+  padding: 26px;
+  border: 1px solid #333;
+  border-radius: 18px;
+  background: #101010;
+  color: #f5f5f5;
+}
+
+#analyticsPanel[hidden] {
+  display: none !important;
+}
+
+#analyticsPanel .analytics-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 20px;
+  flex-wrap: wrap;
+  margin-bottom: 24px;
+}
+
+#analyticsPanel .analytics-eyebrow {
+  margin: 0 0 10px;
+  color: #999;
+  font-size: 10px;
+  letter-spacing: 3px;
+}
+
+#analyticsPanel .analytics-header h2 {
+  margin: 0;
+  font-size: clamp(27px, 4vw, 36px);
+  letter-spacing: -1px;
+}
+
+#analyticsPanel .analytics-header p:not(.analytics-eyebrow) {
+  margin: 9px 0 0;
+  color: #999;
+  font-size: 13px;
+}
+
+#analyticsPanel .analytics-filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+}
+
+#analyticsPanel .analytics-filters button {
+  margin: 0;
+  padding: 10px 13px;
+  border: 1px solid #393939;
+  border-radius: 9px;
+  background: #171717;
+  color: #bbb;
+  font-size: 12px;
+}
+
+#analyticsPanel .analytics-filters button[aria-pressed="true"] {
+  background: #f5f5f5;
+  border-color: #f5f5f5;
+  color: #080808;
+}
+
+#analyticsStatus {
+  margin: 0 0 18px;
+  color: #999;
+  font-size: 12px;
+  overflow-wrap: anywhere;
+}
+
+#analyticsPanel .analytics-stats {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+#analyticsPanel .analytics-card {
+  min-width: 0;
+  padding: 20px;
+  border: 1px solid #303030;
+  border-radius: 14px;
+  background: #151515;
+}
+
+#analyticsPanel .analytics-stats .analytics-card > p {
+  margin: 0 0 17px;
+  color: #999;
+  font-size: 10px;
+  letter-spacing: 1.3px;
+}
+
+#analyticsPanel .analytics-stats h3 {
+  margin: 0 0 10px;
+  font-size: clamp(24px, 3vw, 32px);
+  letter-spacing: -1px;
+  overflow-wrap: anywhere;
+}
+
+#analyticsPanel .analytics-stats span {
+  color: #888;
+  font-size: 11px;
+  line-height: 1.5;
+}
+
+#analyticsPanel .analytics-sections {
+  display: grid;
+  grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr);
+  gap: 14px;
+}
+
+#analyticsPanel .analytics-sections > .analytics-card > h3 {
+  margin: 0 0 7px;
+  font-size: 16px;
+}
+
+#analyticsPanel .analytics-sections > .analytics-card > p {
+  margin: 0 0 18px;
+  color: #929292;
+  font-size: 12px;
+}
+
+#analyticsPanel #analyticsChart {
+  display: block;
+  width: 100%;
+  max-width: 100%;
+  height: 190px;
+}
+
+#analyticsPanel #analyticsChartLabels {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  color: #888;
+  font-size: 10px;
+}
+
+#analyticsPanel #analyticsTopLinks {
+  display: grid;
+  gap: 10px;
+}
+
+#analyticsPanel #analyticsTopLinks > p {
+  color: #888;
+  font-size: 12px;
+}
+
+#analyticsPanel .analytics-link-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 12px 0;
+  border-bottom: 1px solid #2b2b2b;
+}
+
+#analyticsPanel .analytics-link-row:last-child {
+  border-bottom: 0;
+}
+
+#analyticsPanel .analytics-link-name {
+  min-width: 0;
+  color: #eee;
+  font-size: 12px;
+  overflow-wrap: anywhere;
+}
+
+#analyticsPanel .analytics-link-count {
+  flex-shrink: 0;
+  color: #aaa;
+  font-size: 12px;
+}
+
+@media (max-width: 760px) {
+  #analyticsPanel .analytics-stats {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  #analyticsPanel .analytics-sections {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 480px) {
+  #analyticsPanel {
+    padding: 18px 14px;
+  }
+
+  #analyticsPanel .analytics-header {
+    gap: 16px;
+  }
+
+  #analyticsPanel .analytics-filters {
+    width: 100%;
+  }
+
+  #analyticsPanel .analytics-filters button {
+    flex: 1;
+    padding: 10px 8px;
+  }
+
+  #analyticsPanel .analytics-card {
+    padding: 15px;
+  }
+}
+
 
   </style>
 </head>
@@ -1225,7 +1431,102 @@ hr {
     <button type="button" class="workspace-more-option" data-go="appearance">Appearance <span>Customize your page ↗</span></button>
     <button type="button" class="workspace-more-option" data-go="settings">Account settings <span>Coming soon ↗</span></button>
   </section>
+<!-- AVELIOR ANALYTICS -->
+<section
+  id="analyticsPanel"
+  data-panel="analytics"
+  hidden
+>
+  <div class="analytics-header">
+    <div>
+      <p class="analytics-eyebrow">AVELIOR / INSIGHTS</p>
+      <h2>Analytics</h2>
+      <p>Understand how people interact with your profile.</p>
+    </div>
 
+    <div class="analytics-filters">
+      <button
+        type="button"
+        data-analytics-range="7"
+        aria-pressed="true"
+      >
+        7 Days
+      </button>
+
+      <button
+        type="button"
+        data-analytics-range="30"
+        aria-pressed="false"
+      >
+        30 Days
+      </button>
+
+      <button
+        type="button"
+        data-analytics-range="all"
+        aria-pressed="false"
+      >
+        All Time
+      </button>
+    </div>
+  </div>
+
+  <p id="analyticsStatus" role="status">
+    Loading analytics...
+  </p>
+
+  <div class="analytics-stats">
+    <article class="analytics-card">
+      <p>PROFILE VIEWS</p>
+      <h3 id="analyticsProfileViews">—</h3>
+      <span>Total profile visits</span>
+    </article>
+
+    <article class="analytics-card">
+      <p>LINK VIEWS</p>
+      <h3 id="analyticsLinkViews">—</h3>
+      <span>Links viewed on screen</span>
+    </article>
+
+    <article class="analytics-card">
+      <p>LINK CLICKS</p>
+      <h3 id="analyticsLinkClicks">—</h3>
+      <span>Link interactions</span>
+    </article>
+
+    <article class="analytics-card">
+      <p>CLICK-THROUGH RATE</p>
+      <h3 id="analyticsCtr">—</h3>
+      <span>Clicks divided by link views</span>
+    </article>
+  </div>
+
+  <div class="analytics-sections">
+    <section class="analytics-card">
+      <h3>Activity</h3>
+      <p>Profile visits and link engagement over time.</p>
+
+      <canvas
+        id="analyticsChart"
+        height="190"
+        aria-label="Analytics activity chart"
+        role="img"
+      ></canvas>
+
+      <div id="analyticsChartLabels"></div>
+    </section>
+
+    <section class="analytics-card">
+      <h3>Top Performing Links</h3>
+      <p>Your most-clicked links for the selected period.</p>
+
+      <div id="analyticsTopLinks">
+        <p>No link activity yet.</p>
+      </div>
+    </section>
+  </div>
+</section>
+<!-- END AVELIOR ANALYTICS -->
   <!-- FEATURES NOT CONNECTED YET -->
   <section class="workspace-panel" data-panel="feature" hidden>
     <div class="workspace-section-heading">
@@ -1334,11 +1635,9 @@ const dashboardViews = {
   more: {
     panel: "more"
   },
-  analytics: {
-    panel: "feature",
-    title: "Analytics",
-    description: "Profile engagement tracking is coming soon."
-  },
+analytics: {
+  panel: "analytics"
+},
   appearance: {
     panel: "feature",
     title: "Appearance",
