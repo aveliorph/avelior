@@ -1226,6 +1226,17 @@ hr {
 
     <section id="auth" class="card hidden">
       <h2>Customer access</h2>
+      
+<div class="google-login-section">
+  <button type="button" id="googleLoginBtn">
+    Continue with Google
+  </button>
+
+  <p class="muted" style="text-align:center; margin:18px 0;">
+    OR USE EMAIL
+  </p>
+</div>
+
       <form id="authForm">
         <label for="email">Email</label>
         <input id="email" type="email" autocomplete="email" required>
@@ -2571,6 +2582,36 @@ window.addEventListener("resize", () => {
     void loadAnalytics();
   }
 });
+
+$("googleLoginBtn").addEventListener("click", async () => {
+  const button = $("googleLoginBtn");
+
+  if (button.disabled) return;
+
+  button.disabled = true;
+  button.textContent = "Connecting to Google...";
+
+  try {
+    const { error } = await client.auth.signInWithOAuth({
+      provider: "google",
+      options: {
+        redirectTo: window.location.origin + window.location.pathname
+      }
+    });
+
+    if (error) throw error;
+  } catch (error) {
+    notify(
+      error.message || "Google login failed. Please try again.",
+      "error",
+      "Google login failed"
+    );
+
+    button.disabled = false;
+    button.textContent = "Continue with Google";
+  }
+});
+
 
 $("authForm").addEventListener("submit", async event => {
   event.preventDefault();
