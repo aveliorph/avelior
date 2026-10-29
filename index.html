@@ -1538,13 +1538,124 @@ hr {
   </div>
 </section>
 <!-- END AVELIOR ANALYTICS -->
-  <!-- FEATURES NOT CONNECTED YET -->
-  <section class="workspace-panel" data-panel="feature" hidden>
-    <div class="workspace-section-heading">
-      <h2 id="workspaceFeatureTitle">Coming soon</h2>
-      <p id="workspaceFeatureDescription">This feature is not connected yet.</p>
-    </div>
-  </section>
+ 
+<!-- AVELIOR APPEARANCE -->
+<section class="workspace-panel" data-panel="appearance" hidden>
+  <div class="workspace-section-heading">
+    <h2>Appearance</h2>
+    <p>Make your digital profile feel like yours. Changes won't affect your profile information.</p>
+  </div>
+
+  <h3>Choose your design</h3>
+  <p class="workspace-note">You can always return to the original AVELIOR design.</p>
+
+  <label for="appearanceMode">Design mode</label>
+  <select id="appearanceMode">
+    <option value="default">Default AVELIOR</option>
+    <option value="custom">Custom design</option>
+  </select>
+
+  <div id="appearanceCustomControls" hidden>
+    <hr class="workspace-divider">
+
+    <h3>Ready-made palettes</h3>
+    <label for="appearancePalette">Choose a color theme</label>
+    <select id="appearancePalette">
+      <option value="midnight">Midnight</option>
+      <option value="ocean">Ocean Blue</option>
+      <option value="forest">Forest Green</option>
+      <option value="purple">Royal Purple</option>
+      <option value="burgundy">Burgundy</option>
+      <option value="sand">Sand &amp; Cream</option>
+      <option value="rose">Rose Pink</option>
+      <option value="gray">Minimal Gray</option>
+      <option value="custom">My own colors</option>
+    </select>
+
+    <hr class="workspace-divider">
+
+    <h3>Customize your colors</h3>
+
+    <label for="appearanceBackground">Background color</label>
+    <input id="appearanceBackground" type="color" value="#080808">
+
+    <label for="appearanceText">Text color</label>
+    <input id="appearanceText" type="color" value="#FFFFFF">
+
+    <label for="appearanceButton">Button color</label>
+    <input id="appearanceButton" type="color" value="#FFFFFF">
+
+    <label for="appearanceButtonText">Button text color</label>
+    <input id="appearanceButtonText" type="color" value="#111111">
+
+    <label for="appearanceAccent">Accent color</label>
+    <input id="appearanceAccent" type="color" value="#BDBDBD">
+
+    <hr class="workspace-divider">
+
+    <h3>Profile layout</h3>
+    <label for="appearanceLayout">Layout style</label>
+    <select id="appearanceLayout">
+      <option value="classic">Classic</option>
+      <option value="compact">Compact</option>
+      <option value="featured">Featured</option>
+    </select>
+
+    <label for="appearanceButtonStyle">Button shape</label>
+    <select id="appearanceButtonStyle">
+      <option value="rounded">Rounded</option>
+      <option value="pill">Pill</option>
+      <option value="square">Square</option>
+    </select>
+  </div>
+
+  <hr class="workspace-divider">
+
+  <h3>Preview</h3>
+  <p class="workspace-note">This sample will help you see your selected design before saving.</p>
+
+  <div id="appearancePreview" style="
+    max-width: 420px;
+    margin: 18px auto;
+    padding: 28px 20px;
+    border: 1px solid #363636;
+    border-radius: 20px;
+    background: #080808;
+    color: #FFFFFF;
+    text-align: center;
+  ">
+    <p style="letter-spacing: 4px; font-size: 12px;">A V E L I O R</p>
+    <div style="
+      width: 64px;
+      height: 64px;
+      margin: 18px auto;
+      border-radius: 50%;
+      background: #292929;
+      border: 1px solid #BDBDBD;
+    "></div>
+    <h3 id="appearancePreviewName" style="color: inherit;">Your Name</h3>
+    <p id="appearancePreviewHeadline" style="color: inherit;">Your headline goes here</p>
+    <button id="appearancePreviewButton" type="button" style="
+      width: 100%;
+      margin: 8px 0 0;
+      background: #FFFFFF;
+      color: #111111;
+      border: 1px solid #FFFFFF;
+      border-radius: 10px;
+    ">Your Link</button>
+  </div>
+
+  <p id="appearanceStatus" class="workspace-note" role="status"></p>
+
+  <button type="button" id="saveAppearanceBtn" class="workspace-save">
+    Save appearance
+  </button>
+
+  <button type="button" id="resetAppearanceBtn" class="workspace-secondary" style="width: 100%;">
+    Reset to default AVELIOR
+  </button>
+</section>
+<!-- END AVELIOR APPEARANCE -->
 
   <!-- BOTTOM NAV -->
   <nav class="workspace-bottom-nav" aria-label="Workspace navigation">
@@ -1650,10 +1761,8 @@ analytics: {
   panel: "analytics"
 },
   appearance: {
-    panel: "feature",
-    title: "Appearance",
-    description: "Profile customization is coming soon."
-  },
+  panel: "appearance"
+},
   settings: {
     panel: "feature",
     title: "Account settings",
@@ -1975,6 +2084,7 @@ async function loadDashboard(user) {
 });
   }
 
+    setAppearanceControls(data?.profile_design);
   $("phone").value = contacts?.phone || "";
   $("contactEmail").value = contacts?.contact_email || "";
   $("showPhone").checked = contacts?.show_phone === true;
@@ -2011,7 +2121,7 @@ const cacheKey = `avelior-public-profile:${username}`;
 try {
   const { data: profile, error } = await client
     .from("profiles")
-    .select("id,username,full_name,headline,bio,avatar_url,custom_links")
+   .select("id,username,full_name,headline,bio,avatar_url,custom_links,profile_design")
     .eq("username", username)
     .maybeSingle();
 
@@ -2084,7 +2194,7 @@ try {
 
   $("publicHeadline").textContent = data.headline || "";
   $("publicBio").textContent = data.bio || "";
-
+applyAppearanceToPublicProfile(data.profile_design);
   const links = $("publicLinks");
   links.replaceChildren();
   const oldContactSection = $("publicContactSection");
@@ -2217,7 +2327,393 @@ contactSection.style.textAlign = "left";
   }
 }
 
-  
+ 
+/* =========================
+   AVELIOR APPEARANCE SETTINGS
+========================= */
+
+const AVELIOR_DEFAULT_DESIGN = {
+  use_default: true,
+  background: "#080808",
+  text: "#FFFFFF",
+  button: "#FFFFFF",
+  button_text: "#111111",
+  accent: "#BDBDBD",
+  layout: "classic",
+  button_style: "rounded"
+};
+
+const AVELIOR_PALETTES = {
+  midnight: {
+    background: "#080808",
+    text: "#FFFFFF",
+    button: "#FFFFFF",
+    button_text: "#111111",
+    accent: "#BDBDBD"
+  },
+  ocean: {
+    background: "#071B2B",
+    text: "#F1F8FF",
+    button: "#38BDF8",
+    button_text: "#071B2B",
+    accent: "#7DD3FC"
+  },
+  forest: {
+    background: "#10251B",
+    text: "#F0FDF4",
+    button: "#86B99A",
+    button_text: "#10251B",
+    accent: "#BBF7D0"
+  },
+  purple: {
+    background: "#211331",
+    text: "#FAF5FF",
+    button: "#C4A7F2",
+    button_text: "#211331",
+    accent: "#DDD0FF"
+  },
+  burgundy: {
+    background: "#30131B",
+    text: "#FFF1F2",
+    button: "#E7A3B0",
+    button_text: "#30131B",
+    accent: "#FDA4AF"
+  },
+  sand: {
+    background: "#F3EBDD",
+    text: "#30291F",
+    button: "#30291F",
+    button_text: "#FFFFFF",
+    accent: "#8A7355"
+  },
+  rose: {
+    background: "#321D29",
+    text: "#FFF1F7",
+    button: "#F2B6D0",
+    button_text: "#321D29",
+    accent: "#F9A8D4"
+  },
+  gray: {
+    background: "#202124",
+    text: "#F5F5F5",
+    button: "#DADCE0",
+    button_text: "#202124",
+    accent: "#BDBDBD"
+  }
+};
+
+function getAppearanceElements() {
+  return {
+    mode: $("appearanceMode"),
+    palette: $("appearancePalette"),
+    background: $("appearanceBackground"),
+    text: $("appearanceText"),
+    button: $("appearanceButton"),
+    buttonText: $("appearanceButtonText"),
+    accent: $("appearanceAccent"),
+    layout: $("appearanceLayout"),
+    buttonStyle: $("appearanceButtonStyle"),
+    customControls: $("appearanceCustomControls"),
+    preview: $("appearancePreview"),
+    previewName: $("appearancePreviewName"),
+    previewHeadline: $("appearancePreviewHeadline"),
+    previewButton: $("appearancePreviewButton"),
+    status: $("appearanceStatus")
+  };
+}
+
+function getAppearanceDesignFromControls() {
+  const e = getAppearanceElements();
+
+  return {
+    use_default: !e.mode || e.mode.value === "default",
+    background: e.background?.value || "#080808",
+    text: e.text?.value || "#FFFFFF",
+    button: e.button?.value || "#FFFFFF",
+    button_text: e.buttonText?.value || "#111111",
+    accent: e.accent?.value || "#BDBDBD",
+    layout: e.layout?.value || "classic",
+    button_style: e.buttonStyle?.value || "rounded"
+  };
+}
+
+function setAppearanceStatus(message) {
+  const e = getAppearanceElements();
+  if (e.status) e.status.textContent = message;
+}
+
+function updateAppearancePreview() {
+  const e = getAppearanceElements();
+  if (!e.preview) return;
+
+  const design = getAppearanceDesignFromControls();
+  const custom = !design.use_default;
+
+if (e.customControls) {
+  e.customControls.hidden = !custom;
+  e.customControls.classList.toggle("hidden", !custom);
+}
+
+  e.preview.style.backgroundColor = custom
+    ? design.background
+    : "#080808";
+
+  e.preview.style.color = custom
+    ? design.text
+    : "#FFFFFF";
+
+  if (e.previewName) {
+    e.previewName.style.color = custom
+      ? design.text
+      : "#FFFFFF";
+  }
+
+  if (e.previewHeadline) {
+    e.previewHeadline.style.color = custom
+      ? design.accent
+      : "#BDBDBD";
+  }
+
+  if (e.previewButton) {
+    e.previewButton.style.backgroundColor = custom
+      ? design.button
+      : "#FFFFFF";
+
+    e.previewButton.style.color = custom
+      ? design.button_text
+      : "#111111";
+
+    e.previewButton.style.borderRadius =
+      design.button_style === "pill" ? "999px" :
+      design.button_style === "square" ? "0px" : "12px";
+  }
+
+  e.preview.style.borderRadius =
+    design.layout === "compact" ? "10px" : "18px";
+
+  e.preview.style.padding =
+    design.layout === "compact" ? "16px" : "24px";
+
+  if (e.previewButton) {
+    e.previewButton.style.width =
+      design.layout === "featured" ? "100%" : "";
+  }
+}
+
+function setAppearanceControls(savedDesign) {
+  const e = getAppearanceElements();
+  const design = {
+    ...AVELIOR_DEFAULT_DESIGN,
+    ...(savedDesign || {})
+  };
+
+  if (e.mode) {
+    e.mode.value = design.use_default ? "default" : "custom";
+  }
+
+  if (e.background) e.background.value = design.background;
+  if (e.text) e.text.value = design.text;
+  if (e.button) e.button.value = design.button;
+  if (e.buttonText) e.buttonText.value = design.button_text;
+  if (e.accent) e.accent.value = design.accent;
+
+  if (e.layout) e.layout.value = design.layout;
+  if (e.buttonStyle) e.buttonStyle.value = design.button_style;
+
+  updateAppearancePreview();
+}
+
+function applyAppearanceToPublicProfile(savedDesign) {
+  const design = {
+    ...AVELIOR_DEFAULT_DESIGN,
+    ...(savedDesign || {})
+  };
+
+  const root = $("publicProfile");
+  if (!root) return;
+
+  const avatar = $("publicAvatar");
+  const name = $("publicName");
+  const headline = $("publicHeadline");
+  const bio = $("publicBio");
+  const links = $("publicLinks");
+
+  const custom = !design.use_default;
+
+  if (!custom) {
+    [
+      root, avatar, name, headline, bio, links,
+      ...Array.from(root.querySelectorAll("#publicLinks a"))
+    ].forEach(element => {
+      if (!element) return;
+
+      [
+        "background-color", "color", "border-color",
+        "border-radius", "padding", "width",
+        "max-width", "font-size"
+      ].forEach(property => {
+        element.style.removeProperty(property);
+      });
+    });
+
+    root.style.removeProperty("background-color");
+    root.style.removeProperty("color");
+    root.style.removeProperty("border-color");
+    root.style.removeProperty("padding");
+
+    if (avatar) avatar.style.removeProperty("border-color");
+    if (name) name.style.removeProperty("color");
+    if (headline) headline.style.removeProperty("color");
+    if (bio) bio.style.removeProperty("color");
+
+    root.style.removeProperty("--avelior-accent");
+    return;
+  }
+
+  root.style.backgroundColor = design.background;
+  root.style.color = design.text;
+  root.style.borderColor = design.accent;
+  root.style.setProperty("--avelior-accent", design.accent);
+
+  root.style.padding =
+    design.layout === "compact" ? "16px" :
+    design.layout === "featured" ? "32px" : "24px";
+
+  if (avatar) avatar.style.borderColor = design.accent;
+  if (name) name.style.color = design.text;
+  if (headline) headline.style.color = design.accent;
+  if (bio) bio.style.color = design.text;
+
+  if (links) {
+    links.querySelectorAll("a").forEach(link => {
+      link.style.backgroundColor = design.button;
+      link.style.color = design.button_text;
+      link.style.borderColor = design.accent;
+
+      link.style.borderRadius =
+        design.button_style === "pill" ? "999px" :
+        design.button_style === "square" ? "0px" : "12px";
+
+      link.style.padding =
+        design.layout === "compact" ? "10px 12px" : "14px 16px";
+
+      if (design.layout === "featured") {
+        link.style.width = "100%";
+        link.style.maxWidth = "100%";
+      }
+    });
+  }
+}
+
+function initializeAppearanceSettings() {
+  const e = getAppearanceElements();
+
+  if (!e.mode) return;
+
+  [
+    e.mode, e.palette, e.background, e.text, e.button,
+    e.buttonText, e.accent, e.layout, e.buttonStyle
+  ].filter(Boolean).forEach(element => {
+    element.addEventListener("input", updateAppearancePreview);
+    element.addEventListener("change", updateAppearancePreview);
+  });
+
+  if (e.palette) {
+    e.palette.addEventListener("change", () => {
+      const palette = AVELIOR_PALETTES[e.palette.value];
+      if (!palette) return;
+
+      if (e.background) e.background.value = palette.background;
+      if (e.text) e.text.value = palette.text;
+      if (e.button) e.button.value = palette.button;
+      if (e.buttonText) e.buttonText.value = palette.button_text;
+      if (e.accent) e.accent.value = palette.accent;
+
+      if (e.mode) e.mode.value = "custom";
+
+      updateAppearancePreview();
+    });
+  }
+
+  if (e.mode) {
+    e.mode.addEventListener("change", updateAppearancePreview);
+  }
+
+  if ($("saveAppearanceBtn")) {
+    $("saveAppearanceBtn").addEventListener("click", async () => {
+      try {
+        setAppearanceStatus("Saving appearance...");
+
+        const { data: authData, error: authError } =
+          await client.auth.getUser();
+
+        if (authError) throw authError;
+
+        const user = authData?.user;
+        if (!user) {
+          setAppearanceStatus("Please log in before saving.");
+          return;
+        }
+
+        const design = getAppearanceDesignFromControls();
+
+        const { error } = await client
+          .from("profiles")
+          .update({ profile_design: design })
+          .eq("id", user.id);
+
+        if (error) throw error;
+
+        setAppearanceStatus("Appearance saved successfully!");
+      } catch (error) {
+        console.error("Appearance save error:", error);
+        setAppearanceStatus(
+          "Could not save appearance: " + (error.message || "Unknown error")
+        );
+      }
+    });
+  }
+
+  if ($("resetAppearanceBtn")) {
+    $("resetAppearanceBtn").addEventListener("click", async () => {
+      setAppearanceControls(AVELIOR_DEFAULT_DESIGN);
+
+      try {
+        setAppearanceStatus("Restoring default appearance...");
+
+        const { data: authData, error: authError } =
+          await client.auth.getUser();
+
+        if (authError) throw authError;
+
+        const user = authData?.user;
+        if (!user) {
+          setAppearanceStatus("Default preview restored. Log in to save it.");
+          return;
+        }
+
+        const { error } = await client
+          .from("profiles")
+          .update({ profile_design: AVELIOR_DEFAULT_DESIGN })
+          .eq("id", user.id);
+
+        if (error) throw error;
+
+        setAppearanceStatus("Default appearance restored!");
+      } catch (error) {
+        console.error("Appearance reset error:", error);
+        setAppearanceStatus(
+          "Could not reset appearance: " + (error.message || "Unknown error")
+        );
+      }
+    });
+  }
+
+  updateAppearancePreview();
+}
+
+initializeAppearanceSettings();
+ 
 
 /* =========================
    AVELIOR ANALYTICS LOGIC
@@ -2495,6 +2991,7 @@ async function loadAnalytics() {
     const { data, error } = await query;
 
     if (error) throw error;
+   
 
     const events = Array.isArray(data) ? data : [];
 
