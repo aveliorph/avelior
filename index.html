@@ -1199,6 +1199,173 @@ hr {
 }
 
 
+/* AVELIOR APPEARANCE SETTINGS */
+
+#appearanceSettings {
+  margin-top: 28px;
+}
+
+.appearance-options {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 14px;
+  margin: 24px 0;
+}
+
+.appearance-option {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 10px;
+  border: 1px solid #383838;
+  border-radius: 14px;
+  background: #171717;
+  color: #ffffff;
+  text-align: left;
+  cursor: pointer;
+  transition: border-color 0.2s, transform 0.2s;
+}
+
+.appearance-option:hover {
+  transform: translateY(-2px);
+  border-color: #b89b62;
+}
+
+.appearance-option.selected {
+  border: 2px solid #b89b62;
+  padding: 9px;
+}
+
+.appearance-preview {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  aspect-ratio: 1 / 1.15;
+  border-radius: 9px;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 2px;
+}
+
+.preview-black {
+  background: #171717;
+  color: #ffffff;
+  border: 1px solid #444444;
+}
+
+.preview-white {
+  background: #ffffff;
+  color: #222222;
+}
+
+.preview-pink {
+  background: #f5cbd9;
+  color: #38232b;
+}
+
+.appearance-option-label {
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.appearance-check {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  display: none;
+  width: 21px;
+  height: 21px;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: #b89b62;
+  color: #171717;
+  font-size: 13px;
+}
+
+.appearance-option.selected .appearance-check {
+  display: flex;
+}
+
+.appearance-check::after {
+  content: "✓";
+}
+
+#saveAppearanceBtn {
+  width: 100%;
+  margin-top: 8px;
+}
+
+#appearanceStatus {
+  margin-top: 12px;
+  font-size: 13px;
+  color: #b89b62;
+}
+
+@media (max-width: 420px) {
+  .appearance-options {
+    gap: 8px;
+  }
+
+  .appearance-option {
+    padding: 7px;
+  }
+
+  .appearance-option.selected {
+    padding: 6px;
+  }
+
+  .appearance-option-label {
+    font-size: 12px;
+  }
+}
+
+    /* AVELIOR PUBLIC PROFILE THEMES */
+
+/* BLACK */
+#publicProfile.theme-black {
+  background: linear-gradient(160deg, #1b1b1b, #090909);
+  color: #f5f5f5;
+  border-color: #333;
+}
+
+/* WHITE */
+#publicProfile.theme-white {
+  background: #ffffff;
+  color: #222222;
+  border-color: #dddddd;
+}
+
+#publicProfile.theme-white #publicLinks a,
+#publicProfile.theme-white #publicContactSection a {
+  color: #222222;
+  border-color: #cccccc !important;
+}
+
+/* PINK */
+#publicProfile.theme-pink {
+  background: #f5cbd9;
+  color: #38232b;
+  border-color: #e5aebe;
+}
+
+#publicProfile.theme-pink #publicLinks a,
+#publicProfile.theme-pink #publicContactSection a {
+  color: #38232b;
+  border-color: #d99caf !important;
+}
+
+/* Keep profile text readable */
+#publicProfile.theme-white #publicName,
+#publicProfile.theme-white #publicHeadline,
+#publicProfile.theme-white #publicBio,
+#publicProfile.theme-pink #publicName,
+#publicProfile.theme-pink #publicHeadline,
+#publicProfile.theme-pink #publicBio {
+  color: inherit;
+}
   </style>
 </head>
 
@@ -1528,12 +1695,48 @@ hr {
 </section>
 <!-- END AVELIOR ANALYTICS -->
   <!-- FEATURES NOT CONNECTED YET -->
-  <section class="workspace-panel" data-panel="feature" hidden>
-    <div class="workspace-section-heading">
-      <h2 id="workspaceFeatureTitle">Coming soon</h2>
-      <p id="workspaceFeatureDescription">This feature is not connected yet.</p>
+<section class="workspace-panel" data-panel="feature" hidden>
+  <div class="workspace-section-heading">
+    <h2 id="workspaceFeatureTitle">Coming soon</h2>
+    <p id="workspaceFeatureDescription">This feature is not connected yet.</p>
+  </div>
+
+  <div id="appearanceSettings" hidden>
+    <div class="appearance-options">
+
+      <button type="button" class="appearance-option" data-theme="black">
+        <span class="appearance-preview preview-black">
+          <span>AVELIOR</span>
+        </span>
+        <span class="appearance-option-label">Black</span>
+        <span class="appearance-check" aria-hidden="true"></span>
+      </button>
+
+      <button type="button" class="appearance-option" data-theme="white">
+        <span class="appearance-preview preview-white">
+          <span>AVELIOR</span>
+        </span>
+        <span class="appearance-option-label">White</span>
+        <span class="appearance-check" aria-hidden="true"></span>
+      </button>
+
+      <button type="button" class="appearance-option" data-theme="pink">
+        <span class="appearance-preview preview-pink">
+          <span>AVELIOR</span>
+        </span>
+        <span class="appearance-option-label">Pink</span>
+        <span class="appearance-check" aria-hidden="true"></span>
+      </button>
+
     </div>
-  </section>
+
+    <button type="button" id="saveAppearanceBtn">
+      Save Changes
+    </button>
+
+    <p id="appearanceStatus" role="status"></p>
+  </div>
+</section>
 
   <!-- BOTTOM NAV -->
   <nav class="workspace-bottom-nav" aria-label="Workspace navigation">
@@ -1638,11 +1841,11 @@ const dashboardViews = {
 analytics: {
   panel: "analytics"
 },
-  appearance: {
-    panel: "feature",
-    title: "Appearance",
-    description: "Profile customization is coming soon."
-  },
+appearance: {
+  panel: "feature",
+  title: "Appearance",
+  description: "Choose a background for your public profile."
+},
   settings: {
     panel: "feature",
     title: "Account settings",
@@ -1667,6 +1870,11 @@ function setDashboardView(view) {
   if (config.panel === "feature") {
     $("workspaceFeatureTitle").textContent = config.title;
     $("workspaceFeatureDescription").textContent = config.description;
+    const appearanceSettings = $("appearanceSettings");
+
+if (appearanceSettings) {
+  appearanceSettings.hidden = view !== "appearance";
+}
   }
 
   if (view === "analytics") {
@@ -1689,6 +1897,83 @@ document.querySelectorAll("#dashboard [data-go]").forEach(button => {
 setDashboardView("overview");
 
 
+// =========================
+// AVELIOR APPEARANCE SETTINGS
+// =========================
+
+let selectedAppearance = "black";
+
+function selectAppearance(theme) {
+  if (!["black", "white", "pink"].includes(theme)) {
+    theme = "black";
+  }
+
+  selectedAppearance = theme;
+
+  document.querySelectorAll(".appearance-option").forEach(option => {
+    const selected = option.dataset.theme === theme;
+
+    option.classList.toggle("selected", selected);
+    option.setAttribute("aria-pressed", String(selected));
+  });
+}
+
+// Select a background theme.
+document.querySelectorAll(".appearance-option").forEach(option => {
+  option.addEventListener("click", () => {
+    selectAppearance(option.dataset.theme);
+  });
+});
+
+// Save the selected background.
+$("saveAppearanceBtn").addEventListener("click", async () => {
+  const button = $("saveAppearanceBtn");
+  const status = $("appearanceStatus");
+
+  button.disabled = true;
+  status.textContent = "Saving your appearance...";
+
+  try {
+    const { data: { user }, error: userError } =
+      await client.auth.getUser();
+
+    if (userError) throw userError;
+    if (!user) throw new Error("Please log in again.");
+
+    // Get the existing design settings first.
+    const { data: profile, error: fetchError } = await client
+      .from("profiles")
+      .select("profile_design")
+      .eq("id", user.id)
+      .single();
+
+    if (fetchError) throw fetchError;
+
+    const currentDesign = profile?.profile_design || {};
+
+    const { error } = await client
+      .from("profiles")
+      .update({
+        profile_design: {
+          ...currentDesign,
+          background: selectedAppearance
+        },
+        updated_at: new Date().toISOString()
+      })
+      .eq("id", user.id);
+
+    if (error) throw error;
+
+    status.textContent = "Appearance saved successfully!";
+    notify("Your background preference has been saved.", "success");
+
+  } catch (error) {
+    console.error("Appearance save failed:", error);
+    status.textContent = error.message || "Could not save appearance.";
+  } finally {
+    button.disabled = false;
+  }
+});
 function notify(message, type = "success", title = "") {
   const container = $("aveliorToastContainer");
   if (!container) return { dismiss() {} };
@@ -1963,7 +2248,7 @@ async function loadDashboard(user) {
   addCustomLink(link.name || "", link.url || "");
 });
   }
-
+  selectAppearance(data?.profile_design?.background || "black");
   $("phone").value = contacts?.phone || "";
   $("contactEmail").value = contacts?.contact_email || "";
   $("showPhone").checked = contacts?.show_phone === true;
@@ -1986,9 +2271,23 @@ show("dashboard");
   status("You're logged in. Your profile is ready to edit.");
 }
 
+function applyPublicAppearance(theme) {
+  const profile = $("publicProfile");
 
+  profile.classList.remove(
+    "theme-black",
+    "theme-white",
+    "theme-pink"
+  );
+
+  const validThemes = ["black", "white", "pink"];
+  const selectedTheme = validThemes.includes(theme)
+    ? theme
+    : "black";
+
+  profile.classList.add("theme-" + selectedTheme);
+}
     
-
 async function showPublicProfile(username) {
  
 let data;
@@ -2000,7 +2299,7 @@ const cacheKey = `avelior-public-profile:${username}`;
 try {
   const { data: profile, error } = await client
     .from("profiles")
-    .select("id,username,full_name,headline,bio,avatar_url,custom_links")
+    .select("id,username,full_name,headline,bio,avatar_url,custom_links,profile_design")
     .eq("username", username)
     .maybeSingle();
 
@@ -2059,7 +2358,9 @@ try {
   console.log("Showing cached AVELIOR profile offline.");
 }
 
-
+applyPublicAppearance(
+  data.profile_design?.background || "black"
+);
   $("publicName").textContent = data.full_name || data.username;
 
   const avatar = $("publicAvatar");
