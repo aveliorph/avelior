@@ -562,7 +562,28 @@ hr {
   color: #f5f5f5;
   border: 1px solid #333;
   text-align: left;
+  margin-right: 0;
 }
+    
+.workspace-more-heading {
+  margin: 26px 0 10px;
+  color: #999;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 1.5px;
+}
+
+.workspace-more-option:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.workspace-more-option#moreLogoutBtn {
+  margin-top: 28px;
+  border-color: #633333;
+  color: #ff7777;
+}
+
 
 .workspace-more-option span {
   color: #999;
@@ -1600,16 +1621,66 @@ hr {
   </div>
   </section>
 
-  <!-- MORE -->
-  <section class="workspace-panel" data-panel="more" hidden>
-    <div class="workspace-section-heading">
-      <h2>More</h2>
-      <p>Additional workspace features</p>
-    </div>
-    <button type="button" class="workspace-more-option" data-go="analytics">Analytics <span>Track engagement ↗</span></button>
-    <button type="button" class="workspace-more-option" data-go="appearance">Appearance <span>Customize your page ↗</span></button>
-    <button type="button" class="workspace-more-option" data-go="settings">Account settings <span>Coming soon ↗</span></button>
-  </section>
+
+<!-- MORE -->
+<section class="workspace-panel" data-panel="more" hidden>
+  <div class="workspace-section-heading">
+    <h2>More</h2>
+    <p>Account, preferences, and support.</p>
+  </div>
+
+  <h3 class="workspace-more-heading">ACCOUNT</h3>
+
+  <button type="button" class="workspace-more-option" data-go="profile">
+    Personal Information
+    <span>Username and account details</span>
+  </button>
+
+<button type="button" class="workspace-more-option" disabled>
+  Email Address
+  <span>Manage your account email · Coming soon</span>
+</button>
+
+  <button type="button" class="workspace-more-option" disabled>
+    Password &amp; Security
+    <span>Account protection · Coming soon</span>
+  </button>
+
+  <button type="button" class="workspace-more-option" disabled>
+    Preferences
+    <span>Account preferences · Coming soon</span>
+  </button>
+
+  <h3 class="workspace-more-heading">HELP &amp; SUPPORT</h3>
+
+  <button type="button" class="workspace-more-option" disabled>
+    Help Center
+    <span>Frequently asked questions</span>
+  </button>
+
+  <button type="button" class="workspace-more-option" disabled>
+    Contact Support
+    <span>Get assistance with AVELIOR</span>
+  </button>
+
+  <h3 class="workspace-more-heading">ABOUT</h3>
+
+  <button type="button" class="workspace-more-option" disabled>
+    About AVELIOR
+    <span>Learn more about our platform</span>
+  </button>
+
+  <button type="button" class="workspace-more-option" disabled>
+    Terms &amp; Privacy
+    <span>Policies and account information</span>
+  </button>
+
+  <button type="button" class="workspace-more-option" id="moreLogoutBtn">
+    Log Out
+    <span>Sign out of your account</span>
+  </button>
+</section>
+
 <!-- AVELIOR ANALYTICS -->
 <section
   id="analyticsPanel"
@@ -3212,12 +3283,17 @@ await loadMyCardLink();
 
 
 
-    $("logoutBtn").addEventListener("click", async () => {
-      const { error } = await client.auth.signOut();
-      if (error) return status(error.message);
-      show("auth");
-      status("Logged out.");
-    });
+$("logoutBtn").addEventListener("click", async () => {
+  const { error } = await client.auth.signOut();
+  if (error) return status(error.message);
+  show("auth");
+  status("Logged out.");
+});
+
+$("moreLogoutBtn").addEventListener("click", () => {
+  $("logoutBtn").click();
+});
+
 
     async function refresh() {
       const username = new URLSearchParams(location.search).get("u");
