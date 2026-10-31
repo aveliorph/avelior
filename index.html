@@ -1378,6 +1378,18 @@ hr {
 #publicProfile.theme-pink > p.muted {
   color: #38232B;
 }
+
+    /* AVELIOR PUBLIC PAGE OUTER BACKGROUND */
+
+/* Pink theme */
+body.public-theme-pink {
+  background: #38232B;
+}
+
+/* White theme */
+body.public-theme-white {
+  background: #E9E6E1;
+}
   </style>
 </head>
 
@@ -2292,12 +2304,25 @@ function applyPublicAppearance(theme) {
     "theme-pink"
   );
 
+  document.body.classList.remove(
+    "public-theme-pink",
+    "public-theme-white"
+  );
+
   const validThemes = ["black", "white", "pink"];
   const selectedTheme = validThemes.includes(theme)
     ? theme
     : "black";
 
   profile.classList.add("theme-" + selectedTheme);
+
+  if (selectedTheme === "pink") {
+    document.body.classList.add("public-theme-pink");
+  }
+
+  if (selectedTheme === "white") {
+    document.body.classList.add("public-theme-white");
+  }
 }
     
 async function showPublicProfile(username) {
