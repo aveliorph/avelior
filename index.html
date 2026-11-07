@@ -1427,6 +1427,29 @@ hr {
 #publicProfile.theme-pink > p.muted {
   color: #38232B;
 }
+
+    /* AVELIOR OUTER PAGE THEMES */
+
+/* BLACK */
+body.theme-black {
+  background: #090909;
+  min-height: 100vh;
+  transition: background 0.3s ease;
+}
+
+/* WHITE */
+body.theme-white {
+  background: #f2f2f2;
+  min-height: 100vh;
+  transition: background 0.3s ease;
+}
+
+/* PINK */
+body.theme-pink {
+  background: #f9e5ec;
+  min-height: 100vh;
+  transition: background 0.3s ease;
+}
   </style>
 </head>
 
@@ -2378,18 +2401,25 @@ show("dashboard");
 function applyPublicAppearance(theme) {
   const profile = $("publicProfile");
 
+  const validThemes = ["black", "white", "pink"];
+  const selectedTheme = validThemes.includes(theme)
+    ? theme
+    : "black";
+
   profile.classList.remove(
     "theme-black",
     "theme-white",
     "theme-pink"
   );
 
-  const validThemes = ["black", "white", "pink"];
-  const selectedTheme = validThemes.includes(theme)
-    ? theme
-    : "black";
+  document.body.classList.remove(
+    "theme-black",
+    "theme-white",
+    "theme-pink"
+  );
 
   profile.classList.add("theme-" + selectedTheme);
+  document.body.classList.add("theme-" + selectedTheme);
 }
     
 async function showPublicProfile(username) {
