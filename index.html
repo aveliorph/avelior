@@ -1400,57 +1400,37 @@ hr {
   color: #38232B;
 }
 
-    /* SAVE CONTACT BUTTON */
+ /* SAVE CONTACT */
 .save-contact-section {
-  margin-top: 24px;
+  margin-top: 18px;
   text-align: center;
 }
 
 .save-contact-btn {
-  width: 100%;
-  max-width: 280px;
-  padding: 13px 20px;
-  border: 1px solid currentColor;
-  border-radius: 10px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+  padding: 10px 16px;
+  border: none;
   background: transparent;
   color: inherit;
-  font-size: 14px;
-  font-weight: 600;
-  letter-spacing: 0.5px;
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: 0.3px;
   cursor: pointer;
-  transition: background 0.2s ease, opacity 0.2s ease;
+  opacity: 0.85;
+  transition: opacity 0.2s ease;
 }
 
 .save-contact-btn:hover {
-  background: rgba(128, 128, 128, 0.12);
+  opacity: 0.55;
 }
 
-.save-contact-note {
-  margin-top: 9px;
-  font-size: 12px;
-  opacity: 0.7;
+.save-contact-icon {
+  font-size: 15px;
+  font-weight: 400;
 }
-  </style>
-</head>
-
-<body>
-  <div
-    id="aveliorToastContainer"
-    aria-live="polite"
-    aria-atomic="false"
-  ></div>
-
-  <header>
-    <div class="brand">AVELIOR</div>
-    <span class="muted">YOUR IDENTITY. ONE TAP.</span>
-  </header>
-
-  <main>
-    <section id="intro">
-      <p class="muted">DIGITAL IDENTITY, REFINED.</p>
-      <h1>Your identity.<br>One tap.</h1>
-      <p>Create a digital profile for your AVELIOR NFC card.
-        Share your introduction and selected contact links in one place.</p>
     </section>
 
     <p id="status" role="status">Connecting to AVELIOR...</p>
@@ -1884,13 +1864,11 @@ hr {
   <div id="publicLinks"></div>
 
   <div id="saveContactSection" class="save-contact-section hidden">
-    <button type="button" id="saveContactBtn" class="save-contact-btn">
-      Save Contact
-    </button>
-    <p class="save-contact-note">
-      Add my contact information to your phone.
-    </p>
-  </div>
+  <button type="button" id="saveContactBtn" class="save-contact-btn">
+    <span>Save Contact</span>
+    <span class="save-contact-icon">↓</span>
+  </button>
+</div>
 
   <p class="muted">Powered by AVELIOR</p>
 </section>
