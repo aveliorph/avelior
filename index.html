@@ -2396,12 +2396,18 @@ function applyPublicAppearance(theme) {
   profile.classList.add("theme-" + selectedTheme);
 
   // PUBLIC PROFILE OUTER BACKGROUND
-  document.body.style.background =
-    selectedTheme === "white"
-      ? "#eeeeee"
-      : selectedTheme === "pink"
-        ? "#B96F86"
-        : "var(--bg)";
+const pageBackground =
+  selectedTheme === "white"
+    ? "#eeeeee"
+    : selectedTheme === "pink"
+      ? "#B96F86"
+      : "#080808";
+
+document.documentElement.style.backgroundColor = pageBackground;
+document.body.style.backgroundColor = pageBackground;
+
+document.documentElement.style.colorScheme =
+  selectedTheme === "black" ? "dark" : "light";
 }
     
 async function showPublicProfile(username) {
