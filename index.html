@@ -2394,6 +2394,14 @@ function applyPublicAppearance(theme) {
     : "black";
 
   profile.classList.add("theme-" + selectedTheme);
+
+  // PUBLIC PROFILE OUTER BACKGROUND
+  document.body.style.background =
+    selectedTheme === "white"
+      ? "#eeeeee"
+      : selectedTheme === "pink"
+        ? "#B96F86"
+        : "var(--bg)";
 }
     
 async function showPublicProfile(username) {
