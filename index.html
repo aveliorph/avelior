@@ -1379,24 +1379,36 @@ hr {
 }
 
     
-/* AVELIOR MATTE UI SHADOWS */
+/* AVELIOR FROSTED MATTE GLASS UI */
 
 /* BLACK */
 #publicProfile.theme-black #publicLinks a,
 #publicProfile.theme-black #publicContactSection a {
-  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.22);
+  background: rgba(255, 255, 255, 0.045);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.12);
 }
 
 /* WHITE */
 #publicProfile.theme-white #publicLinks a,
 #publicProfile.theme-white #publicContactSection a {
-  box-shadow: 0 4px 18px rgba(70, 70, 70, 0.09);
+  background: rgba(255, 255, 255, 0.48);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.65);
+  box-shadow: 0 4px 18px rgba(70, 70, 70, 0.07);
 }
 
 /* PINK */
 #publicProfile.theme-pink #publicLinks a,
 #publicProfile.theme-pink #publicContactSection a {
-  box-shadow: 0 4px 18px rgba(112, 63, 79, 0.11);
+  background: rgba(255, 255, 255, 0.28);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.48);
+  box-shadow: 0 4px 18px rgba(112, 63, 79, 0.08);
 }
 /* Keep profile text readable */
 #publicProfile.theme-white #publicName,
