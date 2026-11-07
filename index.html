@@ -1523,60 +1523,59 @@ hr {
     </div>
   </section>
 
-  <!-- PROFILE: existing fields and save function -->
-  <form id="profileForm" class="workspace-panel" data-panel="profile" hidden>
-    <div class="workspace-section-heading">
-      <h2>Your Profile</h2>
-      <p>Edit your details</p>
-    </div>
+ 
+<!-- PROFILE: existing fields and save function -->
+<form id="profileForm" class="workspace-panel" data-panel="profile" hidden>
+  <div class="workspace-section-heading">
+    <h2>Your Profile</h2>
+    <p>Edit your details</p>
+  </div>
 
-    <label for="username">Username</label>
-    <input id="username" type="text" pattern="[a-z0-9_]{3,30}" minlength="3" maxlength="30" required>
+  <input id="username" type="hidden">
 
-    <label for="fullName">Display name</label>
-    <input id="fullName" type="text" maxlength="100" placeholder="Your display name">
+  <label for="avatarFile">Profile picture</label>
+  <input id="avatarFile" type="file" accept="image/jpeg,image/png,image/webp">
+  <button type="button" id="uploadAvatarBtn" class="workspace-secondary">Upload picture</button>
+  <p class="workspace-note">JPG, PNG, or WebP. Maximum 2 MB.</p>
 
-    <label for="headline">Headline</label>
-    <input id="headline" type="text" maxlength="120" placeholder="A short introduction">
+  <label for="fullName">Display name</label>
+  <input id="fullName" type="text" maxlength="100" placeholder="Your display name">
 
-    <label for="bio">About you</label>
-    <textarea id="bio" maxlength="1000" placeholder="Tell people a little about yourself"></textarea>
+  <label for="headline">Headline</label>
+  <input id="headline" type="text" maxlength="120" placeholder="A short introduction">
 
-    <label for="avatarFile">Profile picture</label>
-    <input id="avatarFile" type="file" accept="image/jpeg,image/png,image/webp">
-    <button type="button" id="uploadAvatarBtn" class="workspace-secondary">Upload picture</button>
-    <p class="workspace-note">JPG, PNG, or WebP. Maximum 2 MB.</p>
+  <label for="bio">About you</label>
+  <textarea id="bio" maxlength="1000" placeholder="Tell people a little about yourself"></textarea>
 
-    <hr class="workspace-divider">
+  <hr class="workspace-divider">
 
-    <h3>Your Links</h3>
-    <p class="workspace-note">Add your social media accounts and websites.</p>
-    <div id="customLinksEditor"></div>
-    <button type="button" id="addCustomLinkBtn" class="workspace-secondary">+ Add link</button>
+  <h3>Your Links</h3>
+  <p class="workspace-note">Add your social media accounts and websites.</p>
+  <div id="customLinksEditor"></div>
+  <button type="button" id="addCustomLinkBtn" class="workspace-secondary">+ Add link</button>
 
-    <hr class="workspace-divider">
+  <hr class="workspace-divider">
 
-    <h3>Contact &amp; Privacy</h3>
+  <h3>Contact &amp; Privacy</h3>
 
-    <label for="phone">Contact number</label>
-    <input id="phone" type="tel" placeholder="09XXXXXXXXX">
+  <label for="phone">Contact number</label>
+  <input id="phone" type="tel" placeholder="09XXXXXXXXX">
 
-    <label for="contactEmail">Contact email</label>
-    <input id="contactEmail" type="email" placeholder="Email for public contact">
+  <label for="contactEmail">Contact email</label>
+  <input id="contactEmail" type="email" placeholder="Email for public contact">
 
-    <label class="workspace-check">
-      <input id="showPhone" type="checkbox">
-      Show my contact number on my public profile
-    </label>
+  <label class="workspace-check">
+    <input id="showPhone" type="checkbox">
+    Show my contact number on my public profile
+  </label>
 
-    <label class="workspace-check">
-      <input id="showEmail" type="checkbox">
-      Show my contact email on my public profile
-    </label>
+  <label class="workspace-check">
+    <input id="showEmail" type="checkbox">
+    Show my contact email on my public profile
+  </label>
 
-    <button type="submit" id="saveChangesBtn" class="workspace-save">Save changes</button>
-  </form>
-
+  <button type="submit" id="saveChangesBtn" class="workspace-save">Save changes</button>
+</form>
 
 <!-- CARDS -->
 <section class="workspace-panel" data-panel="cards" hidden>
@@ -1621,7 +1620,6 @@ hr {
   </div>
   </section>
 
-
 <!-- MORE -->
 <section class="workspace-panel" data-panel="more" hidden>
   <div class="workspace-section-heading">
@@ -1631,15 +1629,10 @@ hr {
 
   <h3 class="workspace-more-heading">ACCOUNT</h3>
 
-  <button type="button" class="workspace-more-option" data-go="profile">
-    Personal Information
-    <span>Username and account details</span>
+  <button type="button" class="workspace-more-option" disabled>
+    Email Address
+    <span>Manage your account email · Coming soon</span>
   </button>
-
-<button type="button" class="workspace-more-option" disabled>
-  Email Address
-  <span>Manage your account email · Coming soon</span>
-</button>
 
   <button type="button" class="workspace-more-option" disabled>
     Password &amp; Security
