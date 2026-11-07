@@ -2434,7 +2434,23 @@ function applyPublicAppearance(theme) {
   profile.classList.add("theme-" + selectedTheme);
   document.body.classList.add("theme-" + selectedTheme);
 }
-    
+      // Match browser color scheme with selected theme
+  document.documentElement.style.colorScheme =
+    selectedTheme === "black" ? "dark" : "light";
+
+  // Update browser theme color
+  const themeColor = document.querySelector('meta[name="theme-color"]');
+
+  if (themeColor) {
+    themeColor.setAttribute(
+      "content",
+      selectedTheme === "black"
+        ? "#090909"
+        : selectedTheme === "white"
+          ? "#f2f2f2"
+          : "#f9e5ec"
+    );
+  }
 async function showPublicProfile(username) {
  
 let data;
