@@ -1399,6 +1399,37 @@ hr {
 #publicProfile.theme-pink > p.muted {
   color: #38232B;
 }
+
+    /* SAVE CONTACT BUTTON */
+.save-contact-section {
+  margin-top: 24px;
+  text-align: center;
+}
+
+.save-contact-btn {
+  width: 100%;
+  max-width: 280px;
+  padding: 13px 20px;
+  border: 1px solid currentColor;
+  border-radius: 10px;
+  background: transparent;
+  color: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  cursor: pointer;
+  transition: background 0.2s ease, opacity 0.2s ease;
+}
+
+.save-contact-btn:hover {
+  background: rgba(128, 128, 128, 0.12);
+}
+
+.save-contact-note {
+  margin-top: 9px;
+  font-size: 12px;
+  opacity: 0.7;
+}
   </style>
 </head>
 
@@ -1840,17 +1871,29 @@ hr {
 </section>
 
      
-    <section id="publicProfile" class="card hidden">
-        <div class="brand profile-brand">A V E L I O R</div>
-      <img id="publicAvatar" alt="Profile picture"
-        class="profile-avatar hidden">
-      <h1 id="publicName" class="profile-name"></h1>
-      <h2 id="publicHeadline"></h2>
-      <p id="publicBio"></p>
-      <div id="publicLinks"></div>
-      <p class="muted">Powered by AVELIOR</p>
-    </section>
+ <section id="publicProfile" class="card hidden">
+  <div class="brand profile-brand">A V E L I O R</div>
 
+  <img id="publicAvatar" alt="Profile picture"
+    class="profile-avatar hidden">
+
+  <h1 id="publicName" class="profile-name"></h1>
+  <h2 id="publicHeadline"></h2>
+  <p id="publicBio"></p>
+
+  <div id="publicLinks"></div>
+
+  <div id="saveContactSection" class="save-contact-section hidden">
+    <button type="button" id="saveContactBtn" class="save-contact-btn">
+      Save Contact
+    </button>
+    <p class="save-contact-note">
+      Add my contact information to your phone.
+    </p>
+  </div>
+
+  <p class="muted">Powered by AVELIOR</p>
+</section>
   </main>
 
   <script type="module">
@@ -2578,12 +2621,70 @@ contactSection.style.textAlign = "left";
   addContactLink("✉  Email me", contact.contact_email, "email");
 
    $("publicProfile").insertBefore(
-    contactSection,
-    $("publicProfile").lastElementChild
-  );
+  contactSection,
+  $("saveContactSection")
+);
 }
 
-  show("publicProfile");
+const hasPublicContact = Boolean(
+  contact?.phone || contact?.contact_email
+);
+
+$("saveContactSection").classList.toggle(
+  "hidden",
+  !hasPublicContact
+);
+
+$("saveContactBtn").onclick = () => {
+  if (!hasPublicContact) return;
+
+  const escapeVCard = (value) =>
+    String(value || "")
+      .replace(/\\/g, "\\\\")
+      .replace(/\n/g, "\\n")
+      .replace(/;/g, "\\;")
+      .replace(/,/g, "\\,");
+
+  const name = data.full_name || data.username;
+
+  const vCardLines = [
+    "BEGIN:VCARD",
+    "VERSION:3.0",
+    `FN:${escapeVCard(name)}`
+  ];
+
+  if (contact?.phone) {
+    vCardLines.push(`TEL;TYPE=CELL:${escapeVCard(contact.phone)}`);
+  }
+
+  if (contact?.contact_email) {
+    vCardLines.push(`EMAIL;TYPE=INTERNET:${escapeVCard(contact.contact_email)}`);
+  }
+
+  vCardLines.push("END:VCARD");
+
+  const blob = new Blob(
+    [vCardLines.join("\r\n")],
+    { type: "text/vcard;charset=utf-8" }
+  );
+
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement("a");
+
+  const safeName = String(name)
+    .replace(/[^a-z0-9_-]/gi, "_");
+
+  link.href = url;
+  link.download = `${safeName}.vcf`;
+
+  document.body.appendChild(link);
+  link.click();
+  link.remove();
+
+  setTimeout(() => URL.revokeObjectURL(url), 1000);
+};
+
+show("publicProfile");
 
   if (loadedFromNetwork) {
     void trackAnalyticsEvent(username, "profile_view");
