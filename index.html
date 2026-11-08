@@ -1791,11 +1791,38 @@ hr {
   <label for="headline">Headline</label>
   <input id="headline" type="text" maxlength="120" placeholder="A short introduction">
 
-  <label for="bio">About you</label>
-  <textarea id="bio" maxlength="1000" placeholder="Tell people a little about yourself"></textarea>
+<label for="bio">About you</label>
+<textarea id="bio" maxlength="1000" placeholder="Tell people a little about yourself"></textarea>
 
-  <hr class="workspace-divider">
+<label for="favoriteSongTitle">Favorite Song</label>
+<input
+  id="favoriteSongTitle"
+  type="text"
+  maxlength="150"
+  placeholder="Song title"
+>
 
+<label for="favoriteSongArtist">Artist name</label>
+<input
+  id="favoriteSongArtist"
+  type="text"
+  maxlength="150"
+  placeholder="Artist name"
+>
+
+<label for="favoriteSongUrl">Spotify / YouTube link</label>
+<input
+  id="favoriteSongUrl"
+  type="url"
+  maxlength="1000"
+  placeholder="Paste your music link"
+>
+
+<p class="workspace-note">
+  Add one favorite song to your public profile. This is optional.
+</p>
+
+<hr class="workspace-divider">
   <h3>Your Links</h3>
   <p class="workspace-note">Add your social media accounts and websites.</p>
   <div id="customLinksEditor"></div>
@@ -2582,14 +2609,22 @@ async function loadDashboard(user) {
     $("fullName").value = user.user_metadata?.full_name || "";
     $("headline").value = "";
     $("bio").value = "";
+    $("favoriteSongTitle").value = "";
+$("favoriteSongArtist").value = "";
+$("favoriteSongUrl").value = "";
     $("customLinksEditor").replaceChildren();
 
   } else {
     $("username").value = data.username || "";
     $("fullName").value = data.full_name || "";
     $("headline").value = data.headline || "";
-    $("bio").value = data.bio || "";
-    $("customLinksEditor").replaceChildren();
+  $("bio").value = data.bio || "";
+
+$("favoriteSongTitle").value = data.favorite_song_title || "";
+$("favoriteSongArtist").value = data.favorite_song_artist || "";
+$("favoriteSongUrl").value = data.favorite_song_url || "";
+
+$("customLinksEditor").replaceChildren();
 
     (data.custom_links || []).forEach(link => {
       addCustomLink(link.name || "", link.url || "");
@@ -2656,7 +2691,7 @@ const cacheKey = `avelior-public-profile:${username}`;
 try {
   const { data: profile, error } = await client
     .from("profiles")
-    .select("id,username,full_name,headline,bio,avatar_url,custom_links,profile_design")
+   .select("id,username,full_name,headline,bio,avatar_url,custom_links,profile_design,favorite_song_title,favorite_song_artist,favorite_song_url")
     .eq("username", username)
     .maybeSingle();
 
@@ -2734,6 +2769,76 @@ applyPublicAppearance(
 
   const links = $("publicLinks");
   links.replaceChildren();
+  // FAVORITE SONG
+const oldFavoriteSong = $("publicFavoriteSong");
+if (oldFavoriteSong) oldFavoriteSong.remove();
+
+const songTitle = data.favorite_song_title || "";
+const songArtist = data.favorite_song_artist || "";
+const songUrl = data.favorite_song_url || "";
+
+if (songTitle && songArtist && songUrl) {
+  try {
+    const parsedUrl = new URL(songUrl);
+    const host = parsedUrl.hostname.toLowerCase();
+
+    const allowedHosts = [
+      "open.spotify.com",
+      "spotify.com",
+      "www.spotify.com",
+      "youtube.com",
+      "www.youtube.com",
+      "music.youtube.com",
+      "youtu.be"
+    ];
+
+    if (
+      parsedUrl.protocol === "https:" &&
+      allowedHosts.includes(host)
+    ) {
+      const songSection = document.createElement("div");
+      songSection.id = "publicFavoriteSong";
+      songSection.style.marginTop = "18px";
+      songSection.style.marginBottom = "18px";
+      songSection.style.textAlign = "left";
+
+      const heading = document.createElement("p");
+      heading.textContent = "FAVORITE SONG";
+      heading.style.fontSize = "11px";
+      heading.style.letterSpacing = "2px";
+      heading.style.marginBottom = "8px";
+      heading.style.color = "#b89b62";
+
+      const title = document.createElement("p");
+      title.textContent = songTitle;
+      title.style.fontWeight = "600";
+      title.style.margin = "0 0 4px";
+
+      const artist = document.createElement("p");
+      artist.textContent = songArtist;
+      artist.style.fontSize = "13px";
+      artist.style.opacity = "0.7";
+      artist.style.margin = "0 0 8px";
+
+      const link = document.createElement("a");
+      link.href = parsedUrl.href;
+      link.textContent = "Listen to song ↗";
+      link.target = "_blank";
+      link.rel = "noopener noreferrer";
+
+      songSection.append(
+        heading,
+        title,
+        artist,
+        link
+      );
+
+      links.parentNode.insertBefore(songSection, links);
+    }
+  } catch {
+    // Invalid song link: do not display the section.
+  }
+}
   const oldContactSection = $("publicContactSection");
 if (oldContactSection) oldContactSection.remove();
 
@@ -3330,7 +3435,42 @@ $("profileForm").addEventListener("submit", async event => {
     if (!user) throw new Error("Please log in again.");
 
     const username = $("username").value.trim();
+const songTitle = $("favoriteSongTitle").value.trim();
+const songArtist = $("favoriteSongArtist").value.trim();
+const songUrl = $("favoriteSongUrl").value.trim();
 
+if (songTitle || songArtist || songUrl) {
+  if (!songTitle || !songArtist || !songUrl) {
+    throw new Error("Please complete all Favorite Song fields.");
+  }
+
+  let parsedSongUrl;
+
+  try {
+    parsedSongUrl = new URL(songUrl);
+  } catch {
+    throw new Error("Please enter a valid Spotify or YouTube link.");
+  }
+
+  const host = parsedSongUrl.hostname.toLowerCase();
+
+  const allowedMusicSites = [
+    "spotify.com",
+    "www.spotify.com",
+    "open.spotify.com",
+    "youtube.com",
+    "www.youtube.com",
+    "music.youtube.com",
+    "youtu.be"
+  ];
+
+  if (
+    parsedSongUrl.protocol !== "https:" ||
+    !allowedMusicSites.includes(host)
+  ) {
+    throw new Error("Only Spotify and YouTube links are allowed.");
+  }
+}
     if (!/^[a-z0-9_]{3,30}$/.test(username)) {
       throw new Error(
         "Username must be 3–30 lowercase letters, numbers or underscores."
@@ -3349,7 +3489,9 @@ $("profileForm").addEventListener("submit", async event => {
       full_name: $("fullName").value.trim(),
       headline: $("headline").value.trim(),
       bio: $("bio").value.trim(),
-
+favorite_song_title: $("favoriteSongTitle").value.trim() || null,
+favorite_song_artist: $("favoriteSongArtist").value.trim() || null,
+favorite_song_url: $("favoriteSongUrl").value.trim() || null,
       custom_links: Array.from(
         $("customLinksEditor").querySelectorAll(".custom-link-row")
       ).map(row => ({
