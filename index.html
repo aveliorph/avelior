@@ -2769,7 +2769,8 @@ applyPublicAppearance(
 
   const links = $("publicLinks");
   links.replaceChildren();
-  // FAVORITE SONG
+ 
+// FAVORITE SONG
 const oldFavoriteSong = $("publicFavoriteSong");
 if (oldFavoriteSong) oldFavoriteSong.remove();
 
@@ -2796,49 +2797,164 @@ if (songTitle && songArtist && songUrl) {
       parsedUrl.protocol === "https:" &&
       allowedHosts.includes(host)
     ) {
+      const theme = ["white", "pink"].find(t =>
+        $("publicProfile").classList.contains("theme-" + t)
+      ) || "black";
+
+      const colors = {
+        black: {
+          heading: "#b89b62",
+          title: "#f5f5f5",
+          artist: "#bdbdbd",
+          link: "#b89b62"
+        },
+        white: {
+          heading: "#8a6b36",
+          title: "#222222",
+          artist: "#666666",
+          link: "#8a6b36"
+        },
+        pink: {
+          heading: "#71334d",
+          title: "#492236",
+          artist: "#754a60",
+          link: "#71334d"
+        }
+      };
+
+      const color = colors[theme];
+
+      const fallbackSvg = `
+        <svg xmlns="http://www.w3.org/2000/svg"
+          width="100" height="100">
+          <rect width="100" height="100" fill="#242424"/>
+          <text x="50%" y="57%" text-anchor="middle"
+            font-size="38" fill="#b89b62">♫</text>
+        </svg>
+      `;
+
+      const fallbackImage =
+        "data:image/svg+xml;charset=UTF-8," +
+        encodeURIComponent(fallbackSvg);
+
       const songSection = document.createElement("div");
       songSection.id = "publicFavoriteSong";
-      songSection.style.marginTop = "18px";
-      songSection.style.marginBottom = "18px";
+      songSection.style.margin = "14px 0";
       songSection.style.textAlign = "left";
 
       const heading = document.createElement("p");
       heading.textContent = "FAVORITE SONG";
-      heading.style.fontSize = "11px";
-      heading.style.letterSpacing = "2px";
-      heading.style.marginBottom = "8px";
-      heading.style.color = "#b89b62";
+      heading.style.color = color.heading;
+      heading.style.fontSize = "10px";
+      heading.style.fontWeight = "600";
+      heading.style.letterSpacing = "1.5px";
+      heading.style.margin = "0 0 7px";
+
+      const songRow = document.createElement("div");
+      songRow.style.display = "flex";
+      songRow.style.alignItems = "center";
+      songRow.style.gap = "10px";
+
+      const cover = document.createElement("img");
+      cover.alt = "Song cover";
+      cover.width = 48;
+      cover.height = 48;
+      cover.style.width = "48px";
+      cover.style.height = "48px";
+      cover.style.flexShrink = "0";
+      cover.style.objectFit = "cover";
+      cover.style.borderRadius = "5px";
+      cover.src = fallbackImage;
+
+      cover.onerror = () => {
+        cover.onerror = null;
+        cover.src = fallbackImage;
+      };
+
+      const details = document.createElement("div");
+      details.style.minWidth = "0";
 
       const title = document.createElement("p");
       title.textContent = songTitle;
+      title.style.color = color.title;
+      title.style.fontSize = "13px";
       title.style.fontWeight = "600";
-      title.style.margin = "0 0 4px";
+      title.style.margin = "0 0 2px";
+      title.style.lineHeight = "1.4";
+      title.style.overflowWrap = "anywhere";
 
       const artist = document.createElement("p");
       artist.textContent = songArtist;
-      artist.style.fontSize = "13px";
-      artist.style.opacity = "0.7";
-      artist.style.margin = "0 0 8px";
+      artist.style.color = color.artist;
+      artist.style.fontSize = "11px";
+      artist.style.margin = "0 0 3px";
+      artist.style.lineHeight = "1.4";
 
       const link = document.createElement("a");
       link.href = parsedUrl.href;
-      link.textContent = "Listen to song ↗";
+      link.textContent = "♫ Listen ↗";
       link.target = "_blank";
       link.rel = "noopener noreferrer";
+      link.style.color = color.link;
+      link.style.fontSize = "11px";
+      link.style.textDecoration = "none";
 
-      songSection.append(
-        heading,
-        title,
-        artist,
-        link
-      );
+      details.append(title, artist, link);
+      songRow.append(cover, details);
+      songSection.append(heading, songRow);
 
       links.parentNode.insertBefore(songSection, links);
+
+      // AUTOMATIC ALBUM COVER
+      if (
+        host === "youtube.com" ||
+        host === "www.youtube.com" ||
+        host === "music.youtube.com" ||
+        host === "youtu.be"
+      ) {
+        let videoId = "";
+
+        if (host === "youtu.be") {
+          videoId = parsedUrl.pathname.slice(1).split("/")[0];
+        } else {
+          videoId =
+            parsedUrl.searchParams.get("v") ||
+            parsedUrl.pathname.match(
+              /\/(?:shorts|embed)\/([^/?]+)/
+            )?.[1] ||
+            "";
+        }
+
+        if (/^[a-zA-Z0-9_-]{11}$/.test(videoId)) {
+          cover.src =
+            "https://i.ytimg.com/vi/" +
+            videoId +
+            "/hqdefault.jpg";
+        }
+      } else {
+        fetch(
+          "https://open.spotify.com/oembed?url=" +
+          encodeURIComponent(parsedUrl.href)
+        )
+          .then(response => {
+            if (!response.ok) throw new Error("Cover unavailable");
+            return response.json();
+          })
+          .then(result => {
+            if (result.thumbnail_url) {
+              cover.src = result.thumbnail_url;
+            }
+          })
+          .catch(() => {
+            // Keep the default AVELIOR music cover.
+          });
+      }
     }
   } catch {
     // Invalid song link: do not display the section.
   }
 }
+
   const oldContactSection = $("publicContactSection");
 if (oldContactSection) oldContactSection.remove();
 
