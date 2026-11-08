@@ -1835,7 +1835,7 @@ hr {
     href="#"
     target="_blank"
     rel="noopener noreferrer"
-  >View public profile ↗</a>
+  >View public profile</a>
 
   <button
     type="button"
@@ -2627,7 +2627,7 @@ async function loadMyCardLink() {
       open.href = cardUrl.href;
       open.target = "_blank";
       open.rel = "noopener noreferrer";
-      open.textContent = "Open link ↗";
+      open.textContent = "Open link";
 
       const copy = document.createElement("button");
       copy.type = "button";
@@ -3011,14 +3011,52 @@ if (songTitle && songArtist && songUrl) {
       artist.style.margin = "0 0 3px";
       artist.style.lineHeight = "1.4";
 
-      const link = document.createElement("a");
-      link.href = parsedUrl.href;
-      link.textContent = "♫ Listen ↗";
-      link.target = "_blank";
-      link.rel = "noopener noreferrer";
-      link.style.color = color.link;
-      link.style.fontSize = "11px";
-      link.style.textDecoration = "none";
+     const link = document.createElement("a");
+link.href = parsedUrl.href;
+link.textContent = "♫ Listen";
+link.target = "_blank";
+link.rel = "noopener noreferrer";
+link.style.color = color.link;
+link.style.fontSize = "11px";
+link.style.textDecoration = "none";
+
+// SVG LISTEN ARROW
+const isWhiteTheme =
+  $("publicProfile").classList.contains("theme-white");
+
+const arrowColor = isWhiteTheme
+  ? "#000000"
+  : "#FFFFFF";
+
+const arrow = document.createElementNS(
+  "http://www.w3.org/2000/svg",
+  "svg"
+);
+
+arrow.setAttribute("viewBox", "0 0 16 16");
+arrow.setAttribute("width", "12");
+arrow.setAttribute("height", "12");
+arrow.setAttribute("fill", "none");
+arrow.setAttribute("stroke", arrowColor);
+arrow.setAttribute("stroke-width", "1.5");
+arrow.setAttribute("stroke-linecap", "round");
+arrow.setAttribute("stroke-linejoin", "round");
+arrow.setAttribute("aria-hidden", "true");
+
+arrow.style.display = "inline-block";
+arrow.style.marginLeft = "5px";
+arrow.style.verticalAlign = "middle";
+arrow.style.pointerEvents = "none";
+
+const arrowPath = document.createElementNS(
+  "http://www.w3.org/2000/svg",
+  "path"
+);
+
+arrowPath.setAttribute("d", "M4 12 12 4 M5 4h7v7");
+
+arrow.appendChild(arrowPath);
+link.appendChild(arrow);
 
       details.append(title, artist, link);
       songRow.append(cover, details);
