@@ -2758,6 +2758,7 @@ $("customLinksEditor").replaceChildren();
 }
 
 
+
 function applyPublicAppearance(theme) {
   const profile = $("publicProfile");
 
@@ -2775,13 +2776,27 @@ function applyPublicAppearance(theme) {
   profile.classList.add("theme-" + selectedTheme);
 
   // PUBLIC PROFILE OUTER BACKGROUND
+  const outerBackground = {
+    black: "var(--bg)",
+    white: "#eeeeee",
+    pink: "#E8C5D1"
+  };
+
   document.body.style.background =
-    selectedTheme === "white"
-      ? "#eeeeee"
-      : selectedTheme === "pink"
-        ? "#B96F86"
-        : "var(--bg)";
+    outerBackground[selectedTheme];
+
+  // PUBLIC PROFILE AVELIOR BRAND COLOR
+  const brand = profile.querySelector(".profile-brand");
+
+  if (brand) {
+    if (selectedTheme === "pink") {
+      brand.style.color = "#71334D";
+    } else {
+      brand.style.removeProperty("color");
+    }
+  }
 }
+
     
 async function showPublicProfile(username) {
  
