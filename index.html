@@ -3080,72 +3080,114 @@ if (songTitle && songArtist && songUrl) {
 if (oldContactSection) oldContactSection.remove();
 
 
-  const addLink = (label, value, type = "url") => {
-    if (!value) return;
 
-    let href;
+const addLink = (label, value, type = "url") => {
+  if (!value) return;
 
-    if (type === "phone") {
-      href = "tel:" + value.replace(/[^\d+]/g, "");
-    } else if (type === "email") {
-      href = "mailto:" + value.trim();
-    } else {
-      href = safeUrl(value);
-    }
+  let href;
 
-    if (!href) return;
+  if (type === "phone") {
+    href = "tel:" + value.replace(/[^\d+]/g, "");
+  } else if (type === "email") {
+    href = "mailto:" + value.trim();
+  } else {
+    href = safeUrl(value);
+  }
 
-    const p = document.createElement("p");
-    const a = document.createElement("a");
+  if (!href) return;
 
-    a.href = href;
+  const p = document.createElement("p");
+  const a = document.createElement("a");
 
-    if (type === "url") {
-      a.target = "_blank";
-      a.rel = "noopener noreferrer";
+  a.href = href;
 
-      a.addEventListener("click", () => {
-        void trackAnalyticsEvent(
-  username,
-  "link_click",
-  label,
-  value
-);
-      });
+  if (type === "url") {
+    a.target = "_blank";
+    a.rel = "noopener noreferrer";
 
-      if ("IntersectionObserver" in window) {
-        let recorded = false;
+    a.addEventListener("click", () => {
+      void trackAnalyticsEvent(
+        username,
+        "link_click",
+        label,
+        value
+      );
+    });
 
-        const observer = new IntersectionObserver(entries => {
-          for (const entry of entries) {
-            if (
-              !recorded &&
-              entry.isIntersecting &&
-              entry.intersectionRatio >= 0.5
-            ) {
-              recorded = true;
-              observer.disconnect();
+    if ("IntersectionObserver" in window) {
+      let recorded = false;
+
+      const observer = new IntersectionObserver(entries => {
+        for (const entry of entries) {
+          if (
+            !recorded &&
+            entry.isIntersecting &&
+            entry.intersectionRatio >= 0.5
+          ) {
+            recorded = true;
+            observer.disconnect();
 
             void trackAnalyticsEvent(
-  username,
-  "link_view",
-  label,
-  value
-);
-            }
+              username,
+              "link_view",
+              label,
+              value
+            );
           }
-        }, {
-          threshold: [0.5]
-        });
+        }
+      }, {
+        threshold: [0.5]
+      });
 
-        observer.observe(a);
-      }
+      observer.observe(a);
     }
+  }
 
-    a.textContent = label + (type === "url" ? " ↗" : "");
-    p.append(a);
-    links.append(p);
-  };
+  a.textContent = label;
+
+  // SVG EXTERNAL LINK ARROW
+  if (type === "url") {
+    const isWhiteTheme =
+      $("publicProfile").classList.contains("theme-white");
+
+    const arrowColor = isWhiteTheme
+      ? "#000000"
+      : "#FFFFFF";
+
+    const arrow = document.createElementNS(
+      "http://www.w3.org/2000/svg",
+      "svg"
+    );
+
+    arrow.setAttribute("viewBox", "0 0 16 16");
+    arrow.setAttribute("width", "12");
+    arrow.setAttribute("height", "12");
+    arrow.setAttribute("fill", "none");
+    arrow.setAttribute("stroke", arrowColor);
+    arrow.setAttribute("stroke-width", "1.5");
+    arrow.setAttribute("stroke-linecap", "round");
+    arrow.setAttribute("stroke-linejoin", "round");
+    arrow.setAttribute("aria-hidden", "true");
+    arrow.style.display = "inline-block";
+    arrow.style.marginLeft = "5px";
+    arrow.style.verticalAlign = "middle";
+    arrow.style.pointerEvents = "none";
+
+    const path = document.createElementNS(
+      "http://www.w3.org/2000/svg",
+      "path"
+    );
+
+    path.setAttribute("d", "M4 12 12 4 M5 4h7v7");
+
+    arrow.appendChild(path);
+    a.appendChild(arrow);
+  }
+
+  p.append(a);
+  links.append(p);
+};
+
 
   (data.custom_links || []).forEach(link => {
   addLink(link.name, link.url);
