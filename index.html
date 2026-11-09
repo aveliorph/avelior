@@ -1610,6 +1610,56 @@ a.workspace-more-option { position: relative; box-sizing: border-box; line-heigh
   transition: transform 0.25s var(--ease), box-shadow 0.25s var(--ease), border-color 0.25s var(--ease);
 }
 
+/* Link icons */
+#publicProfile #publicLinks a.link-with-icon {
+  display: grid;
+  grid-template-columns: 38px minmax(0, 1fr) 38px;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  min-height: 58px;
+}
+#publicProfile #publicLinks a.link-with-icon .link-label {
+  grid-column: 2;
+  text-align: center;
+  overflow-wrap: anywhere;
+}
+#publicProfile #publicLinks a.link-with-icon > svg {
+  grid-column: 3;
+  justify-self: center;
+  margin-left: 0 !important;
+  opacity: 0.55;
+  transition: opacity 0.25s var(--ease), transform 0.25s var(--ease);
+}
+#publicProfile #publicLinks a.link-with-icon:hover > svg { opacity: 1; transform: translate(1px, -1px); }
+#publicProfile .link-icon {
+  grid-column: 1;
+  display: inline-grid;
+  place-items: center;
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  border: 1px solid color-mix(in srgb, currentColor 22%, transparent);
+  background: color-mix(in srgb, currentColor 5%, transparent);
+  flex: none;
+  transition: border-color 0.25s var(--ease), background 0.25s var(--ease);
+}
+#publicProfile .link-icon svg { display: block; width: 18px; height: 18px; }
+#publicProfile #publicLinks a.link-with-icon:hover .link-icon {
+  border-color: color-mix(in srgb, currentColor 45%, transparent);
+  background: color-mix(in srgb, currentColor 9%, transparent);
+}
+#publicProfile #publicContactSection a.contact-with-icon {
+  display: flex !important;
+  align-items: center;
+  gap: 12px;
+}
+#publicProfile #publicContactSection a.contact-with-icon .link-icon {
+  width: 32px;
+  height: 32px;
+}
+#publicProfile #publicContactSection a.contact-with-icon .link-icon svg { width: 16px; height: 16px; }
+
 #publicProfile #publicLinks a:hover,
 #publicProfile #publicContactSection a:hover {
   transform: translateY(-2px);
@@ -1689,6 +1739,152 @@ a.workspace-more-option { position: relative; box-sizing: border-box; line-heigh
 #publicProfile.theme-pink #publicContactSection { border-top-color: rgba(255, 255, 255, 0.45) !important; }
 #publicProfile.theme-pink #publicContactSection h3 { color: #ffffff !important; }
 #publicProfile.theme-pink #publicContactSection a { background: #ffffff !important; color: #713d51 !important; border-color: #ffffff !important; }
+
+/* ---------- Public profile: Save contact + QR ---------- */
+#publicProfile .public-actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin: 0 0 26px;
+}
+#publicProfile .public-action {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+  min-height: 52px;
+  padding: 0 16px;
+  border: 1px solid rgba(255, 255, 255, 0.28);
+  border-radius: 999px;
+  background: transparent;
+  color: inherit;
+  font-family: var(--sans);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  cursor: pointer;
+  box-shadow: none;
+  transition: transform 0.25s var(--ease), box-shadow 0.25s var(--ease), border-color 0.25s var(--ease), opacity 0.2s;
+}
+#publicProfile .public-action:hover { transform: translateY(-2px); box-shadow: 0 16px 30px -18px rgba(0, 0, 0, 0.55); }
+#publicProfile .public-action:disabled { opacity: 0.6; cursor: progress; transform: none; }
+#publicProfile .public-action svg {
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.6;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+#publicProfile .public-action.primary { border-color: transparent; }
+
+#publicProfile.theme-black .public-action { border-color: rgba(255, 255, 255, 0.28); color: #f2f2f0; }
+#publicProfile.theme-black .public-action.primary { background: var(--ivory-grad); color: #111111; border-color: transparent; }
+#publicProfile.theme-white .public-action { border-color: #cfccc4; color: #171717; background: #ffffff; }
+#publicProfile.theme-white .public-action.primary { background: #171717; color: #ffffff; border-color: #171717; }
+#publicProfile.theme-pink .public-action { border-color: rgba(255, 255, 255, 0.6); color: #ffffff; background: rgba(255, 255, 255, 0.1); }
+#publicProfile.theme-pink .public-action.primary { background: #ffffff; color: #713d51; border-color: #ffffff; }
+
+/* QR window (native dialog = top layer, escapes the card) */
+#publicProfile > dialog.qr-dialog {
+  position: fixed;
+  width: min(360px, calc(100vw - 32px));
+  max-height: calc(100dvh - 32px);
+  margin: auto;
+  padding: 40px 26px 26px;
+  overflow: auto;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 28px;
+  background:
+    radial-gradient(300px 160px at 50% 0%, rgba(255, 255, 255, 0.1), transparent 70%),
+    linear-gradient(160deg, #1a1a1a, #070707);
+  color: #f2f2f0;
+  text-align: center;
+  box-shadow: 0 50px 120px -30px rgba(0, 0, 0, 0.8);
+}
+#publicProfile > dialog.qr-dialog[open] { animation: aveRise 0.45s var(--ease) both; }
+#publicProfile > dialog.qr-dialog::backdrop {
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+}
+#publicProfile.theme-white > dialog.qr-dialog {
+  background: linear-gradient(180deg, #ffffff, #f2f1ed);
+  color: #171717;
+  border-color: #e4e2dc;
+}
+#publicProfile.theme-pink > dialog.qr-dialog {
+  background: linear-gradient(170deg, #c47c92, #ad6279);
+  color: #ffffff;
+  border-color: rgba(255, 255, 255, 0.4);
+}
+.qr-dialog .qr-close {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  width: 38px;
+  height: 38px;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  color: inherit;
+  font-size: 24px;
+  line-height: 1;
+  opacity: 0.7;
+  cursor: pointer;
+  box-shadow: none;
+}
+.qr-dialog .qr-close:hover { opacity: 1; transform: none; }
+.qr-dialog .qr-brand {
+  margin-bottom: 22px;
+  font-family: var(--wordmark);
+  font-stretch: 125%;
+  font-variation-settings: "wdth" 125;
+  font-size: 15px;
+  font-weight: 800;
+  letter-spacing: 0.32em;
+}
+.qr-dialog .qr-tile {
+  width: min(232px, 100%);
+  margin: 0 auto;
+  padding: 16px;
+  border-radius: 20px;
+  background: #ffffff;
+  box-shadow: 0 20px 40px -22px rgba(0, 0, 0, 0.6);
+}
+.qr-dialog .qr-code { aspect-ratio: 1; display: grid; place-items: center; }
+.qr-dialog .qr-code svg { display: block; width: 100%; height: 100%; }
+.qr-dialog .qr-code .qr-loading { font-size: 11px; letter-spacing: 0.2em; color: #888888; text-transform: uppercase; }
+.qr-dialog .qr-name {
+  margin: 22px 0 4px;
+  font-family: var(--serif);
+  font-size: 26px;
+  font-weight: 600;
+  line-height: 1.15;
+  color: inherit;
+  overflow-wrap: anywhere;
+}
+.qr-dialog .qr-hint {
+  margin: 0 0 22px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  opacity: 0.7;
+}
+.qr-dialog .qr-buttons { display: grid; gap: 10px; }
+
+#publicProfile .public-action span { white-space: nowrap; }
+@media (max-width: 480px) {
+  #publicProfile .public-action { padding: 0 12px; gap: 7px; font-size: 11px; letter-spacing: 0.08em; }
+}
+@media (max-width: 340px) {
+  #publicProfile .public-actions { grid-template-columns: 1fr; }
+}
 
 /* ---------- Motion ---------- */
 @keyframes aveRise {
@@ -2391,8 +2587,30 @@ a.workspace-more-option { position: relative; box-sizing: border-box; line-heigh
       <h1 id="publicName" class="profile-name"></h1>
       <h2 id="publicHeadline"></h2>
       <p id="publicBio"></p>
+      <div id="publicActions" class="public-actions">
+        <button type="button" id="saveContactBtn" class="public-action primary">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="9" cy="8" r="3.6"/><path d="M2.8 20c.6-3.6 3.2-5.6 6.2-5.6s5.6 2 6.2 5.6"/><path d="M19 8v6M16 11h6"/></svg>
+          <span>Save Contact</span>
+        </button>
+        <button type="button" id="showQrBtn" class="public-action">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="7" height="7" rx="1.2"/><rect x="14" y="3" width="7" height="7" rx="1.2"/><rect x="3" y="14" width="7" height="7" rx="1.2"/><path d="M14 14h3v3h-3zM20 14v.01M14 20h.01M17 20h4v-3"/></svg>
+          <span>QR Code</span>
+        </button>
+      </div>
       <div id="publicLinks"></div>
       <p class="muted">Powered by AVELIOR</p>
+
+      <dialog id="qrDialog" class="qr-dialog" aria-labelledby="qrDialogName">
+        <button type="button" class="qr-close" id="qrCloseBtn" aria-label="Close">×</button>
+        <div class="qr-brand">AVELIOR</div>
+        <div class="qr-tile"><div id="qrCode" class="qr-code" role="img" aria-label="QR code of this profile"></div></div>
+        <h3 id="qrDialogName" class="qr-name"></h3>
+        <p class="qr-hint">Scan to open this profile</p>
+        <div class="qr-buttons">
+          <button type="button" id="qrDownloadBtn" class="public-action primary"><span>Download QR</span></button>
+          <button type="button" id="qrShareBtn" class="public-action"><span>Share link</span></button>
+        </div>
+      </dialog>
     </section>
 
   </main>
@@ -3085,7 +3303,294 @@ function applyPublicAppearance(theme) {
   }
 }
 
-    
+/* =========================
+   PUBLIC PROFILE: SAVE CONTACT + QR
+========================= */
+
+let currentPublicProfile = null;
+let qrLibPromise = null;
+let qrCacheUrl = "";
+
+function loadQrLib() {
+  if (!qrLibPromise) {
+    qrLibPromise = import("https://cdn.jsdelivr.net/npm/qrcode@1.5.4/+esm")
+      .then(mod => mod.default || mod)
+      .catch(error => {
+        qrLibPromise = null;
+        throw error;
+      });
+  }
+  return qrLibPromise;
+}
+
+function vcardEscape(value) {
+  return String(value || "")
+    .replace(/\\/g, "\\\\")
+    .replace(/\r?\n/g, "\\n")
+    .replace(/,/g, "\\,")
+    .replace(/;/g, "\\;");
+}
+
+function fileSafeName(value) {
+  return (String(value || "contact").replace(/[^\p{L}\p{N} _.-]+/gu, "").trim() || "contact").slice(0, 60);
+}
+
+function avatarAsJpegBase64(url) {
+  return new Promise(resolve => {
+    if (!url) return resolve("");
+    const img = new Image();
+    img.crossOrigin = "anonymous";
+    const timer = setTimeout(() => resolve(""), 5000);
+    img.onload = () => {
+      clearTimeout(timer);
+      try {
+        const size = 400;
+        const canvas = document.createElement("canvas");
+        canvas.width = size;
+        canvas.height = size;
+        const ctx = canvas.getContext("2d");
+        const scale = Math.max(size / img.naturalWidth, size / img.naturalHeight);
+        const w = img.naturalWidth * scale;
+        const h = img.naturalHeight * scale;
+        ctx.fillStyle = "#ffffff";
+        ctx.fillRect(0, 0, size, size);
+        ctx.drawImage(img, (size - w) / 2, (size - h) / 2, w, h);
+        resolve(canvas.toDataURL("image/jpeg", 0.85).split(",")[1] || "");
+      } catch {
+        resolve("");
+      }
+    };
+    img.onerror = () => {
+      clearTimeout(timer);
+      resolve("");
+    };
+    img.src = url;
+  });
+}
+
+async function buildVCard(profile) {
+  const { data, contact, url } = profile;
+  const fullName = (data.full_name || data.username || "").trim();
+  const parts = fullName.split(/\s+/).filter(Boolean);
+  const lastName = parts.length > 1 ? parts.pop() : "";
+  const firstName = parts.join(" ");
+
+  const lines = [
+    "BEGIN:VCARD",
+    "VERSION:3.0",
+    `N:${vcardEscape(lastName)};${vcardEscape(firstName)};;;`,
+    `FN:${vcardEscape(fullName)}`
+  ];
+
+  if (data.headline) lines.push(`TITLE:${vcardEscape(data.headline)}`);
+  if (contact?.phone) lines.push(`TEL;TYPE=CELL:${vcardEscape(contact.phone.trim())}`);
+  if (contact?.contact_email) lines.push(`EMAIL;TYPE=INTERNET:${vcardEscape(contact.contact_email.trim())}`);
+
+  let item = 1;
+  lines.push(`item${item}.URL:${vcardEscape(url)}`, `item${item}.X-ABLabel:AVELIOR`);
+
+  (data.custom_links || []).forEach(link => {
+    const href = safeUrl(link?.url || "");
+    if (!href) return;
+    item += 1;
+    lines.push(`item${item}.URL:${vcardEscape(href)}`);
+    if (link.name) lines.push(`item${item}.X-ABLabel:${vcardEscape(link.name)}`);
+  });
+
+  if (data.bio) lines.push(`NOTE:${vcardEscape(data.bio)}`);
+
+  const photo = await avatarAsJpegBase64(data.avatar_url);
+  if (photo) lines.push(`PHOTO;ENCODING=b;TYPE=JPEG:${photo}`);
+
+  lines.push("END:VCARD");
+  const fold = line => {
+    const chars = Array.from(line);
+    if (chars.length <= 74) return line;
+    const out = [];
+    for (let i = 0; i < chars.length; i += 74) out.push(chars.slice(i, i + 74).join(""));
+    return out.join("\r\n ");
+  };
+  return lines.map(fold).join("\r\n") + "\r\n";
+}
+
+function downloadBlob(blob, filename) {
+  const href = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = href;
+  a.download = filename;
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  setTimeout(() => URL.revokeObjectURL(href), 4000);
+}
+
+async function saveContact() {
+  if (!currentPublicProfile) return;
+  const button = $("saveContactBtn");
+  button.disabled = true;
+  try {
+    const vcard = await buildVCard(currentPublicProfile);
+    const name = fileSafeName(currentPublicProfile.data.full_name || currentPublicProfile.username);
+    downloadBlob(new Blob([vcard], { type: "text/vcard;charset=utf-8" }), `${name}.vcf`);
+  } catch (error) {
+    console.error("Save contact failed:", error);
+    notify("Could not save the contact. Please try again.", "error");
+  } finally {
+    button.disabled = false;
+  }
+}
+
+async function openQrDialog() {
+  if (!currentPublicProfile) return;
+  const dialog = $("qrDialog");
+  const box = $("qrCode");
+  $("qrDialogName").textContent =
+    currentPublicProfile.data.full_name || currentPublicProfile.username;
+
+  if (typeof dialog.showModal === "function") {
+    if (!dialog.open) dialog.showModal();
+  } else {
+    dialog.setAttribute("open", "");
+  }
+
+  if (qrCacheUrl === currentPublicProfile.url && box.firstElementChild?.tagName === "svg") return;
+
+  box.innerHTML = '<span class="qr-loading">Loading…</span>';
+  try {
+    const QRCode = await loadQrLib();
+    const svg = await QRCode.toString(currentPublicProfile.url, {
+      type: "svg",
+      errorCorrectionLevel: "M",
+      margin: 0,
+      color: { dark: "#111111", light: "#ffffff" }
+    });
+    box.innerHTML = svg;
+    qrCacheUrl = currentPublicProfile.url;
+  } catch (error) {
+    console.error("QR failed:", error);
+    box.innerHTML = '<span class="qr-loading">QR unavailable</span>';
+  }
+}
+
+function closeQrDialog() {
+  const dialog = $("qrDialog");
+  if (typeof dialog.close === "function" && dialog.open) dialog.close();
+  else dialog.removeAttribute("open");
+}
+
+async function downloadQrImage() {
+  if (!currentPublicProfile) return;
+  const button = $("qrDownloadBtn");
+  button.disabled = true;
+  try {
+    const QRCode = await loadQrLib();
+    const W = 1080;
+    const H = 1350;
+    const canvas = document.createElement("canvas");
+    canvas.width = W;
+    canvas.height = H;
+    const ctx = canvas.getContext("2d");
+
+    const bg = ctx.createLinearGradient(0, 0, W, H);
+    bg.addColorStop(0, "#1b1b1b");
+    bg.addColorStop(1, "#050505");
+    ctx.fillStyle = bg;
+    ctx.fillRect(0, 0, W, H);
+
+    try {
+      await Promise.all([
+        document.fonts.load('800 56px "Archivo"'),
+        document.fonts.load('600 76px "Cormorant Garamond"'),
+        document.fonts.load('600 26px "Manrope"')
+      ]);
+    } catch {}
+
+    ctx.fillStyle = "#f5f5f5";
+    ctx.textAlign = "center";
+    ctx.textBaseline = "alphabetic";
+    ctx.font = '800 54px "Archivo", "Helvetica Neue", Arial, sans-serif';
+    if ("letterSpacing" in ctx) ctx.letterSpacing = "18px";
+    ctx.fillText("AVELIOR", W / 2 + 9, 180);
+    if ("letterSpacing" in ctx) ctx.letterSpacing = "0px";
+
+    const tile = 700;
+    const tx = (W - tile) / 2;
+    const ty = 260;
+    ctx.fillStyle = "#ffffff";
+    ctx.beginPath();
+    if (ctx.roundRect) ctx.roundRect(tx, ty, tile, tile, 44);
+    else ctx.rect(tx, ty, tile, tile);
+    ctx.fill();
+
+    const qrCanvas = document.createElement("canvas");
+    await QRCode.toCanvas(qrCanvas, currentPublicProfile.url, {
+      errorCorrectionLevel: "M",
+      margin: 0,
+      width: tile - 100,
+      color: { dark: "#111111", light: "#ffffff" }
+    });
+    ctx.drawImage(qrCanvas, tx + 50, ty + 50, tile - 100, tile - 100);
+
+    const name = currentPublicProfile.data.full_name || currentPublicProfile.username;
+    ctx.fillStyle = "#f5f5f5";
+    let size = 76;
+    ctx.font = `600 ${size}px "Cormorant Garamond", Georgia, serif`;
+    while (ctx.measureText(name).width > W - 160 && size > 40) {
+      size -= 4;
+      ctx.font = `600 ${size}px "Cormorant Garamond", Georgia, serif`;
+    }
+    ctx.fillText(name, W / 2, 1100);
+
+    ctx.fillStyle = "#9a9a9a";
+    ctx.font = '600 24px "Manrope", Arial, sans-serif';
+    if ("letterSpacing" in ctx) ctx.letterSpacing = "6px";
+    ctx.fillText("@" + String(currentPublicProfile.username).toUpperCase(), W / 2 + 3, 1160);
+    if ("letterSpacing" in ctx) ctx.letterSpacing = "0px";
+
+    const blob = await new Promise(resolve => canvas.toBlob(resolve, "image/png"));
+    if (!blob) throw new Error("Image unavailable");
+    downloadBlob(blob, `${fileSafeName(name)}-AVELIOR-QR.png`);
+  } catch (error) {
+    console.error("QR download failed:", error);
+    notify("Could not download the QR code. Please try again.", "error");
+  } finally {
+    button.disabled = false;
+  }
+}
+
+async function shareProfileLink() {
+  if (!currentPublicProfile) return;
+  const url = currentPublicProfile.url;
+  const title = currentPublicProfile.data.full_name || currentPublicProfile.username;
+  if (navigator.share) {
+    try {
+      await navigator.share({ title, url });
+      return;
+    } catch (error) {
+      if (error?.name === "AbortError") return;
+    }
+  }
+  try {
+    await navigator.clipboard.writeText(url);
+    notify("Link copied.", "success");
+  } catch {
+    notify(url, "success", "Profile link");
+  }
+}
+
+$("saveContactBtn").addEventListener("click", saveContact);
+$("showQrBtn").addEventListener("click", openQrDialog);
+$("qrCloseBtn").addEventListener("click", closeQrDialog);
+$("qrDownloadBtn").addEventListener("click", downloadQrImage);
+$("qrShareBtn").addEventListener("click", shareProfileLink);
+$("qrDialog").addEventListener("click", event => {
+  if (event.target !== $("qrDialog")) return;
+  const r = $("qrDialog").getBoundingClientRect();
+  const inside = event.clientX >= r.left && event.clientX <= r.right &&
+    event.clientY >= r.top && event.clientY <= r.bottom;
+  if (!inside) closeQrDialog();
+});
+
 async function showPublicProfile(username) {
  
 let data;
@@ -3404,6 +3909,60 @@ if (oldContactSection) oldContactSection.remove();
 
 
 
+function detectLinkKind(href, label) {
+  const h = String(href || "").trim().toLowerCase();
+  if (h.startsWith("mailto:")) return "email";
+  if (h.startsWith("tel:")) return "phone";
+  let host = "";
+  try { host = new URL(h).hostname.replace(/^www\.|^m\./, ""); } catch {}
+  const is = (...domains) => domains.some(d => host === d || host.endsWith("." + d));
+  if (is("instagram.com", "instagr.am")) return "instagram";
+  if (is("tiktok.com")) return "tiktok";
+  if (is("facebook.com", "fb.com", "fb.me", "messenger.com", "m.me")) return "facebook";
+  if (is("youtube.com", "youtu.be")) return "youtube";
+  if (is("linkedin.com", "lnkd.in")) return "linkedin";
+  if (is("x.com", "twitter.com", "t.co")) return "x";
+  if (is("wa.me", "whatsapp.com", "whatsapp.net")) return "whatsapp";
+  if (is("t.me", "telegram.me", "telegram.org", "telegram.dog")) return "telegram";
+  if (h.startsWith("whatsapp:")) return "whatsapp";
+  if (h.startsWith("tg:")) return "telegram";
+  // Fall back to the link's name when the address is not recognised
+  const n = String(label || "").toLowerCase();
+  const byName = [
+    ["instagram", "instagram"], ["tiktok", "tiktok"], ["facebook", "facebook"],
+    ["youtube", "youtube"], ["linkedin", "linkedin"], ["twitter", "x"],
+    ["whatsapp", "whatsapp"], ["telegram", "telegram"], ["email", "email"], ["phone", "phone"]
+  ].find(([word]) => n.includes(word));
+  if (byName) return byName[1];
+  if (n.trim() === "x") return "x";
+  return "web";
+}
+
+const LINK_ICON_PATHS = {
+  instagram: '<rect x="3.5" y="3.5" width="17" height="17" rx="5"/><circle cx="12" cy="12" r="3.9"/><circle cx="17.2" cy="6.8" r="0.6" fill="currentColor" stroke="none"/>',
+  tiktok: '<path d="M14 3.5v11.25a3.75 3.75 0 1 1-3.75-3.75"/><path d="M14 3.5c.35 2.7 2.3 4.65 5 5"/>',
+  facebook: '<path d="M15.5 3.5h-2.2A3.8 3.8 0 0 0 9.5 7.3v2.7H7v3.3h2.5v7.2h3.3v-7.2h2.5l.6-3.3h-3.1V7.6c0-.6.5-1 1-1h1.7z"/>',
+  youtube: '<rect x="2.5" y="5.5" width="19" height="13" rx="4"/><path d="M10.25 9.3v5.4L14.9 12z" fill="currentColor" stroke="none"/>',
+  linkedin: '<rect x="3.5" y="3.5" width="17" height="17" rx="3"/><path d="M8 10.5v6M8 7.6v.01M11.5 16.5v-6M11.5 13c0-1.6 1-2.6 2.4-2.6 1.4 0 2.1.9 2.1 2.6v3.5"/>',
+  x: '<path d="M4.5 4h4.2l10.8 16h-4.2z"/><path d="M19.2 4l-6.3 7.1M11.1 12.9 4.8 20"/>',
+  whatsapp: '<path d="M4 20l1.2-3.9A8.2 8.2 0 1 1 8.3 19z"/><path d="M9.3 8.4c-.4.4-.6 1-.4 1.7.6 2 2.3 3.7 4.4 4.4.7.2 1.3 0 1.7-.4l.4-.6-1.6-.9-.8.6c-.9-.4-1.6-1.1-2-2l.6-.8-.9-1.6z"/>',
+  telegram: '<path d="M21 4 3 11l6.3 2.3L12 20l3.3-4.4L21 4z"/><path d="M9.3 13.3 21 4"/>',
+  email: '<rect x="3" y="5.5" width="18" height="13" rx="2.5"/><path d="m3.8 7 8.2 6 8.2-6"/>',
+  phone: '<path d="M8.6 3.5H6.2A2.2 2.2 0 0 0 4 5.8C4.4 13.6 10.4 19.6 18.2 20a2.2 2.2 0 0 0 2.3-2.2v-2.4l-3.6-1.6-1.9 1.9a11 11 0 0 1-5.5-5.5l1.9-1.9z"/>',
+  web: '<circle cx="12" cy="12" r="8.5"/><path d="M3.5 12h17M12 3.5c2.4 2.4 3.6 5.2 3.6 8.5s-1.2 6.1-3.6 8.5c-2.4-2.4-3.6-5.2-3.6-8.5S9.6 5.9 12 3.5z"/>'
+};
+
+function createLinkIcon(kind) {
+  const wrap = document.createElement("span");
+  wrap.className = "link-icon link-icon-" + kind;
+  wrap.setAttribute("aria-hidden", "true");
+  wrap.innerHTML =
+    '<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">' +
+    (LINK_ICON_PATHS[kind] || LINK_ICON_PATHS.web) +
+    "</svg>";
+  return wrap;
+}
+
 const addLink = (label, value, type = "url") => {
   if (!value) return;
 
@@ -3466,7 +4025,12 @@ const addLink = (label, value, type = "url") => {
     }
   }
 
-  a.textContent = label;
+  a.classList.add("link-with-icon");
+  a.append(createLinkIcon(detectLinkKind(href, label)));
+  const labelSpan = document.createElement("span");
+  labelSpan.className = "link-label";
+  labelSpan.textContent = label;
+  a.append(labelSpan);
 
   // SVG EXTERNAL LINK ARROW
   if (type === "url") {
@@ -3543,8 +4107,11 @@ contactSection.style.textAlign = "left";
       ? "tel:" + value.replace(/[^\d+]/g, "")
       : "mailto:" + value.trim();
 
-    a.textContent = label;
-    a.style.display = "block";
+    a.classList.add("contact-with-icon");
+    a.append(createLinkIcon(type === "phone" ? "phone" : "email"));
+    const labelSpan = document.createElement("span");
+    labelSpan.textContent = label;
+    a.append(labelSpan);
     a.style.padding = "14px 16px";
     a.style.marginBottom = "10px";
     a.style.border = "1px solid rgba(255, 255, 255, 0.55)";
@@ -3555,14 +4122,27 @@ contactSection.style.textAlign = "left";
     contactSection.appendChild(p);
   };
 
-  addContactLink("☎  Call me", contact.phone, "phone");
-  addContactLink("✉  Email me", contact.contact_email, "email");
+  addContactLink("Call me", contact.phone, "phone");
+  addContactLink("Email me", contact.contact_email, "email");
 
    $("publicProfile").insertBefore(
     contactSection,
-    $("publicProfile").lastElementChild
+    $("publicProfile").querySelector(":scope > p.muted")
   );
 }
+
+  const profileUrl = new URL(location.href);
+  profileUrl.search = "";
+  profileUrl.hash = "";
+  profileUrl.searchParams.set("u", data.username || username);
+
+  currentPublicProfile = {
+    data,
+    contact,
+    username: data.username || username,
+    url: profileUrl.href
+  };
+  qrCacheUrl = "";
 
   show("publicProfile");
 
