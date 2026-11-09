@@ -1968,6 +1968,85 @@ a.workspace-more-option { position: relative; box-sizing: border-box; line-heigh
   .appearance-option { padding: 7px 7px 11px; }
 }
 
+/* =========================================================
+   AVELIOR — Payments (GCash, Maya, Bank QR)
+========================================================= */
+.pay-tabs { display: flex; flex-wrap: wrap; gap: 8px; margin: 16px 0 18px; }
+.pay-tabs button {
+  margin: 0; padding: 9px 16px;
+  border: 1px solid var(--line-strong); border-radius: 999px;
+  background: rgba(255, 255, 255, 0.02); color: var(--text-soft);
+  font-size: 12px; font-weight: 600; letter-spacing: 0.02em;
+  display: inline-flex; align-items: center; gap: 7px;
+}
+.pay-tabs button:hover { color: var(--text); border-color: var(--gold-line); background: rgba(255, 255, 255, 0.06); box-shadow: none; }
+.pay-tabs button.is-active { background: var(--ivory-grad); color: #111111; border-color: transparent; }
+.pay-tabs .pay-dot { width: 6px; height: 6px; border-radius: 50%; background: currentColor; opacity: 0; }
+.pay-tabs button.has-value .pay-dot { opacity: 0.8; }
+.pay-panel[hidden] { display: none !important; }
+.pay-qr-upload {
+  display: grid; grid-template-columns: 96px minmax(0, 1fr); gap: 16px; align-items: center;
+  padding: 14px; margin: 0 0 6px;
+  border: 1px dashed var(--gold-line); border-radius: 16px;
+  background: rgba(255, 255, 255, 0.02); cursor: pointer;
+  transition: border-color 0.2s var(--ease), background 0.2s var(--ease);
+}
+#profileForm label.pay-qr-upload { text-transform: none; letter-spacing: normal; font-weight: 400; font-size: 13px; }
+#publicProfile .public-action[hidden], .qr-dialog .qr-tile[hidden] { display: none !important; }
+.pay-qr-upload:hover { border-color: rgba(255, 255, 255, 0.4); background: rgba(255, 255, 255, 0.04); }
+.pay-qr-upload.is-uploading { opacity: 0.6; cursor: progress; }
+.pay-qr-thumb {
+  width: 96px; height: 96px; border-radius: 12px; overflow: hidden;
+  display: grid; place-items: center;
+  background: #ffffff; color: #111111;
+}
+.pay-qr-thumb img { width: 100%; height: 100%; object-fit: contain; display: block; }
+.pay-qr-thumb svg { width: 40px; height: 40px; opacity: 0.35; }
+.pay-qr-copy strong { display: block; font-size: 14px; color: var(--text); margin-bottom: 4px; }
+.pay-qr-copy span { display: block; font-size: 12px; color: var(--muted); line-height: 1.5; }
+.pay-panel-actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 14px; }
+.pay-panel-actions button { margin: 0; }
+.pay-optional { color: var(--muted); font-weight: 500; font-size: 11px; margin-left: 6px; }
+
+/* Public profile: payments list */
+#publicProfile #publicPaymentsSection { margin: 6px 0 26px; text-align: left; }
+#publicProfile #publicPaymentsSection h3 {
+  margin: 0 0 12px; font-family: var(--sans); font-weight: 700;
+  font-size: 12px; letter-spacing: 3px; color: #bdbdbd;
+}
+#publicProfile .pay-method-list { display: grid; gap: 10px; }
+#publicProfile .pay-method {
+  display: grid; grid-template-columns: 38px minmax(0, 1fr) 38px; align-items: center; gap: 10px;
+  width: 100%; min-height: 58px; margin: 0; padding: 10px 12px;
+  border: 1px solid var(--line-strong); border-radius: 16px;
+  background: transparent; color: inherit; cursor: pointer;
+  font-family: var(--sans); font-size: 14px; font-weight: 600; letter-spacing: 0.02em; text-transform: none;
+  transition: transform 0.25s var(--ease), box-shadow 0.25s var(--ease), border-color 0.25s var(--ease);
+}
+#publicProfile .pay-method:hover { transform: translateY(-2px); box-shadow: 0 16px 30px -18px rgba(0, 0, 0, 0.55); }
+#publicProfile .pay-method .pay-method-label { grid-column: 2; text-align: center; overflow-wrap: anywhere; }
+#publicProfile .pay-method .pay-method-arrow { grid-column: 3; justify-self: center; width: 14px; height: 14px; opacity: 0.55; }
+#publicProfile.theme-black .pay-method { background: rgba(255, 255, 255, 0.03); color: #f2f2f0; border-color: #343434; }
+#publicProfile.theme-black .pay-method:hover { border-color: rgba(255, 255, 255, 0.45); }
+#publicProfile.theme-white #publicPaymentsSection h3 { color: #171717; }
+#publicProfile.theme-white .pay-method { background: #ffffff; color: #222222; border-color: #e2e0da; box-shadow: 0 4px 14px rgba(0, 0, 0, 0.05); }
+#publicProfile.theme-pink #publicPaymentsSection h3 { color: #ffffff; }
+#publicProfile.theme-pink .pay-method { background: rgba(255, 255, 255, 0.12); color: #ffffff; border-color: rgba(255, 255, 255, 0.55); }
+
+/* Public profile: payment window (reuses the QR window look) */
+.qr-dialog .pay-badge {
+  display: inline-flex; align-items: center; gap: 6px;
+  margin: 0 0 16px; padding: 6px 14px;
+  border: 1px solid color-mix(in srgb, currentColor 30%, transparent); border-radius: 999px;
+  font-size: 11px; font-weight: 700; letter-spacing: 0.16em; text-transform: uppercase;
+}
+.qr-dialog .pay-qr-img { display: block; width: 100%; aspect-ratio: 1; object-fit: contain; border-radius: 8px; }
+.qr-dialog .pay-number {
+  display: inline-flex; align-items: center; gap: 8px; margin: 0 0 6px;
+  font-size: 15px; font-weight: 600; letter-spacing: 0.06em; font-variant-numeric: tabular-nums;
+}
+.qr-dialog .pay-number:empty { display: none; }
+
   </style>
 </head>
 
@@ -2262,6 +2341,19 @@ a.workspace-more-option { position: relative; box-sizing: border-box; line-heigh
       <span class="switch-track" aria-hidden="true"></span>
       Show my contact email on my public profile
     </label>
+  </section>
+
+  <section class="profile-group" id="paymentsGroup">
+    <div class="profile-group-head"><span class="profile-step">06</span><h3>Payments</h3><span class="profile-optional">Optional</span></div>
+    <p class="workspace-note">Add your GCash, Maya, or bank QR so anyone who taps your card can pay you in seconds.</p>
+
+    <div class="pay-tabs" role="tablist" aria-label="Payment methods">
+      <button type="button" role="tab" data-pay-tab="gcash" class="is-active" aria-selected="true"><span class="pay-dot" aria-hidden="true"></span>GCash</button>
+      <button type="button" role="tab" data-pay-tab="maya" aria-selected="false"><span class="pay-dot" aria-hidden="true"></span>Maya</button>
+      <button type="button" role="tab" data-pay-tab="bank" aria-selected="false"><span class="pay-dot" aria-hidden="true"></span>Bank &amp; more</button>
+    </div>
+
+    <div id="paymentEditor"></div>
   </section>
 
   <div class="profile-savebar">
@@ -2611,6 +2703,20 @@ a.workspace-more-option { position: relative; box-sizing: border-box; line-heigh
           <button type="button" id="qrShareBtn" class="public-action"><span>Share link</span></button>
         </div>
       </dialog>
+
+      <dialog id="payDialog" class="qr-dialog" aria-labelledby="payDialogName">
+        <button type="button" class="qr-close" id="payCloseBtn" aria-label="Close">×</button>
+        <div class="qr-brand">AVELIOR</div>
+        <span id="payDialogBadge" class="pay-badge"></span>
+        <div id="payDialogTile" class="qr-tile"><img id="payDialogQr" class="pay-qr-img" alt=""></div>
+        <h3 id="payDialogName" class="qr-name"></h3>
+        <p id="payDialogNumber" class="pay-number"></p>
+        <p id="payDialogHint" class="qr-hint"></p>
+        <div class="qr-buttons">
+          <button type="button" id="payDownloadBtn" class="public-action primary"><span>Download QR</span></button>
+          <button type="button" id="payCopyBtn" class="public-action"><span>Copy number</span></button>
+        </div>
+      </dialog>
     </section>
 
   </main>
@@ -2628,6 +2734,387 @@ a.workspace-more-option { position: relative; box-sizing: border-box; line-heigh
     const client = createClient(
       SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY
     );
+
+/* =========================
+   AVELIOR PAYMENTS
+   Stored in profiles.profile_design.payments
+========================= */
+
+const PAYMENT_METHODS = {
+  gcash: { label: "GCash", app: "GCash" },
+  maya: { label: "Maya", app: "Maya" },
+  bank: { label: "Bank Transfer", app: "banking" }
+};
+
+const PAY_ICONS = {
+  wallet: '<path d="M3.5 7.5A2.5 2.5 0 0 1 6 5h11.5v3"/><path d="M3.5 7.5v10A2.5 2.5 0 0 0 6 20h13.5V8.5H6a2.5 2.5 0 0 1-2.5-1Z"/><path d="M16 14.2h.01"/>',
+  bank: '<path d="M3 9.5 12 4l9 5.5"/><path d="M5 10v8M9.5 10v8M14.5 10v8M19 10v8"/><path d="M3 20.5h18"/>',
+  qr: '<rect x="3" y="3" width="7" height="7" rx="1.2"/><rect x="14" y="3" width="7" height="7" rx="1.2"/><rect x="3" y="14" width="7" height="7" rx="1.2"/><path d="M14 14h3v3h-3zM20 14v.01M14 20h.01M17 20h4v-3"/>'
+};
+
+function paySvg(kind) {
+  return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' + (PAY_ICONS[kind] || "") + "</svg>";
+}
+
+function safePaymentImageUrl(value) {
+  try {
+    const url = new URL(String(value || ""));
+    return url.protocol === "https:" ? url.href : "";
+  } catch {
+    return "";
+  }
+}
+
+function paymentDisplayLabel(method, entry) {
+  if (method === "bank") {
+    const bank = (entry?.bank_name || "").trim();
+    return bank ? `${bank} · Bank Transfer` : "Bank Transfer";
+  }
+  return PAYMENT_METHODS[method]?.label || method;
+}
+
+function hasPaymentValue(entry) {
+  return Boolean(entry && (entry.qr_url || entry.account_number));
+}
+
+function buildPaymentEditor() {
+  const editor = $("paymentEditor");
+  if (!editor || editor.childElementCount) return;
+
+  Object.entries(PAYMENT_METHODS).forEach(([method, info], index) => {
+    const panel = document.createElement("div");
+    panel.className = "pay-panel";
+    panel.dataset.payPanel = method;
+    panel.dataset.qrUrl = "";
+    panel.hidden = index !== 0;
+
+    const label = method === "bank" ? "bank" : info.label;
+    panel.innerHTML = `
+      <label class="pay-qr-upload" for="payQr-${method}">
+        <span class="pay-qr-thumb">${paySvg("qr")}</span>
+        <span class="pay-qr-copy">
+          <strong>Upload your ${label} QR</strong>
+          <span>PNG, JPG, or WebP — a screenshot from your app works. Maximum 2 MB.</span>
+        </span>
+      </label>
+      <input id="payQr-${method}" class="file-hidden pay-qr-file" type="file" accept="image/jpeg,image/png,image/webp">
+      <p class="settings-status pay-qr-status" role="status"></p>
+      ${method === "bank" ? `
+      <label for="payBank-${method}">Bank name</label>
+      <input id="payBank-${method}" class="pay-bank-name" type="text" maxlength="60" placeholder="e.g. BDO, BPI, UnionBank">` : ""}
+      <label for="payName-${method}">Account name</label>
+      <input id="payName-${method}" class="pay-account-name" type="text" maxlength="100" placeholder="e.g. Juan Dela Cruz">
+      <label for="payNumber-${method}">Account number <span class="pay-optional">(optional)</span></label>
+      <input id="payNumber-${method}" class="pay-account-number" type="text" inputmode="numeric" maxlength="40" placeholder="${method === "bank" ? "e.g. 0012 3456 7890" : "e.g. 0917 123 4567"}">
+      <div class="pay-panel-actions">
+        <button type="button" class="workspace-secondary pay-remove">Remove ${info.label}</button>
+      </div>`;
+
+    editor.append(panel);
+
+    panel.querySelector(".pay-qr-file").addEventListener("change", event => {
+      const file = event.target.files?.[0];
+      if (file) void uploadPaymentQr(method, file);
+    });
+
+    panel.querySelector(".pay-remove").addEventListener("click", () => {
+      setPaymentPanel(method, {});
+      markProfileDirty();
+    });
+
+    panel.addEventListener("input", () => updatePaymentTabDots());
+  });
+
+  document.querySelectorAll("[data-pay-tab]").forEach(tab => {
+    tab.addEventListener("click", () => selectPaymentTab(tab.dataset.payTab));
+  });
+}
+
+function selectPaymentTab(method) {
+  document.querySelectorAll("[data-pay-tab]").forEach(tab => {
+    const active = tab.dataset.payTab === method;
+    tab.classList.toggle("is-active", active);
+    tab.setAttribute("aria-selected", active ? "true" : "false");
+  });
+  document.querySelectorAll("[data-pay-panel]").forEach(panel => {
+    panel.hidden = panel.dataset.payPanel !== method;
+  });
+}
+
+function setPaymentQrPreview(panel, url) {
+  const thumb = panel.querySelector(".pay-qr-thumb");
+  thumb.replaceChildren();
+  if (url) {
+    const img = document.createElement("img");
+    img.src = url;
+    img.alt = "Your payment QR";
+    thumb.append(img);
+  } else {
+    thumb.innerHTML = paySvg("qr");
+  }
+}
+
+function setPaymentPanel(method, entry = {}) {
+  const panel = document.querySelector(`[data-pay-panel="${method}"]`);
+  if (!panel) return;
+  const qrUrl = safePaymentImageUrl(entry.qr_url);
+  panel.dataset.qrUrl = qrUrl;
+  setPaymentQrPreview(panel, qrUrl);
+  panel.querySelector(".pay-account-name").value = entry.account_name || "";
+  panel.querySelector(".pay-account-number").value = entry.account_number || "";
+  const bank = panel.querySelector(".pay-bank-name");
+  if (bank) bank.value = entry.bank_name || "";
+  panel.querySelector(".pay-qr-status").textContent = "";
+  updatePaymentTabDots();
+}
+
+function fillPaymentEditor(payments) {
+  buildPaymentEditor();
+  Object.keys(PAYMENT_METHODS).forEach(method => {
+    setPaymentPanel(method, payments?.[method] || {});
+  });
+  selectPaymentTab("gcash");
+}
+
+function readPaymentPanel(method) {
+  const panel = document.querySelector(`[data-pay-panel="${method}"]`);
+  if (!panel) return null;
+  return {
+    qr_url: panel.dataset.qrUrl || "",
+    account_name: panel.querySelector(".pay-account-name").value.trim(),
+    account_number: panel.querySelector(".pay-account-number").value.trim(),
+    bank_name: panel.querySelector(".pay-bank-name")?.value.trim() || ""
+  };
+}
+
+function updatePaymentTabDots() {
+  document.querySelectorAll("[data-pay-tab]").forEach(tab => {
+    const entry = readPaymentPanel(tab.dataset.payTab);
+    tab.classList.toggle("has-value", hasPaymentValue(entry));
+  });
+}
+
+function collectPayments() {
+  const payments = {};
+  for (const method of Object.keys(PAYMENT_METHODS)) {
+    const entry = readPaymentPanel(method);
+    if (!entry) continue;
+    const anything = entry.qr_url || entry.account_name || entry.account_number || entry.bank_name;
+    if (!anything) continue;
+
+    if (!entry.qr_url && !entry.account_number) {
+      selectPaymentTab(method);
+      throw new Error(`Add a QR code or account number for ${PAYMENT_METHODS[method].label}, or remove it.`);
+    }
+    if (!entry.account_name) {
+      selectPaymentTab(method);
+      document.querySelector(`[data-pay-panel="${method}"] .pay-account-name`)?.focus();
+      throw new Error(`Please enter the account name for ${PAYMENT_METHODS[method].label}.`);
+    }
+
+    const clean = {
+      qr_url: entry.qr_url || null,
+      account_name: entry.account_name,
+      account_number: entry.account_number || null
+    };
+    if (method === "bank") clean.bank_name = entry.bank_name || null;
+    payments[method] = clean;
+  }
+  return payments;
+}
+
+async function uploadPaymentQr(method, file) {
+  const panel = document.querySelector(`[data-pay-panel="${method}"]`);
+  const status = panel.querySelector(".pay-qr-status");
+  const box = panel.querySelector(".pay-qr-upload");
+  const input = panel.querySelector(".pay-qr-file");
+  const previousUrl = panel.dataset.qrUrl || "";
+
+  try {
+    if (file.size > 2 * 1024 * 1024) {
+      throw new Error("QR image must be 2 MB or smaller.");
+    }
+    if (!["image/jpeg", "image/png", "image/webp"].includes(file.type)) {
+      throw new Error("Please choose a PNG, JPG, or WebP image.");
+    }
+
+    const { data: { user } } = await client.auth.getUser();
+    if (!user) throw new Error("Please log in again.");
+
+    setPaymentQrPreview(panel, URL.createObjectURL(file));
+    box.classList.add("is-uploading");
+    status.textContent = "Uploading QR...";
+
+    const ext = file.type === "image/png" ? "png" : file.type === "image/webp" ? "webp" : "jpg";
+    const path = `${user.id}/payment-${method}-${Date.now()}.${ext}`;
+
+    const { error: uploadError } = await client.storage
+      .from("profile-pictures")
+      .upload(path, file, { contentType: file.type, upsert: false });
+
+    if (uploadError) throw uploadError;
+
+    const { data: publicData } = client.storage
+      .from("profile-pictures")
+      .getPublicUrl(path);
+
+    panel.dataset.qrUrl = publicData.publicUrl;
+    setPaymentQrPreview(panel, publicData.publicUrl);
+    status.textContent = "QR uploaded. Tap Save changes to show it on your profile.";
+    markProfileDirty();
+    updatePaymentTabDots();
+  } catch (e) {
+    panel.dataset.qrUrl = previousUrl;
+    setPaymentQrPreview(panel, previousUrl);
+    status.textContent = e.message || "QR upload failed.";
+    notify(e.message || "QR upload failed.", "error", "Upload failed");
+  } finally {
+    box.classList.remove("is-uploading");
+    input.value = "";
+  }
+}
+
+buildPaymentEditor();
+
+/* ---------- Public profile: payments ---------- */
+
+let currentPayment = null;
+
+function renderPublicPayments(data, username) {
+  $("publicPaymentsSection")?.remove();
+
+  const payments = data?.profile_design?.payments || {};
+  const entries = Object.keys(PAYMENT_METHODS)
+    .map(method => [method, payments[method]])
+    .filter(([, entry]) => entry && (safePaymentImageUrl(entry.qr_url) || entry.account_number));
+
+  if (!entries.length) return;
+
+  const section = document.createElement("div");
+  section.id = "publicPaymentsSection";
+
+  const heading = document.createElement("h3");
+  heading.textContent = "PAYMENTS";
+  section.append(heading);
+
+  const list = document.createElement("div");
+  list.className = "pay-method-list";
+
+  entries.forEach(([method, entry]) => {
+    const label = paymentDisplayLabel(method, entry);
+    const button = document.createElement("button");
+    button.type = "button";
+    button.className = "pay-method";
+
+    const icon = document.createElement("span");
+    icon.className = "link-icon";
+    icon.innerHTML = paySvg(method === "bank" ? "bank" : "wallet");
+
+    const text = document.createElement("span");
+    text.className = "pay-method-label";
+    text.textContent = label;
+
+    const arrow = document.createElement("span");
+    arrow.className = "pay-method-arrow";
+    arrow.innerHTML = paySvg("qr");
+
+    button.append(icon, text, arrow);
+    button.addEventListener("click", () => {
+      openPaymentDialog(method, entry);
+      void trackAnalyticsEvent(username, "link_click", label, safePaymentImageUrl(entry.qr_url) || null);
+    });
+    list.append(button);
+  });
+
+  section.append(list);
+
+  const profile = $("publicProfile");
+  const before = $("publicContactSection") || profile.querySelector(":scope > p.muted");
+  profile.insertBefore(section, before);
+}
+
+function openPaymentDialog(method, entry) {
+  const dialog = $("payDialog");
+  const qrUrl = safePaymentImageUrl(entry.qr_url);
+  currentPayment = { method, entry, qrUrl };
+
+  $("payDialogBadge").textContent = paymentDisplayLabel(method, entry);
+  $("payDialogName").textContent = entry.account_name || "";
+  $("payDialogNumber").textContent = entry.account_number || "";
+
+  const tile = $("payDialogTile");
+  const img = $("payDialogQr");
+  if (qrUrl) {
+    img.src = qrUrl;
+    img.alt = `${PAYMENT_METHODS[method].label} QR of ${entry.account_name || "this profile"}`;
+    tile.hidden = false;
+  } else {
+    img.removeAttribute("src");
+    tile.hidden = true;
+  }
+
+  $("payDialogHint").textContent = qrUrl
+    ? `Scan with your ${PAYMENT_METHODS[method].app} app to pay`
+    : `Send via your ${PAYMENT_METHODS[method].app} app`;
+
+  $("payDownloadBtn").hidden = !qrUrl;
+  $("payCopyBtn").hidden = !entry.account_number;
+
+  if (typeof dialog.showModal === "function") {
+    if (!dialog.open) dialog.showModal();
+  } else {
+    dialog.setAttribute("open", "");
+  }
+}
+
+function closePaymentDialog() {
+  const dialog = $("payDialog");
+  if (typeof dialog.close === "function" && dialog.open) dialog.close();
+  else dialog.removeAttribute("open");
+}
+
+async function copyPaymentNumber() {
+  const number = currentPayment?.entry?.account_number;
+  if (!number) return;
+  try {
+    await navigator.clipboard.writeText(number.replace(/\s+/g, ""));
+    notify("Account number copied.", "success", "Copied");
+  } catch {
+    notify("Could not copy. Please copy the number manually.", "error");
+  }
+}
+
+async function downloadPaymentQr() {
+  if (!currentPayment?.qrUrl) return;
+  const button = $("payDownloadBtn");
+  button.disabled = true;
+  const name = (currentPayment.entry.account_name || "avelior")
+    .toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "") || "avelior";
+  const filename = `${name}-${currentPayment.method}-qr`;
+  try {
+    const response = await fetch(currentPayment.qrUrl);
+    if (!response.ok) throw new Error("Download failed");
+    const blob = await response.blob();
+    const ext = blob.type === "image/png" ? "png" : blob.type === "image/webp" ? "webp" : "jpg";
+    downloadBlob(blob, `${filename}.${ext}`);
+  } catch (error) {
+    console.error("Payment QR download failed:", error);
+    window.open(currentPayment.qrUrl, "_blank", "noopener");
+  } finally {
+    button.disabled = false;
+  }
+}
+
+$("payCloseBtn").addEventListener("click", closePaymentDialog);
+$("payCopyBtn").addEventListener("click", copyPaymentNumber);
+$("payDownloadBtn").addEventListener("click", downloadPaymentQr);
+$("payDialog").addEventListener("click", event => {
+  if (event.target !== $("payDialog")) return;
+  const r = $("payDialog").getBoundingClientRect();
+  const inside = event.clientX >= r.left && event.clientX <= r.right &&
+    event.clientY >= r.top && event.clientY <= r.bottom;
+  if (!inside) closePaymentDialog();
+});
 
  const sections = [
   "auth",
@@ -3237,6 +3724,7 @@ $("customLinksEditor").replaceChildren();
   }
 
   selectAppearance(data?.profile_design?.background || "black");
+  fillPaymentEditor(data?.profile_design?.payments);
 
   $("phone").value = contacts?.phone || "";
   $("contactEmail").value = contacts?.contact_email || "";
@@ -4131,6 +4619,8 @@ contactSection.style.textAlign = "left";
   );
 }
 
+  renderPublicPayments(data, username);
+
   const profileUrl = new URL(location.href);
   profileUrl.search = "";
   profileUrl.hash = "";
@@ -4682,11 +5172,21 @@ if (songTitle || songArtist || songUrl) {
       customLinks.push({ name, url });
     }
 
+    const payments = collectPayments();
+
     loadingToast = notify(
       "Updating your digital identity.",
       "loading",
       "Saving profile"
     );
+
+    const { data: designRow, error: designError } = await client
+      .from("profiles")
+      .select("profile_design")
+      .eq("id", user.id)
+      .maybeSingle();
+
+    if (designError) throw designError;
 
     const { error } = await client.from("profiles").upsert({
       id: user.id,
@@ -4698,6 +5198,10 @@ favorite_song_title: $("favoriteSongTitle").value.trim() || null,
 favorite_song_artist: $("favoriteSongArtist").value.trim() || null,
 favorite_song_url: $("favoriteSongUrl").value.trim() || null,
       custom_links: customLinks,
+      profile_design: {
+        ...(designRow?.profile_design || {}),
+        payments
+      },
 
       updated_at: new Date().toISOString()
     }, { onConflict: "id" });
