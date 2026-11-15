@@ -1267,24 +1267,6 @@ a.workspace-more-option { position: relative; box-sizing: border-box; line-heigh
   font-weight: 600;
   letter-spacing: 0.08em;
 }
-.my-card-label { margin: 0 0 6px; color: var(--gold); font-size: 10px; font-weight: 600; letter-spacing: 0.22em; }
-.my-card-url { margin: 0; color: var(--text-soft); font-size: 12px; font-family: ui-monospace, "SF Mono", Menlo, monospace; line-height: 1.6; overflow-wrap: anywhere; }
-.my-card-actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 20px; }
-.my-card-actions a,
-.my-card-actions button {
-  flex: 1;
-  min-width: 110px;
-  margin: 0;
-  padding: 12px 14px;
-  border-radius: 11px;
-  text-align: center;
-  font-size: 12px;
-  text-decoration: none;
-}
-.my-card-open { background: var(--ivory-grad); color: #0b0b0a; border: 1px solid transparent; font-weight: 700; }
-.my-card-open:hover { color: #0b0b0a; }
-.my-card-copy { background: rgba(255, 255, 255, 0.03); color: var(--text); border: 1px solid var(--line-strong); cursor: pointer; }
-.my-card-copy:hover { border-color: var(--gold-line); box-shadow: none; }
 
 /* ---------- Analytics ---------- */
 #analyticsPanel { color: var(--text); }
@@ -3563,7 +3545,7 @@ async function loadMyCardLink() {
 
       const description = document.createElement("p");
       description.textContent =
-        "Link your AVELIOR NFC card below to see its permanent link here.";
+        "Link your AVELIOR NFC card below to see it here.";
 
       empty.append(heading, description);
       list.appendChild(empty);
@@ -3571,10 +3553,6 @@ async function loadMyCardLink() {
     }
 
     cards.forEach(card => {
-      const cardUrl = new URL("./card.html", location.href);
-      cardUrl.search = "";
-      cardUrl.hash = "";
-      cardUrl.searchParams.set("id", card.card_code);
 
       const item = document.createElement("article");
       item.className = "my-card-item";
@@ -3597,48 +3575,7 @@ async function loadMyCardLink() {
 
       top.append(name, badge);
 
-      const label = document.createElement("p");
-      label.className = "my-card-label";
-      label.textContent = "PERMANENT CARD LINK";
-
-      const url = document.createElement("p");
-      url.className = "my-card-url";
-      url.textContent = cardUrl.href;
-
-      const actions = document.createElement("div");
-      actions.className = "my-card-actions";
-
-      const open = document.createElement("a");
-      open.className = "my-card-open";
-      open.href = cardUrl.href;
-      open.target = "_blank";
-      open.rel = "noopener noreferrer";
-      open.textContent = "Open link";
-
-      const copy = document.createElement("button");
-      copy.type = "button";
-      copy.className = "my-card-copy";
-      copy.textContent = "Copy link";
-
-      copy.addEventListener("click", async () => {
-        try {
-          await navigator.clipboard.writeText(cardUrl.href);
-          notify(
-            `${card.card_code} link copied.`,
-            "success",
-            "Link copied"
-          );
-        } catch {
-          notify(
-            "Copy is unavailable. Please copy the link manually.",
-            "error",
-            "Copy failed"
-          );
-        }
-      });
-
-      actions.append(open, copy);
-      item.append(face, top, label, url, actions);
+      item.append(face, top);
       list.appendChild(item);
     });
   } catch (error) {
