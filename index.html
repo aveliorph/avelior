@@ -1267,19 +1267,6 @@ a.workspace-more-option { position: relative; box-sizing: border-box; line-heigh
   font-weight: 600;
   letter-spacing: 0.08em;
 }
-.my-card-lock { display:flex; align-items:center; justify-content:space-between; gap:12px; padding-top:16px; border-top:1px solid var(--line); }
-.my-card-lock strong { display:block; color:var(--text); font-size:13px; font-weight:600; }
-.my-card-lock small { display:block; margin-top:3px; color:var(--text-soft); font-size:11px; }
-.my-card-switch { position:relative; flex:0 0 auto; width:44px; height:24px; padding:0; border:1px solid rgba(255,255,255,0.3); border-radius:999px; background:transparent; cursor:pointer; transition:background .25s; }
-.my-card-switch::after { content:""; position:absolute; top:3px; left:3px; width:16px; height:16px; border-radius:50%; background:#e6e6e6; transition:transform .25s; }
-.my-card-switch[aria-checked="true"] { background:#e6e6e6; }
-.my-card-switch[aria-checked="true"]::after { transform:translateX(20px); background:#0a0a0a; }
-.my-card-switch:hover { transform:none; box-shadow:none; }
-.my-card-item.is-locked .my-card-face { opacity:.45; }
-.avelior-lock-screen { position:fixed; inset:0; z-index:9999; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:10px; padding:24px; background:#050505; color:#f2f2f2; text-align:center; }
-.avelior-lock-screen h1 { margin:0 0 18px; font-size:22px; font-weight:800; letter-spacing:.4em; }
-.avelior-lock-screen h2 { margin:0; font-family:var(--serif); font-size:26px; font-weight:600; }
-.avelior-lock-screen p { margin:0; color:#9a9a9a; font-size:13px; }
 .my-card-label { margin: 0 0 6px; color: var(--gold); font-size: 10px; font-weight: 600; letter-spacing: 0.22em; }
 .my-card-url { margin: 0; color: var(--text-soft); font-size: 12px; font-family: ui-monospace, "SF Mono", Menlo, monospace; line-height: 1.6; overflow-wrap: anywhere; }
 .my-card-actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 20px; }
@@ -3583,13 +3570,6 @@ async function loadMyCardLink() {
       return;
     }
 
-    let lockedCards = [];
-    try {
-      const { data: { user: lockUser } } = await client.auth.getUser();
-      const { data: lockRow } = await client.from("profiles").select("profile_design").eq("id", lockUser.id).maybeSingle();
-      lockedCards = Array.isArray(lockRow?.profile_design?.locked_cards) ? lockRow.profile_design.locked_cards : [];
-    } catch (lockError) { console.warn("Could not read card lock state:", lockError); }
-
     cards.forEach(card => {
 
       const item = document.createElement("article");
@@ -3613,49 +3593,7 @@ async function loadMyCardLink() {
 
       top.append(name, badge);
 
-      const isLocked = lockedCards.includes(card.card_code);
-      const lockRow = document.createElement("div");
-      lockRow.className = "my-card-lock";
-      const lockText = document.createElement("div");
-      const lockTitle = document.createElement("strong");
-      lockTitle.textContent = "Card Lock / Lost Mode";
-      const lockHint = document.createElement("small");
-      lockHint.textContent = "Freeze this card if lost or misplaced";
-      lockText.append(lockTitle, lockHint);
-      const lockSwitch = document.createElement("button");
-      lockSwitch.type = "button";
-      lockSwitch.className = "my-card-switch";
-      lockSwitch.setAttribute("role", "switch");
-      lockSwitch.setAttribute("aria-label", `Lock card ${card.card_code}`);
-      const paintLock = locked => {
-        lockSwitch.setAttribute("aria-checked", String(locked));
-        item.classList.toggle("is-locked", locked);
-        badge.textContent = locked ? "🔒 Locked" : "● Linked";
-      };
-      paintLock(isLocked);
-      lockSwitch.addEventListener("click", async () => {
-        const next = lockSwitch.getAttribute("aria-checked") !== "true";
-        lockSwitch.disabled = true;
-        try {
-          const { data: { user: u } } = await client.auth.getUser();
-          const { data: row, error: readErr } = await client.from("profiles").select("profile_design").eq("id", u.id).maybeSingle();
-          if (readErr) throw readErr;
-          const design = row?.profile_design || {};
-          const set = new Set(Array.isArray(design.locked_cards) ? design.locked_cards : []);
-          next ? set.add(card.card_code) : set.delete(card.card_code);
-          const { error: saveErr } = await client.from("profiles").update({ profile_design: { ...design, locked_cards: [...set] } }).eq("id", u.id);
-          if (saveErr) throw saveErr;
-          paintLock(next);
-        } catch (err) {
-          console.error("Card lock failed:", err);
-          alert("Could not update card lock. Please try again.");
-        } finally {
-          lockSwitch.disabled = false;
-        }
-      });
-      lockRow.append(lockText, lockSwitch);
-
-      item.append(face, top, lockRow);
+      item.append(face, top);
       list.appendChild(item);
     });
   } catch (error) {
@@ -4166,29 +4104,38 @@ try {
   console.log("Showing cached AVELIOR profile offline.");
 }
 
+// Check the physical card ID before displaying a public profile.
+// A card tap must be verified against fresh server data so an old
+// offline cache cannot bypass a newly enabled lock.
 {
-  const qs = new URLSearchParams(location.search);
-  const tappedCard = (qs.get("card") || qs.get("id") || "").trim().toUpperCase();
-  const lockedList = Array.isArray(data.profile_design?.locked_cards) ? data.profile_design.locked_cards.map(c => String(c).toUpperCase()) : [];
-  if (tappedCard && lockedList.includes(tappedCard)) {
+  const params = new URLSearchParams(location.search);
+  const tappedCard = (params.get("card") || params.get("id") || "")
+    .trim()
+    .toUpperCase();
+
+  if (tappedCard) {
     const lockScreen = document.createElement("div");
     lockScreen.className = "avelior-lock-screen";
-    lockScreen.innerHTML = "<h1>AVELIOR</h1><h2>Card Temporarily Locked</h2><p>This card has been frozen by the owner.</p>";
-    document.body.appendChild(lockScreen);
-    return;
-  }
-  if (tappedCard) {
-    try {
-      const cleanQs = new URLSearchParams(location.search);
-      cleanQs.delete("id");
-      cleanQs.delete("card");
-      const newQuery = cleanQs.toString();
-      const cleanUrl = location.pathname + (newQuery ? "?" + newQuery : "") + location.hash;
-      window.history.replaceState({}, document.title, cleanUrl);
-    } catch (_) {}
+
+    if (!loadedFromNetwork) {
+      lockScreen.innerHTML =
+        "<h1>AVELIOR</h1><h2>Unable to Verify Card</h2><p>Please connect to the internet and tap your card again.</p>";
+      document.body.appendChild(lockScreen);
+      return;
+    }
+
+    const lockedCards = Array.isArray(data.profile_design?.locked_cards)
+      ? data.profile_design.locked_cards.map(code => String(code).trim().toUpperCase())
+      : [];
+
+    if (lockedCards.includes(tappedCard)) {
+      lockScreen.innerHTML =
+        "<h1>AVELIOR</h1><h2>Card Temporarily Locked</h2><p>This card has been frozen by the owner.</p>";
+      document.body.appendChild(lockScreen);
+      return;
+    }
   }
 }
-
 
 applyPublicAppearance(
   data.profile_design?.background || "black"
@@ -4683,6 +4630,21 @@ contactSection.style.textAlign = "left";
 }
 
   
+
+.avelior-lock-screen {
+  position: fixed; inset: 0; z-index: 9999;
+  display: flex; flex-direction: column; align-items: center;
+  justify-content: center; gap: 10px; padding: 24px;
+  background: #050505; color: #f2f2f2; text-align: center;
+}
+.avelior-lock-screen h1 {
+  margin: 0 0 18px; font-family: var(--sans);
+  font-size: 22px; font-weight: 800; letter-spacing: .4em;
+}
+.avelior-lock-screen h2 {
+  margin: 0; font-family: var(--serif); font-size: 26px; font-weight: 600;
+}
+.avelior-lock-screen p { margin: 0; color: #9a9a9a; font-size: 13px; }
 
 /* =========================
    AVELIOR ANALYTICS LOGIC
