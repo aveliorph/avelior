@@ -248,7 +248,7 @@
       title.textContent = "Opening your profile";
       message.textContent = "Taking you to the card owner's public profile.";
 
-      location.replace("./?u=" + encodeURIComponent(result.username));
+      location.replace("./?u=" + encodeURIComponent(result.username) + "&id=" + encodeURIComponent(cardCode));
     }
 
     openCard().catch(error => {
