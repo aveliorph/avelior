@@ -1267,6 +1267,37 @@ a.workspace-more-option { position: relative; box-sizing: border-box; line-heigh
   font-weight: 600;
   letter-spacing: 0.08em;
 }
+.my-card-lock { display:flex; align-items:center; justify-content:space-between; gap:12px; padding-top:16px; border-top:1px solid var(--line); }
+.my-card-lock strong { display:block; color:var(--text); font-size:13px; font-weight:600; }
+.my-card-lock small { display:block; margin-top:3px; color:var(--text-soft); font-size:11px; }
+.my-card-switch { position:relative; flex:0 0 auto; width:44px; height:24px; padding:0; border:1px solid rgba(255,255,255,0.3); border-radius:999px; background:transparent; cursor:pointer; transition:background .25s; }
+.my-card-switch::after { content:""; position:absolute; top:3px; left:3px; width:16px; height:16px; border-radius:50%; background:#e6e6e6; transition:transform .25s; }
+.my-card-switch[aria-checked="true"] { background:#e6e6e6; }
+.my-card-switch[aria-checked="true"]::after { transform:translateX(20px); background:#0a0a0a; }
+.my-card-switch:hover { transform:none; box-shadow:none; }
+.my-card-item.is-locked .my-card-face { opacity:.45; }
+/* ---------- Card Finish (Matte Black / Glossy White) ---------- */
+.my-card-finish { margin-bottom: 18px; }
+.my-card-finish-label { margin: 0 0 10px; color: var(--text-soft); font-size: 10px; font-weight: 600; letter-spacing: 0.22em; text-transform: uppercase; }
+.my-card-finish-options { display: flex; gap: 8px; }
+.my-card-finish-chip { flex: 1; margin: 0; padding: 9px 12px; border: 1px solid var(--line); border-radius: 999px; background: transparent; color: var(--text-soft); font-family: var(--sans); font-size: 11px; font-weight: 600; letter-spacing: 0.06em; cursor: pointer; transition: border-color .25s, color .25s, background .25s; }
+.my-card-finish-chip:hover { transform: none; box-shadow: none; border-color: rgba(255,255,255,0.35); color: var(--text); }
+.my-card-finish-chip[aria-checked="true"] { border-color: #e6e6e6; color: #f5f5f5; background: rgba(255,255,255,0.05); }
+.my-card-finish-chip:disabled { opacity: .6; cursor: wait; }
+.my-card-face.is-white {
+  background:
+    url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%230a0a0a' stroke-opacity='0.75' stroke-width='1.7' stroke-linecap='round'><path d='M8 8.6a4.6 4.6 0 0 1 0 6.8'/><path d='M11.6 6a8.4 8.4 0 0 1 0 12'/><path d='M15.2 3.4a12.2 12.2 0 0 1 0 17.2'/></svg>") right 16px bottom 14px / 16px no-repeat,
+    linear-gradient(115deg, transparent 40%, rgba(255,255,255,0.9) 45%, rgba(255,255,255,0.3) 50%, transparent 55%),
+    linear-gradient(135deg, rgba(255,255,255,0.85) 0%, rgba(240,240,240,1) 45%, rgba(225,225,225,0.9) 100%),
+    linear-gradient(180deg, #fcfcfc 0%, #f0f0f0 100%);
+  box-shadow: 0 20px 40px -15px rgba(0,0,0,0.8), inset 0 1px 1px rgba(255,255,255,1), inset 0 -1px 2px rgba(0,0,0,0.1);
+  color: #0a0a0a;
+  text-shadow: 0 1px 0 rgba(255,255,255,0.9), 0 -1px 0 rgba(0,0,0,0.12);
+}
+.avelior-lock-screen { position:fixed; inset:0; z-index:9999; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:10px; padding:24px; background:#050505; color:#f2f2f2; text-align:center; }
+.avelior-lock-screen h1 { margin:0 0 18px; font-size:22px; font-weight:800; letter-spacing:.4em; }
+.avelior-lock-screen h2 { margin:0; font-family:var(--serif); font-size:26px; font-weight:600; }
+.avelior-lock-screen p { margin:0; color:#9a9a9a; font-size:13px; }
 .my-card-label { margin: 0 0 6px; color: var(--gold); font-size: 10px; font-weight: 600; letter-spacing: 0.22em; }
 .my-card-url { margin: 0; color: var(--text-soft); font-size: 12px; font-family: ui-monospace, "SF Mono", Menlo, monospace; line-height: 1.6; overflow-wrap: anywhere; }
 .my-card-actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 20px; }
@@ -3570,6 +3601,21 @@ async function loadMyCardLink() {
       return;
     }
 
+    let lockedCards = [];
+    try {
+      const { data: { user: lockUser } } = await client.auth.getUser();
+      const { data: lockRow } = await client.from("profiles").select("profile_design").eq("id", lockUser.id).maybeSingle();
+      lockedCards = Array.isArray(lockRow?.profile_design?.locked_cards) ? lockRow.profile_design.locked_cards : [];
+    } catch (lockError) { console.warn("Could not read card lock state:", lockError); }
+
+    let cardFinishes = {};
+    try {
+      const { data: { user: finishUser } } = await client.auth.getUser();
+      const { data: finishRow } = await client.from("profiles").select("profile_design").eq("id", finishUser.id).maybeSingle();
+      const saved = finishRow?.profile_design?.card_finishes;
+      cardFinishes = saved && typeof saved === "object" && !Array.isArray(saved) ? saved : {};
+    } catch (finishError) { console.warn("Could not read card finish:", finishError); }
+
     cards.forEach(card => {
 
       const item = document.createElement("article");
@@ -3593,7 +3639,110 @@ async function loadMyCardLink() {
 
       top.append(name, badge);
 
-      item.append(face, top);
+      const isLocked = lockedCards.includes(card.card_code);
+      const lockRow = document.createElement("div");
+      lockRow.className = "my-card-lock";
+      const lockText = document.createElement("div");
+      const lockTitle = document.createElement("strong");
+      lockTitle.textContent = "Card Lock / Lost Mode";
+      const lockHint = document.createElement("small");
+      lockHint.textContent = "Freeze this card if lost or misplaced";
+      lockText.append(lockTitle, lockHint);
+      const lockSwitch = document.createElement("button");
+      lockSwitch.type = "button";
+      lockSwitch.className = "my-card-switch";
+      lockSwitch.setAttribute("role", "switch");
+      lockSwitch.setAttribute("aria-label", `Lock card ${card.card_code}`);
+      const paintLock = locked => {
+        lockSwitch.setAttribute("aria-checked", String(locked));
+        item.classList.toggle("is-locked", locked);
+        badge.textContent = locked ? "🔒 Locked" : "● Linked";
+      };
+      paintLock(isLocked);
+      lockSwitch.addEventListener("click", async () => {
+        const next = lockSwitch.getAttribute("aria-checked") !== "true";
+        lockSwitch.disabled = true;
+        try {
+          const { data: { user: u } } = await client.auth.getUser();
+          const { data: row, error: readErr } = await client.from("profiles").select("profile_design").eq("id", u.id).maybeSingle();
+          if (readErr) throw readErr;
+          const design = row?.profile_design || {};
+          const set = new Set(Array.isArray(design.locked_cards) ? design.locked_cards : []);
+          next ? set.add(card.card_code) : set.delete(card.card_code);
+          const { error: saveErr } = await client.from("profiles").update({ profile_design: { ...design, locked_cards: [...set] } }).eq("id", u.id);
+          if (saveErr) throw saveErr;
+          paintLock(next);
+        } catch (err) {
+          console.error("Card lock failed:", err);
+          alert("Could not update card lock. Please try again.");
+        } finally {
+          lockSwitch.disabled = false;
+        }
+      });
+      lockRow.append(lockText, lockSwitch);
+
+      const finishBox = document.createElement("div");
+      finishBox.className = "my-card-finish";
+      const finishLabel = document.createElement("p");
+      finishLabel.className = "my-card-finish-label";
+      finishLabel.textContent = "Card Finish";
+      const finishOptions = document.createElement("div");
+      finishOptions.className = "my-card-finish-options";
+      finishOptions.setAttribute("role", "radiogroup");
+      finishOptions.setAttribute("aria-label", `Card finish for ${card.card_code}`);
+      const finishChoices = [
+        { value: "black", label: "Matte Black" },
+        { value: "white", label: "Glossy White" }
+      ];
+      const finishChips = finishChoices.map(choice => {
+        const chip = document.createElement("button");
+        chip.type = "button";
+        chip.className = "my-card-finish-chip";
+        chip.setAttribute("role", "radio");
+        chip.dataset.finish = choice.value;
+        chip.dataset.label = choice.label;
+        return chip;
+      });
+      const paintFinish = finish => {
+        face.classList.toggle("is-white", finish === "white");
+        finishChips.forEach(chip => {
+          const active = chip.dataset.finish === finish;
+          chip.setAttribute("aria-checked", String(active));
+          chip.textContent = `${active ? "●" : "○"} ${chip.dataset.label}`;
+        });
+      };
+      let currentFinish = cardFinishes[card.card_code] === "white" ? "white" : "black";
+      paintFinish(currentFinish);
+      finishChips.forEach(chip => {
+        chip.addEventListener("click", async () => {
+          const next = chip.dataset.finish;
+          if (next === currentFinish) return;
+          const previous = currentFinish;
+          currentFinish = next;
+          paintFinish(next);
+          finishChips.forEach(c => { c.disabled = true; });
+          try {
+            const { data: { user: u } } = await client.auth.getUser();
+            const { data: row, error: readErr } = await client.from("profiles").select("profile_design").eq("id", u.id).maybeSingle();
+            if (readErr) throw readErr;
+            const design = row?.profile_design || {};
+            const finishes = design.card_finishes && typeof design.card_finishes === "object" && !Array.isArray(design.card_finishes) ? design.card_finishes : {};
+            const { error: saveErr } = await client.from("profiles").update({ profile_design: { ...design, card_finishes: { ...finishes, [card.card_code]: next } } }).eq("id", u.id);
+            if (saveErr) throw saveErr;
+          } catch (err) {
+            console.error("Card finish update failed:", err);
+            currentFinish = previous;
+            paintFinish(previous);
+            alert("Could not update card finish. Please try again.");
+          } finally {
+            finishChips.forEach(c => { c.disabled = false; });
+          }
+        });
+      });
+      finishOptions.append(...finishChips);
+      finishBox.append(finishLabel, finishOptions);
+
+      item.append(face, top, finishBox, lockRow);
       list.appendChild(item);
     });
   } catch (error) {
@@ -4104,38 +4253,29 @@ try {
   console.log("Showing cached AVELIOR profile offline.");
 }
 
-// Check the physical card ID before displaying a public profile.
-// A card tap must be verified against fresh server data so an old
-// offline cache cannot bypass a newly enabled lock.
 {
-  const params = new URLSearchParams(location.search);
-  const tappedCard = (params.get("card") || params.get("id") || "")
-    .trim()
-    .toUpperCase();
-
-  if (tappedCard) {
+  const qs = new URLSearchParams(location.search);
+  const tappedCard = (qs.get("card") || qs.get("id") || "").trim().toUpperCase();
+  const lockedList = Array.isArray(data.profile_design?.locked_cards) ? data.profile_design.locked_cards.map(c => String(c).toUpperCase()) : [];
+  if (tappedCard && lockedList.includes(tappedCard)) {
     const lockScreen = document.createElement("div");
     lockScreen.className = "avelior-lock-screen";
-
-    if (!loadedFromNetwork) {
-      lockScreen.innerHTML =
-        "<h1>AVELIOR</h1><h2>Unable to Verify Card</h2><p>Please connect to the internet and tap your card again.</p>";
-      document.body.appendChild(lockScreen);
-      return;
-    }
-
-    const lockedCards = Array.isArray(data.profile_design?.locked_cards)
-      ? data.profile_design.locked_cards.map(code => String(code).trim().toUpperCase())
-      : [];
-
-    if (lockedCards.includes(tappedCard)) {
-      lockScreen.innerHTML =
-        "<h1>AVELIOR</h1><h2>Card Temporarily Locked</h2><p>This card has been frozen by the owner.</p>";
-      document.body.appendChild(lockScreen);
-      return;
-    }
+    lockScreen.innerHTML = "<h1>AVELIOR</h1><h2>Card Temporarily Locked</h2><p>This card has been frozen by the owner.</p>";
+    document.body.appendChild(lockScreen);
+    return;
+  }
+  if (tappedCard) {
+    try {
+      const cleanQs = new URLSearchParams(location.search);
+      cleanQs.delete("id");
+      cleanQs.delete("card");
+      const newQuery = cleanQs.toString();
+      const cleanUrl = location.pathname + (newQuery ? "?" + newQuery : "") + location.hash;
+      window.history.replaceState({}, document.title, cleanUrl);
+    } catch (_) {}
   }
 }
+
 
 applyPublicAppearance(
   data.profile_design?.background || "black"
@@ -4630,21 +4770,6 @@ contactSection.style.textAlign = "left";
 }
 
   
-
-.avelior-lock-screen {
-  position: fixed; inset: 0; z-index: 9999;
-  display: flex; flex-direction: column; align-items: center;
-  justify-content: center; gap: 10px; padding: 24px;
-  background: #050505; color: #f2f2f2; text-align: center;
-}
-.avelior-lock-screen h1 {
-  margin: 0 0 18px; font-family: var(--sans);
-  font-size: 22px; font-weight: 800; letter-spacing: .4em;
-}
-.avelior-lock-screen h2 {
-  margin: 0; font-family: var(--serif); font-size: 26px; font-weight: 600;
-}
-.avelior-lock-screen p { margin: 0; color: #9a9a9a; font-size: 13px; }
 
 /* =========================
    AVELIOR ANALYTICS LOGIC
