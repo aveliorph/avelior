@@ -4177,7 +4177,18 @@ try {
     document.body.appendChild(lockScreen);
     return;
   }
+  if (tappedCard) {
+    try {
+      const cleanQs = new URLSearchParams(location.search);
+      cleanQs.delete("id");
+      cleanQs.delete("card");
+      const newQuery = cleanQs.toString();
+      const cleanUrl = location.pathname + (newQuery ? "?" + newQuery : "") + location.hash;
+      window.history.replaceState({}, document.title, cleanUrl);
+    } catch (_) {}
+  }
 }
+
 
 applyPublicAppearance(
   data.profile_design?.background || "black"
