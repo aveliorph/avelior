@@ -1771,6 +1771,153 @@ a.workspace-more-option { position: relative; box-sizing: border-box; line-heigh
 #publicProfile.theme-pink #publicContactSection h3 { color: #ffffff !important; }
 #publicProfile.theme-pink #publicContactSection a { background: #ffffff !important; color: #713d51 !important; border-color: #ffffff !important; }
 
+/* ---------- Public profile: Favorite Song mini-player ---------- */
+#publicFavoriteSong { margin: 16px 0; text-align: left; }
+#publicFavoriteSong .fav-song-eyebrow {
+  margin: 0 0 8px;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+}
+#publicFavoriteSong .fav-song-card {
+  border-radius: 18px;
+  padding: 13px 15px;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  color: #f2f2f0;
+}
+#publicFavoriteSong .fav-song-main { display: flex; align-items: center; gap: 12px; }
+#publicFavoriteSong .fav-song-cover {
+  width: 48px;
+  height: 48px;
+  border-radius: 10px;
+  object-fit: cover;
+  flex-shrink: 0;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+}
+#publicFavoriteSong .fav-song-info { flex: 1; min-width: 0; }
+#publicFavoriteSong .fav-song-title {
+  font-size: 13.5px;
+  font-weight: 700;
+  line-height: 1.35;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+#publicFavoriteSong .fav-song-artist {
+  font-size: 11.5px;
+  line-height: 1.35;
+  margin-top: 2px;
+  opacity: 0.8;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+#publicFavoriteSong .fav-song-play {
+  width: 40px;
+  height: 40px;
+  min-width: 40px;
+  margin: 0;
+  padding: 0;
+  border-radius: 50%;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  flex-shrink: 0;
+  background: #ffffff;
+  color: #111111;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.25);
+  transition: transform 0.2s ease, box-shadow 0.2s ease, opacity 0.2s ease;
+}
+#publicFavoriteSong .fav-song-play:hover { transform: scale(1.06); box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3); }
+#publicFavoriteSong .fav-song-play:active { transform: scale(0.96); }
+#publicFavoriteSong .fav-song-play:focus-visible { outline: 2px solid currentColor; outline-offset: 3px; }
+#publicFavoriteSong .fav-song-play.is-unavailable { opacity: 0.55; }
+#publicFavoriteSong .fav-song-play svg { width: 16px; height: 16px; fill: currentColor; pointer-events: none; }
+#publicFavoriteSong .fav-song-progress-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 10px;
+  font-size: 9.5px;
+  font-weight: 600;
+  opacity: 0.8;
+  font-variant-numeric: tabular-nums;
+}
+#publicFavoriteSong .fav-song-track {
+  flex: 1;
+  height: 3.5px;
+  border-radius: 999px;
+  position: relative;
+  overflow: hidden;
+  background: rgba(255, 255, 255, 0.15);
+}
+#publicFavoriteSong .fav-song-fill {
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 0%;
+  border-radius: 999px;
+  background: currentColor;
+  transition: width 0.25s linear;
+}
+#publicFavoriteSong .fav-song-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 8px;
+  padding-top: 7px;
+  font-size: 10.5px;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+#publicFavoriteSong .fav-song-note { opacity: 0.7; }
+#publicFavoriteSong .fav-song-listen {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-weight: 600;
+  text-decoration: none;
+}
+#publicFavoriteSong .fav-song-listen:hover { text-decoration: underline; text-underline-offset: 3px; }
+
+/* Favorite Song: Black (pure monochrome obsidian) */
+#publicProfile.theme-black #publicFavoriteSong .fav-song-card { background: rgba(255, 255, 255, 0.04); border: 1px solid rgba(255, 255, 255, 0.18); color: #f2f2f0; }
+#publicProfile.theme-black #publicFavoriteSong .fav-song-title { color: #f2f2f0; }
+#publicProfile.theme-black #publicFavoriteSong .fav-song-artist,
+#publicProfile.theme-black #publicFavoriteSong .fav-song-progress-row,
+#publicProfile.theme-black #publicFavoriteSong .fav-song-note { color: #b9b9b9; }
+#publicProfile.theme-black #publicFavoriteSong .fav-song-fill { background: #ffffff; }
+#publicProfile.theme-black #publicFavoriteSong .fav-song-play { background: #ffffff; color: #111111; }
+
+/* Favorite Song: White (porcelain glass) */
+#publicProfile.theme-white #publicFavoriteSong .fav-song-card { background: #ffffff; border: 1px solid #e2e0da; color: #222222; box-shadow: 0 4px 14px rgba(0, 0, 0, 0.05); }
+#publicProfile.theme-white #publicFavoriteSong .fav-song-title { color: #222222; }
+#publicProfile.theme-white #publicFavoriteSong .fav-song-artist,
+#publicProfile.theme-white #publicFavoriteSong .fav-song-progress-row,
+#publicProfile.theme-white #publicFavoriteSong .fav-song-note { color: #555555; }
+#publicProfile.theme-white #publicFavoriteSong .fav-song-cover { box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12); }
+#publicProfile.theme-white #publicFavoriteSong .fav-song-track { background: rgba(0, 0, 0, 0.08); }
+#publicProfile.theme-white #publicFavoriteSong .fav-song-fill { background: #171717; }
+#publicProfile.theme-white #publicFavoriteSong .fav-song-footer { border-top-color: rgba(0, 0, 0, 0.08); }
+#publicProfile.theme-white #publicFavoriteSong .fav-song-play { background: #171717; color: #ffffff; box-shadow: 0 6px 16px rgba(0, 0, 0, 0.18); }
+
+/* Favorite Song: Pink (soft velvet dusty rose) */
+#publicProfile.theme-pink #publicFavoriteSong .fav-song-card { background: rgba(255, 255, 255, 0.14); border: 1px solid rgba(255, 255, 255, 0.38); color: #ffffff; }
+#publicProfile.theme-pink #publicFavoriteSong .fav-song-title { color: #ffffff; }
+#publicProfile.theme-pink #publicFavoriteSong .fav-song-artist,
+#publicProfile.theme-pink #publicFavoriteSong .fav-song-progress-row,
+#publicProfile.theme-pink #publicFavoriteSong .fav-song-note { color: #ffffff; }
+#publicProfile.theme-pink #publicFavoriteSong .fav-song-track { background: rgba(255, 255, 255, 0.22); }
+#publicProfile.theme-pink #publicFavoriteSong .fav-song-fill { background: #ffffff; }
+#publicProfile.theme-pink #publicFavoriteSong .fav-song-footer { border-top-color: rgba(255, 255, 255, 0.22); }
+#publicProfile.theme-pink #publicFavoriteSong .fav-song-play { background: #ffffff; color: #713d51; box-shadow: 0 6px 16px rgba(113, 51, 77, 0.3); }
+
 /* ---------- Public profile: Save contact + QR ---------- */
 #publicProfile .public-actions {
   display: grid;
@@ -4299,225 +4446,286 @@ applyPublicAppearance(
  
 // FAVORITE SONG
 const oldFavoriteSong = $("publicFavoriteSong");
-if (oldFavoriteSong) oldFavoriteSong.remove();
+if (oldFavoriteSong) {
+  const oldFavAudio = oldFavoriteSong.querySelector("audio");
+  if (oldFavAudio) {
+    oldFavAudio.pause();
+    oldFavAudio.removeAttribute("src");
+  }
+  oldFavoriteSong.remove();
+}
 
 const songTitle = data.favorite_song_title || "";
 const songArtist = data.favorite_song_artist || "";
 const songUrl = data.favorite_song_url || "";
 
-if (songTitle && songArtist && songUrl) {
+if (songTitle && songArtist) {
+  // Validate the optional Spotify / YouTube link
+  let parsedUrl = null;
+  let host = "";
+  const allowedHosts = [
+    "open.spotify.com",
+    "spotify.com",
+    "www.spotify.com",
+    "youtube.com",
+    "www.youtube.com",
+    "music.youtube.com",
+    "youtu.be"
+  ];
   try {
-    const parsedUrl = new URL(songUrl);
-    const host = parsedUrl.hostname.toLowerCase();
-
-    const allowedHosts = [
-      "open.spotify.com",
-      "spotify.com",
-      "www.spotify.com",
-      "youtube.com",
-      "www.youtube.com",
-      "music.youtube.com",
-      "youtu.be"
-    ];
-
-    if (
-      parsedUrl.protocol === "https:" &&
-      allowedHosts.includes(host)
-    ) {
-      const theme = ["white", "pink"].find(t =>
-        $("publicProfile").classList.contains("theme-" + t)
-      ) || "black";
-
-      const colors = {
-        black: {
-          heading: "#bdbdbd",
-          title: "#f5f5f5",
-          artist: "#bdbdbd",
-          link: "#bdbdbd"
-        },
-        white: {
-          heading: "#555555",
-          title: "#222222",
-          artist: "#666666",
-          link: "#555555"
-        },
-        pink: {
-          heading: "#71334d",
-          title: "#492236",
-          artist: "#754a60",
-          link: "#71334d"
-        }
-      };
-
-      const color = colors[theme];
-
-      const fallbackSvg = `
-        <svg xmlns="http://www.w3.org/2000/svg"
-          width="100" height="100">
-          <rect width="100" height="100" fill="#242424"/>
-          <text x="50%" y="57%" text-anchor="middle"
-            font-size="38" fill="#bdbdbd">♫</text>
-        </svg>
-      `;
-
-      const fallbackImage =
-        "data:image/svg+xml;charset=UTF-8," +
-        encodeURIComponent(fallbackSvg);
-
-      const songSection = document.createElement("div");
-      songSection.id = "publicFavoriteSong";
-      songSection.style.margin = "14px 0";
-      songSection.style.textAlign = "left";
-
-      const heading = document.createElement("p");
-      heading.textContent = "FAVORITE SONG";
-      heading.style.color = color.heading;
-      heading.style.fontSize = "10px";
-      heading.style.fontWeight = "600";
-      heading.style.letterSpacing = "1.5px";
-      heading.style.margin = "0 0 7px";
-
-      const songRow = document.createElement("div");
-      songRow.style.display = "flex";
-      songRow.style.alignItems = "center";
-      songRow.style.gap = "10px";
-
-      const cover = document.createElement("img");
-      cover.alt = "Song cover";
-      cover.width = 48;
-      cover.height = 48;
-      cover.style.width = "48px";
-      cover.style.height = "48px";
-      cover.style.flexShrink = "0";
-      cover.style.objectFit = "cover";
-      cover.style.borderRadius = "5px";
-      cover.src = fallbackImage;
-
-      cover.onerror = () => {
-        cover.onerror = null;
-        cover.src = fallbackImage;
-      };
-
-      const details = document.createElement("div");
-      details.style.minWidth = "0";
-
-      const title = document.createElement("p");
-      title.textContent = songTitle;
-      title.style.color = color.title;
-      title.style.fontSize = "13px";
-      title.style.fontWeight = "600";
-      title.style.margin = "0 0 2px";
-      title.style.lineHeight = "1.4";
-      title.style.overflowWrap = "anywhere";
-
-      const artist = document.createElement("p");
-      artist.textContent = songArtist;
-      artist.style.color = color.artist;
-      artist.style.fontSize = "11px";
-      artist.style.margin = "0 0 3px";
-      artist.style.lineHeight = "1.4";
-
-     const link = document.createElement("a");
-link.href = parsedUrl.href;
-link.textContent = "♫ Listen";
-link.target = "_blank";
-link.rel = "noopener noreferrer";
-link.style.color = color.link;
-link.style.fontSize = "11px";
-link.style.textDecoration = "none";
-
-// SVG LISTEN ARROW
-const isWhiteTheme =
-  $("publicProfile").classList.contains("theme-white");
-
-const arrowColor = isWhiteTheme
-  ? "#000000"
-  : "#FFFFFF";
-
-const arrow = document.createElementNS(
-  "http://www.w3.org/2000/svg",
-  "svg"
-);
-
-arrow.setAttribute("viewBox", "0 0 16 16");
-arrow.setAttribute("width", "12");
-arrow.setAttribute("height", "12");
-arrow.setAttribute("fill", "none");
-arrow.setAttribute("stroke", arrowColor);
-arrow.setAttribute("stroke-width", "1.5");
-arrow.setAttribute("stroke-linecap", "round");
-arrow.setAttribute("stroke-linejoin", "round");
-arrow.setAttribute("aria-hidden", "true");
-
-arrow.style.display = "inline-block";
-arrow.style.marginLeft = "5px";
-arrow.style.verticalAlign = "middle";
-arrow.style.pointerEvents = "none";
-
-const arrowPath = document.createElementNS(
-  "http://www.w3.org/2000/svg",
-  "path"
-);
-
-arrowPath.setAttribute("d", "M4 12 12 4 M5 4h7v7");
-
-arrow.appendChild(arrowPath);
-link.appendChild(arrow);
-
-      details.append(title, artist, link);
-      songRow.append(cover, details);
-      songSection.append(heading, songRow);
-
-      links.parentNode.insertBefore(songSection, links);
-
-      // AUTOMATIC ALBUM COVER
-      if (
-        host === "youtube.com" ||
-        host === "www.youtube.com" ||
-        host === "music.youtube.com" ||
-        host === "youtu.be"
-      ) {
-        let videoId = "";
-
-        if (host === "youtu.be") {
-          videoId = parsedUrl.pathname.slice(1).split("/")[0];
-        } else {
-          videoId =
-            parsedUrl.searchParams.get("v") ||
-            parsedUrl.pathname.match(
-              /\/(?:shorts|embed)\/([^/?]+)/
-            )?.[1] ||
-            "";
-        }
-
-        if (/^[a-zA-Z0-9_-]{11}$/.test(videoId)) {
-          cover.src =
-            "https://i.ytimg.com/vi/" +
-            videoId +
-            "/hqdefault.jpg";
-        }
-      } else {
-        fetch(
-          "https://open.spotify.com/oembed?url=" +
-          encodeURIComponent(parsedUrl.href)
-        )
-          .then(response => {
-            if (!response.ok) throw new Error("Cover unavailable");
-            return response.json();
-          })
-          .then(result => {
-            if (result.thumbnail_url) {
-              cover.src = result.thumbnail_url;
-            }
-          })
-          .catch(() => {
-            // Keep the default AVELIOR music cover.
-          });
-      }
+    const candidate = new URL(songUrl);
+    const candidateHost = candidate.hostname.toLowerCase();
+    if (candidate.protocol === "https:" && allowedHosts.includes(candidateHost)) {
+      parsedUrl = candidate;
+      host = candidateHost;
     }
   } catch {
-    // Invalid song link: do not display the section.
+    // No valid link: the player still shows, without the listen link.
   }
+  const isYouTube = host.includes("youtube.com") || host === "youtu.be";
+
+  const SVG_NS = "http://www.w3.org/2000/svg";
+  const fallbackSvg = `
+    <svg xmlns="http://www.w3.org/2000/svg" width="100" height="100">
+      <rect width="100" height="100" fill="#242424"/>
+      <text x="50%" y="57%" text-anchor="middle" font-size="38" fill="#bdbdbd">♫</text>
+    </svg>
+  `;
+  const fallbackImage = "data:image/svg+xml;charset=UTF-8," + encodeURIComponent(fallbackSvg);
+
+  const formatTime = (sec) => {
+    const s = Math.max(0, Math.floor(Number.isFinite(sec) ? sec : 0));
+    return Math.floor(s / 60) + ":" + String(s % 60).padStart(2, "0");
+  };
+
+  const songSection = document.createElement("div");
+  songSection.id = "publicFavoriteSong";
+
+  const heading = document.createElement("p");
+  heading.className = "fav-song-eyebrow";
+  heading.textContent = "Favorite Song";
+
+  const card = document.createElement("div");
+  card.className = "fav-song-card";
+
+  const main = document.createElement("div");
+  main.className = "fav-song-main";
+
+  const cover = document.createElement("img");
+  cover.className = "fav-song-cover";
+  cover.alt = "Song cover";
+  cover.width = 48;
+  cover.height = 48;
+  cover.src = fallbackImage;
+  cover.onerror = () => {
+    cover.onerror = null;
+    cover.src = fallbackImage;
+  };
+
+  const info = document.createElement("div");
+  info.className = "fav-song-info";
+
+  const title = document.createElement("div");
+  title.className = "fav-song-title";
+  title.textContent = songTitle;
+  title.title = songTitle;
+
+  const artist = document.createElement("div");
+  artist.className = "fav-song-artist";
+  artist.textContent = songArtist;
+  artist.title = songArtist;
+
+  info.append(title, artist);
+
+  const playBtn = document.createElement("button");
+  playBtn.type = "button";
+  playBtn.className = "fav-song-play";
+  playBtn.setAttribute("aria-label", "Play 30-second preview");
+
+  const playIcon = document.createElementNS(SVG_NS, "svg");
+  playIcon.setAttribute("viewBox", "0 0 24 24");
+  playIcon.setAttribute("aria-hidden", "true");
+  const setIcon = (playing) => {
+    playIcon.innerHTML = playing
+      ? '<rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/>'
+      : '<polygon points="6 3 20 12 6 21 6 3"/>';
+    playBtn.setAttribute("aria-label", playing ? "Pause preview" : "Play 30-second preview");
+  };
+  setIcon(false);
+  playBtn.appendChild(playIcon);
+
+  main.append(cover, info, playBtn);
+
+  const progressRow = document.createElement("div");
+  progressRow.className = "fav-song-progress-row";
+
+  const track = document.createElement("div");
+  track.className = "fav-song-track";
+  const fill = document.createElement("div");
+  fill.className = "fav-song-fill";
+  track.appendChild(fill);
+
+  const timeText = document.createElement("span");
+  timeText.className = "fav-song-time";
+  timeText.textContent = "0:00 / 0:30";
+
+  progressRow.append(track, timeText);
+
+  const footer = document.createElement("div");
+  footer.className = "fav-song-footer";
+
+  const note = document.createElement("span");
+  note.className = "fav-song-note";
+  note.textContent = "Finding preview…";
+  footer.appendChild(note);
+
+  if (parsedUrl) {
+    const link = document.createElement("a");
+    link.className = "fav-song-listen";
+    link.href = parsedUrl.href;
+    link.target = "_blank";
+    link.rel = "noopener noreferrer";
+    link.textContent = isYouTube ? "Listen on YouTube" : "Listen on Spotify";
+
+    const arrow = document.createElementNS(SVG_NS, "svg");
+    arrow.setAttribute("viewBox", "0 0 16 16");
+    arrow.setAttribute("width", "11");
+    arrow.setAttribute("height", "11");
+    arrow.setAttribute("fill", "none");
+    arrow.setAttribute("stroke", "currentColor");
+    arrow.setAttribute("stroke-width", "1.6");
+    arrow.setAttribute("stroke-linecap", "round");
+    arrow.setAttribute("stroke-linejoin", "round");
+    arrow.setAttribute("aria-hidden", "true");
+    const arrowPath = document.createElementNS(SVG_NS, "path");
+    arrowPath.setAttribute("d", "M4 12 12 4 M5 4h7v7");
+    arrow.appendChild(arrowPath);
+    link.appendChild(arrow);
+
+    footer.appendChild(link);
+  }
+
+  const audio = document.createElement("audio");
+  audio.id = "favSongAudio";
+  audio.preload = "none";
+
+  card.append(main, progressRow, footer, audio);
+  songSection.append(heading, card);
+  links.parentNode.insertBefore(songSection, links);
+
+  // Player state
+  let hasPreview = false;
+  let previewChecked = false;
+
+  const markUnavailable = () => {
+    hasPreview = false;
+    playBtn.classList.add("is-unavailable");
+    note.textContent = "Preview unavailable";
+    setIcon(false);
+  };
+
+  playBtn.addEventListener("click", () => {
+    if (!hasPreview) {
+      if (previewChecked && parsedUrl) {
+        window.open(parsedUrl.href, "_blank", "noopener,noreferrer");
+      }
+      return;
+    }
+    if (audio.paused) {
+      const attempt = audio.play();
+      if (attempt && typeof attempt.catch === "function") {
+        attempt.catch(() => setIcon(false));
+      }
+    } else {
+      audio.pause();
+    }
+  });
+
+  audio.addEventListener("play", () => setIcon(true));
+  audio.addEventListener("pause", () => setIcon(false));
+  audio.addEventListener("timeupdate", () => {
+    const total = Number.isFinite(audio.duration) && audio.duration > 0 ? audio.duration : 30;
+    const pct = Math.min(100, (audio.currentTime / total) * 100);
+    fill.style.width = pct + "%";
+    timeText.textContent = formatTime(audio.currentTime) + " / " + formatTime(total);
+  });
+  audio.addEventListener("loadedmetadata", () => {
+    if (Number.isFinite(audio.duration) && audio.duration > 0) {
+      timeText.textContent = formatTime(audio.currentTime) + " / " + formatTime(audio.duration);
+    }
+  });
+  audio.addEventListener("ended", () => {
+    setIcon(false);
+    audio.currentTime = 0;
+    fill.style.width = "0%";
+    const total = Number.isFinite(audio.duration) && audio.duration > 0 ? audio.duration : 30;
+    timeText.textContent = "0:00 / " + formatTime(total);
+  });
+  audio.addEventListener("error", () => {
+    if (audio.getAttribute("src")) markUnavailable();
+  });
+
+  // Fallback cover from the Spotify / YouTube link
+  if (parsedUrl && isYouTube) {
+    let videoId = "";
+    if (host === "youtu.be") {
+      videoId = parsedUrl.pathname.slice(1).split("/")[0];
+    } else {
+      videoId =
+        parsedUrl.searchParams.get("v") ||
+        parsedUrl.pathname.match(/\/(?:shorts|embed)\/([^/?]+)/)?.[1] ||
+        "";
+    }
+    if (/^[a-zA-Z0-9_-]{11}$/.test(videoId)) {
+      cover.src = "https://i.ytimg.com/vi/" + videoId + "/hqdefault.jpg";
+    }
+  } else if (parsedUrl) {
+    fetch("https://open.spotify.com/oembed?url=" + encodeURIComponent(parsedUrl.href))
+      .then(response => {
+        if (!response.ok) throw new Error("Cover unavailable");
+        return response.json();
+      })
+      .then(result => {
+        if (result.thumbnail_url && !hasPreview) cover.src = result.thumbnail_url;
+      })
+      .catch(() => {
+        // Keep the default AVELIOR music cover.
+      });
+  }
+
+  // 30-second preview + artwork from Apple's public iTunes Search API
+  fetch(
+    "https://itunes.apple.com/search?term=" +
+    encodeURIComponent(songTitle + " " + songArtist) +
+    "&entity=song&limit=1"
+  )
+    .then(response => {
+      if (!response.ok) throw new Error("Preview lookup failed");
+      return response.json();
+    })
+    .then(result => {
+      previewChecked = true;
+      const item = result && Array.isArray(result.results) ? result.results[0] : null;
+      if (!item) {
+        markUnavailable();
+        return;
+      }
+      if (item.artworkUrl100) {
+        cover.src = String(item.artworkUrl100).replace("100x100bb", "300x300bb");
+      }
+      if (item.previewUrl) {
+        audio.src = item.previewUrl;
+        hasPreview = true;
+        playBtn.classList.remove("is-unavailable");
+        note.textContent = "30s preview";
+      } else {
+        markUnavailable();
+      }
+    })
+    .catch(() => {
+      previewChecked = true;
+      markUnavailable();
+    });
 }
 
   const oldContactSection = $("publicContactSection");
@@ -5866,25 +6074,3 @@ try {
   </p>
 
   <p style="
-    max-width: 420px;
-    margin: 20px auto 0;
-    line-height: 1.8;
-    opacity: 0.8;
-  ">
-    Building a more seamless way to share your digital identity.
-  </p>
-</section>
-
-<script>
-if ("serviceWorker" in navigator) {
-  window.addEventListener("load", () => {
-    navigator.serviceWorker.register("./service-worker.js")
-      .catch((error) => {
-        console.error("Service worker registration failed:", error);
-      });
-  });
-}
-</script>
-
-</body>
-</html>
