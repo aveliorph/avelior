@@ -4371,8 +4371,32 @@ try {
   const tappedCard = (qs.get("card") || qs.get("id") || "").trim().toUpperCase();
   const lockedList = Array.isArray(data.profile_design?.locked_cards) ? data.profile_design.locked_cards.map(c => String(c).toUpperCase()) : [];
   if (tappedCard && lockedList.includes(tappedCard)) {
+    // Locked cards are a terminal, private state: hide the owner identity
+    // from the address bar, tab title, DOM, and offline profile cache.
+    try {
+      window.history.replaceState({}, "", location.pathname);
+    } catch (_) {}
+
+    document.title = "Card Locked — AVELIOR";
+    currentPublicProfile = null;
+    currentPayment = null;
+    qrCacheUrl = "";
+
+    try {
+      localStorage.removeItem(cacheKey);
+    } catch (_) {}
+
+    document.querySelectorAll("audio").forEach(audio => {
+      audio.pause();
+      audio.removeAttribute("src");
+    });
+    document.querySelector("main")?.replaceChildren();
+    $("founderSection")?.remove();
+    document.querySelector(".avelior-lock-screen")?.remove();
+
     const lockScreen = document.createElement("div");
     lockScreen.className = "avelior-lock-screen";
+    lockScreen.setAttribute("role", "alert");
     lockScreen.innerHTML = "<h1>AVELIOR</h1><h2>Card Temporarily Locked</h2><p>This card has been frozen by the owner.</p>";
     document.body.appendChild(lockScreen);
     return;
