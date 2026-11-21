@@ -13,53 +13,6 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500&family=Manrope:wght@400;500;600;700&family=Archivo:wdth,wght@125,700;125,800&display=swap">
 
-
-<script>
-/* Keep NFC/card details out of the visible address bar. The route is retained
-   only in this tab so a reload can reopen the same public or locked card. */
-(() => {
-  const storageKey = "avelior:public-route:v1";
-  const incoming = new URLSearchParams(location.search);
-  const hasPublicRoute = incoming.has("u") || incoming.has("id") || incoming.has("card");
-  let route = null;
-
-  const readSavedRoute = () => {
-    try {
-      const saved = JSON.parse(sessionStorage.getItem(storageKey) || "null");
-      return saved && typeof saved === "object" ? saved : null;
-    } catch (_) {
-      return null;
-    }
-  };
-
-  if (hasPublicRoute) {
-    route = {};
-    ["u", "id", "card", "src"].forEach(key => {
-      if (incoming.has(key)) route[key] = incoming.get(key) || "";
-    });
-    try {
-      sessionStorage.setItem(storageKey, JSON.stringify(route));
-    } catch (_) {}
-  } else {
-    let navigationType = "";
-    try {
-      navigationType = performance.getEntriesByType("navigation")[0]?.type || "";
-    } catch (_) {}
-    if (navigationType === "reload") route = readSavedRoute();
-    else {
-      try { sessionStorage.removeItem(storageKey); } catch (_) {}
-    }
-  }
-
-  window.__aveliorPublicParams = () => new URLSearchParams(route || {});
-
-  if (hasPublicRoute) {
-    try {
-      window.history.replaceState({}, "", "/");
-    } catch (_) {}
-  }
-})();
-</script>
   
 <link rel="manifest" href="./manifest.json">
 <meta name="theme-color" content="#080808">
@@ -3293,10 +3246,7 @@ function show(id) {
   // Show founder section only on homepage
   const founder = $("founderSection");
   if (founder) {
-    const publicParams = typeof window.__aveliorPublicParams === "function"
-      ? window.__aveliorPublicParams()
-      : new URLSearchParams(location.search);
-    const isHomepage = !publicParams.has("u");
+    const isHomepage = !new URLSearchParams(location.search).has("u");
     founder.classList.toggle("hidden", !(id === "auth" && isHomepage));
   }
 }
@@ -3664,9 +3614,7 @@ function detectAnalyticsDevice() {
 const AV_SOURCE = (() => {
   let src = "direct";
   try {
-    const p = typeof window.__aveliorPublicParams === "function"
-      ? window.__aveliorPublicParams()
-      : new URLSearchParams(location.search);
+    const p = new URLSearchParams(location.search);
     const s = (p.get("src") || "").toLowerCase();
     const ua = navigator.userAgent || "";
     const ref = (document.referrer || "").toLowerCase();
@@ -3674,7 +3622,11 @@ const AV_SOURCE = (() => {
     else if (s === "qr") src = "qr";
     else if (/instagram|fban|fbav|fb_iab|messenger|tiktok|musical_ly|bytedance|linkedin/i.test(ua) ||
       /instagram|facebook|fb\.|messenger|tiktok|linkedin|lnkd|t\.co|twitter|x\.com/.test(ref)) src = "social";
-    if (p.has("src")) p.delete("src");
+    if (p.has("src")) {
+      p.delete("src");
+      const q = p.toString();
+      history.replaceState(history.state, "", location.pathname + (q ? "?" + q : "") + location.hash);
+    }
   } catch {}
   return src;
 })();
@@ -4415,9 +4367,7 @@ try {
 }
 
 {
-  const qs = typeof window.__aveliorPublicParams === "function"
-    ? window.__aveliorPublicParams()
-    : new URLSearchParams(location.search);
+  const qs = new URLSearchParams(location.search);
   const tappedCard = (qs.get("card") || qs.get("id") || "").trim().toUpperCase();
   const lockedList = Array.isArray(data.profile_design?.locked_cards) ? data.profile_design.locked_cards.map(c => String(c).toUpperCase()) : [];
   if (tappedCard && lockedList.includes(tappedCard)) {
@@ -5844,10 +5794,7 @@ $("moreLogoutBtn").addEventListener("click", () => {
 });
 
     async function refresh() {
-      const publicParams = typeof window.__aveliorPublicParams === "function"
-        ? window.__aveliorPublicParams()
-        : new URLSearchParams(location.search);
-      const username = publicParams.get("u");
+      const username = new URLSearchParams(location.search).get("u");
       if (username) return showPublicProfile(username);
 
       const { data: { session } } = await client.auth.getSession();
