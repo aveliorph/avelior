@@ -1423,7 +1423,8 @@ a.workspace-more-option { position: relative; box-sizing: border-box; line-heigh
 @keyframes aveliorToastBar { from { transform: scaleX(1); } to { transform: scaleX(0); } }
 @keyframes aveliorToastSpin { to { transform: rotate(360deg); } }
 @media (max-width: 560px) {
-  #aveliorToastContainer { top: 14px; right: 50%; transform: translateX(50%); width: calc(100vw - 24px); }
+  #aveliorToastContainer { top: calc(env(safe-area-inset-top, 0px) + 12px) !important; left: 12px !important; right: 12px !important; width: auto !important; max-width: none !important; transform: none !important; }
+  .avelior-toast { width: 100%; box-sizing: border-box; }
 }
 @media (prefers-reduced-motion: reduce) {
   .avelior-toast, .avelior-toast.removing { animation-duration: 0.01ms; }
