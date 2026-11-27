@@ -1343,48 +1343,92 @@ a.workspace-more-option { position: relative; box-sizing: border-box; line-heigh
 }
 
 .avelior-toast {
+  position: relative;
+  overflow: hidden;
   display: flex;
-  align-items: flex-start;
-  gap: 12px;
-  padding: 16px 18px;
-  background: rgba(18, 18, 18, 0.92);
-  border: 1px solid var(--line-strong);
-  border-left: 3px solid #888;
-  border-radius: 14px;
-  color: var(--text);
-  box-shadow: 0 20px 50px -10px rgba(0, 0, 0, 0.6);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
+  align-items: center;
+  gap: 13px;
+  padding: 14px 14px 16px 14px;
+  background: linear-gradient(180deg, rgba(28, 28, 30, 0.94), rgba(12, 12, 13, 0.94));
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 16px;
+  color: #f5f5f5;
+  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.06) inset, 0 24px 60px -16px rgba(0, 0, 0, 0.75);
+  backdrop-filter: blur(20px) saturate(140%);
+  -webkit-backdrop-filter: blur(20px) saturate(140%);
   pointer-events: auto;
   opacity: 0;
-  transform: translateX(25px);
-  animation: aveliorToastIn 0.35s var(--ease) forwards;
+  transform: translateY(-10px) scale(0.98);
+  animation: aveliorToastIn 0.4s cubic-bezier(.2,.8,.2,1) forwards;
 }
-.avelior-toast.success { border-left-color: #75b88a; }
-.avelior-toast.error { border-left-color: #d98585; }
-.avelior-toast.loading { border-left-color: var(--gold); }
-.avelior-toast-icon { font-size: 18px; line-height: 1.3; }
-.avelior-toast.success .avelior-toast-icon { color: #75b88a; }
-.avelior-toast.error .avelior-toast-icon { color: #d98585; }
-.avelior-toast.loading .avelior-toast-icon { color: var(--gold); }
+.avelior-toast::before {
+  content: "";
+  position: absolute;
+  top: 0; left: 18px; right: 18px;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.45), transparent);
+}
+.avelior-toast-icon {
+  flex: 0 0 auto;
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  background: rgba(255, 255, 255, 0.05);
+  color: #fff;
+}
+.avelior-toast-icon svg { width: 16px; height: 16px; display: block; }
+.avelior-toast.success .avelior-toast-icon { background: #f5f5f5; border-color: #f5f5f5; color: #0b0b0c; }
+.avelior-toast.error .avelior-toast-icon { background: transparent; border-color: rgba(255, 255, 255, 0.55); color: #fff; }
+.avelior-toast.loading .avelior-toast-icon svg { animation: aveliorToastSpin 0.9s linear infinite; }
 .avelior-toast-content { flex: 1; min-width: 0; }
-.avelior-toast-title { margin: 0 0 4px; color: var(--text); font-size: 13px; font-weight: 700; letter-spacing: 0.04em; }
-.avelior-toast-message { margin: 0; color: var(--text-soft); font-size: 13px; line-height: 1.5; overflow-wrap: anywhere; }
+.avelior-toast-title { margin: 0 0 3px; color: #fff; font-size: 11px; font-weight: 700; letter-spacing: 0.16em; text-transform: uppercase; }
+.avelior-toast-message { margin: 0; color: rgba(255, 255, 255, 0.68); font-size: 13px; line-height: 1.5; overflow-wrap: anywhere; }
 .avelior-toast-close {
+  flex: 0 0 auto;
+  display: grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
   padding: 0;
-  margin: -3px 0 0;
+  margin: 0;
   border: 0;
+  border-radius: 50%;
   background: transparent;
-  color: var(--muted);
-  font-size: 20px;
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 18px;
   font-weight: 400;
   line-height: 1;
+  cursor: pointer;
+  transition: background 0.2s ease, color 0.2s ease;
 }
-.avelior-toast-close:hover { color: var(--text); transform: none; box-shadow: none; }
-.avelior-toast.removing { animation: aveliorToastOut 0.22s ease forwards; }
+.avelior-toast-close:hover { color: #fff; background: rgba(255, 255, 255, 0.08); transform: none; box-shadow: none; }
+.avelior-toast-bar {
+  position: absolute;
+  left: 0; bottom: 0;
+  height: 2px;
+  width: 100%;
+  background: rgba(255, 255, 255, 0.55);
+  transform-origin: left;
+  animation: aveliorToastBar var(--toast-life, 4500ms) linear forwards;
+}
+.avelior-toast.error .avelior-toast-bar { background: #fff; }
+.avelior-toast:hover .avelior-toast-bar { animation-play-state: paused; }
+.avelior-toast.removing { animation: aveliorToastOut 0.25s ease forwards; }
 
-@keyframes aveliorToastIn { to { opacity: 1; transform: translateX(0); } }
-@keyframes aveliorToastOut { to { opacity: 0; transform: translateX(25px); } }
+@keyframes aveliorToastIn { to { opacity: 1; transform: translateY(0) scale(1); } }
+@keyframes aveliorToastOut { to { opacity: 0; transform: translateY(-8px) scale(0.98); } }
+@keyframes aveliorToastBar { from { transform: scaleX(1); } to { transform: scaleX(0); } }
+@keyframes aveliorToastSpin { to { transform: rotate(360deg); } }
+@media (max-width: 560px) {
+  #aveliorToastContainer { top: 14px; right: 50%; transform: translateX(50%); width: calc(100vw - 24px); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .avelior-toast, .avelior-toast.removing { animation-duration: 0.01ms; }
+  .avelior-toast.loading .avelior-toast-icon svg { animation: none; }
+}
 
 /* ---------- My Cards ---------- */
 .my-cards-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 16px; }
@@ -3730,10 +3774,13 @@ function notify(message, type = "success", title = "") {
     loading: title || "Please wait"
   };
 
+  titles.info = title || "AVELIOR";
+  const svg = p => `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${p}</svg>`;
   const icons = {
-    success: "✓",
-    error: "!",
-    loading: "◌"
+    success: svg('<path d="M5 12.5l4.5 4.5L19 7.5"/>'),
+    error: svg('<path d="M12 7v6"/><path d="M12 17h.01"/>'),
+    info: svg('<path d="M12 3l1.8 6.2L20 12l-6.2 1.8L12 21l-1.8-7.2L4 12l6.2-2.8z"/>'),
+    loading: svg('<path d="M21 12a9 9 0 1 1-6.2-8.56"/>')
   };
 
   const toast = document.createElement("div");
@@ -3745,7 +3792,7 @@ function notify(message, type = "success", title = "") {
 
   const icon = document.createElement("span");
   icon.className = "avelior-toast-icon";
-  icon.textContent = icons[type] || "•";
+  icon.innerHTML = icons[type] || icons.info;
 
   const content = document.createElement("div");
   content.className = "avelior-toast-content";
@@ -3786,10 +3833,21 @@ function notify(message, type = "success", title = "") {
   close.addEventListener("click", dismiss);
 
   toast.append(icon, content, close);
+  const life = type === "error" ? 6000 : 4500;
+  if (type !== "loading") {
+    const bar = document.createElement("span");
+    bar.className = "avelior-toast-bar";
+    toast.style.setProperty("--toast-life", life + "ms");
+    toast.append(bar);
+  }
   container.appendChild(toast);
 
   if (type !== "loading") {
-    timer = setTimeout(dismiss, 4500);
+    let left = life, started = Date.now();
+    const arm = () => { started = Date.now(); timer = setTimeout(dismiss, left); };
+    toast.addEventListener("mouseenter", () => { clearTimeout(timer); left -= Date.now() - started; });
+    toast.addEventListener("mouseleave", arm);
+    arm();
   }
 
   return { dismiss, element: toast };
@@ -5357,6 +5415,16 @@ function avAuthMessage(text, kind = "error") {
   el.textContent = text || "";
   el.classList.toggle("is-info", kind === "info");
   el.hidden = !text;
+  avAuthPopup(text, kind);
+}
+let avAuthToast = null;
+function avAuthPopup(text, kind) {
+  if (avAuthToast) { avAuthToast.dismiss(); avAuthToast = null; }
+  if (!text) return;
+  const dup = [...document.querySelectorAll("#aveliorToastContainer .avelior-toast:not(.removing) .avelior-toast-message")].some(m => m.textContent === text);
+  if (dup) return;
+  if (kind === "info" && /…$/.test(text)) { avAuthToast = notify(text, "loading", "One moment"); return; }
+  avAuthToast = notify(text, kind === "info" ? "success" : "error", kind === "info" ? "Done" : (avAuthMode === "signup" ? "Sign up failed" : "Login failed"));
 }
 
 function avClearInvalid() {
@@ -5530,7 +5598,6 @@ async function avSignIn() {
     loadingToast.dismiss();
     const text = avFriendlyAuthError(e, "Login failed.");
     avAuthMessage(text);
-    notify(text, "error", "Login failed");
   } finally {
     button.disabled = false;
     button.textContent = avAuthMode === "signup" ? "Create account" : "Sign in";
