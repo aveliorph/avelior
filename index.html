@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
   <title>AVELIOR — Your Identity. One Tap.</title>
   <meta name="description" content="Create a digital profile for your AVELIOR NFC card. Share your introduction and selected contact links in one place.">
   <meta property="og:title" content="AVELIOR — Your Identity. One Tap.">
@@ -2403,6 +2403,29 @@ a.workspace-more-option { position: relative; box-sizing: border-box; line-heigh
 #analyticsPanel.loading .av-spin{animation:avspin .8s linear infinite}
 @keyframes avspin{to{transform:rotate(360deg)}}
 @media (max-width:640px){#analyticsPanel .av-mini{grid-template-columns:repeat(3,minmax(0,1fr))}}
+
+/* V5: mobile viewport and monochrome analytics */
+html, body { max-width:100%; overflow-x:clip; touch-action:pan-x pan-y; }
+@media (max-width:768px) { input:not([type=checkbox]):not([type=radio]), select, textarea { font-size:16px!important; } }
+#analyticsPanel { --chart-visits:var(--text); --chart-clicks:var(--muted); --chart-saves:var(--gold-soft); }
+#analyticsPanel .av-mini { grid-template-columns:repeat(5,minmax(0,1fr)); }
+#analyticsPanel .av-mini div { min-width:0; border-radius:8px; }
+#analyticsPanel .av-mini span { letter-spacing:0; overflow-wrap:anywhere; }
+#analyticsPanel .av-delta.up, #analyticsPanel .av-delta.down { color:var(--text)!important; background:var(--surface-3); }
+#analyticsPanel .av-bar i { background:var(--surface-3); }
+#analyticsPanel .av-bar i em { background:var(--gold-soft); }
+#analyticsPanel .av-dot.visits { background:var(--chart-visits); }
+#analyticsPanel .av-dot.clicks { background:var(--chart-clicks); }
+#analyticsPanel .av-dot.saves { background:var(--chart-saves); }
+#analyticsPanel .av-tip { position:static; transform:none; border:0; padding:8px 0; white-space:normal; color:var(--text-soft); min-height:34px; }
+#analyticsPanel .av-tip[hidden] { display:none; }
+#analyticsPanel .analytics-card { min-width:0; border-radius:8px; }
+#analyticsPanel .analytics-stats h3 { font-size:38px; }
+#analyticsPanel .analytics-header h2 { font-size:38px; }
+#analyticsUpgradeNote { padding:12px 0; color:var(--muted); font-size:12px; border-top:1px solid var(--line); }
+@media(max-width:640px) { #analyticsPanel .av-mini { grid-template-columns:repeat(2,minmax(0,1fr)); } #analyticsPanel .analytics-stats h3 { font-size:32px; } }
+@media(prefers-reduced-motion:reduce) { #analyticsPanel.loading .av-spin { animation:none; } }
+
 </style>
 </head>
 
@@ -2920,7 +2943,7 @@ a.workspace-more-option { position: relative; box-sizing: border-box; line-heigh
     <div>
       <p class="analytics-eyebrow">AVELIOR / INSIGHTS</p>
       <h2>Analytics</h2>
-      <p>Understand how people discover, save and engage with your profile.</p>
+      
     </div>
     <div class="analytics-filters">
       <button type="button" data-analytics-range="7" aria-pressed="true">7D</button>
@@ -2931,17 +2954,20 @@ a.workspace-more-option { position: relative; box-sizing: border-box; line-heigh
     </div>
   </div>
   <p id="analyticsStatus" role="status">Loading analytics...</p>
+<p id="analyticsUpgradeNote" hidden>Extended tracking is not connected yet. Existing visits and link activity are still available.</p>
   <div class="analytics-stats">
     <article class="analytics-card"><p>PROFILE VISITS</p><h3 id="analyticsProfileViews">—</h3><span class="av-delta" id="dVisits"></span><span>vs last period</span></article>
     <article class="analytics-card"><p>CONTACT SAVES</p><h3 id="analyticsSaves">—</h3><span class="av-delta" id="dSaves"></span><span>vs last period</span></article>
     <article class="analytics-card"><p>LINK CLICKS</p><h3 id="analyticsLinkClicks">—</h3><span class="av-delta" id="dClicks"></span><span>vs last period</span></article>
-    <article class="analytics-card"><p>SONG PLAYS</p><h3 id="mSong">—</h3><span>Times your song was played</span><b id="analyticsSaveRate" hidden></b></article>
+    <article class="analytics-card"><p>SAVE RATE</p><h3 id="analyticsSaveRate">—</h3><span class="av-delta" id="dRate"></span><span>Saves per 100 profile visits</span></article>
   </div>
-  <div hidden><b id="mQr"></b><b id="mShare"></b><b id="analyticsLinkViews"></b><b id="analyticsCtr"></b></div>
+  <div class="av-mini">
+<div><b id="mQr">—</b><span>QR opens</span></div><div><b id="mSong">—</b><span>Song plays</span></div><div><b id="mShare">—</b><span>Shares</span></div><div><b id="analyticsLinkViews">—</b><span>Link views</span></div><div><b id="analyticsCtr">—</b><span>Clicks / views</span></div>
+</div>
   <div class="analytics-sections">
     <section class="analytics-card">
       <h3>Activity</h3>
-      <p><i class="av-dot" style="background:#d8b46a"></i>Visits <i class="av-dot" style="background:#f3ead7"></i>Clicks <i class="av-dot" style="background:#7fae8f"></i>Saves</p>
+      <p><i class="av-dot visits"></i>Visits <i class="av-dot clicks"></i>Clicks <i class="av-dot saves"></i>Saves</p>
       <div style="position:relative">
         <canvas id="analyticsChart" height="190" aria-label="Analytics activity chart" role="img"></canvas>
         <div id="avTip" class="av-tip" hidden></div>
@@ -2953,7 +2979,7 @@ a.workspace-more-option { position: relative; box-sizing: border-box; line-heigh
       <p>Your most-clicked links.</p>
       <div id="analyticsTopLinks"><p>No link activity yet.</p></div>
     </section>
-    <div hidden><div id="avSources"></div><div id="avDevices"></div></div>
+    <section class="analytics-card"><h3>How they found you</h3><div id="avSources"></div></section><section class="analytics-card"><h3>Devices</h3><div id="avDevices"></div></section>
   </div>
 </section>
 <!-- END AVELIOR ANALYTICS -->
@@ -3875,7 +3901,36 @@ function notify(message, type = "success", title = "") {
 
    
 const AV_BOT_RE = /bot|crawl|spider|slurp|bingpreview|facebookexternalhit|embedly|quora link|whatsapp|telegrambot|discordbot|preview|headless|lighthouse|pingdom|curl|wget|python-requests|axios/i;
-const AV_DEDUPE = { profile_view: 30 * 60e3, song_play: 10 * 60e3 };
+// Browser-safe source embedded verbatim into the standalone HTML delivery.
+const AV_DEDUPE = { profile_view: 30 * 60e3, link_view: 30 * 60e3, song_play: 10 * 60e3 };
+function avShouldCount(last, now, type) {
+  return !last || now - last >= (AV_DEDUPE[type] || 4000);
+}
+function avWindow(range, now = new Date()) {
+  const end = new Date(now); end.setHours(24, 0, 0, 0);
+  if (range === "all") return { start: null, previous: null, end };
+  const start = new Date(end); start.setDate(start.getDate() - Number(range));
+  const previous = new Date(start); previous.setDate(previous.getDate() - Number(range));
+  return { start, previous, end };
+}
+function avSplitEvents(events, period) {
+  const cur = [], prev = [];
+  for (const event of events) {
+    const t = new Date(event.created_at).getTime();
+    if (!Number.isFinite(t) || t >= period.end.getTime()) continue;
+    if (!period.start || t >= period.start.getTime()) cur.push(event);
+    else if (period.previous && t >= period.previous.getTime()) prev.push(event);
+  }
+  return { cur, prev };
+}
+async function avReadPages(fetchPage) {
+  const all = [];
+  for (;;) {
+    const rows = await fetchPage(all.length, all.length + 999);
+    if (!rows?.length) return all;
+    all.push(...rows);
+  }
+}
 
 function detectAnalyticsDevice() {
   const ua = navigator.userAgent || "";
@@ -3891,11 +3946,12 @@ const AV_SOURCE = (() => {
     const s = (p.get("src") || "").toLowerCase();
     const ua = navigator.userAgent || "";
     const ref = (document.referrer || "").toLowerCase();
-    if (p.has("card") || s === "nfc") src = "nfc";
+    if (p.has("card") || p.has("id") || s === "nfc") src = "nfc";
     else if (s === "qr") src = "qr";
     else if (/instagram|fban|fbav|fb_iab|messenger|tiktok|musical_ly|bytedance|linkedin/i.test(ua) ||
       /instagram|facebook|fb\.|messenger|tiktok|linkedin|lnkd|t\.co|twitter|x\.com/.test(ref)) src = "social";
-    if (p.has("src")) {
+    else if (ref && new URL(ref).host !== location.host) src = "website";
+    if (s === "qr") {
       p.delete("src");
       const q = p.toString();
       history.replaceState(history.state, "", location.pathname + (q ? "?" + q : "") + location.hash);
@@ -3905,36 +3961,41 @@ const AV_SOURCE = (() => {
 })();
 const AV_DEVICE = detectAnalyticsDevice();
 let avViewerId = null;
-try { client.auth.getSession().then(r => { avViewerId = r?.data?.session?.user?.id || null; }); } catch {}
-
+let avV2Missing = false;
+const avSeenMemory = new Map(), avTrackingPending = new Set();
+const AV_LEGACY_EVENTS = new Set(["profile_view", "link_view", "link_click"]);
+function avMissingRpc(error) { return error?.code === "PGRST202" || /function.*(does not exist|schema cache)/i.test(error?.message || ""); }
 async function trackAnalyticsEvent(username, eventType, linkName = null, linkUrl = null) {
+  if (!username || AV_BOT_RE.test(navigator.userAgent || "") || navigator.webdriver) return;
+  const key = `av:${eventType}:${String(username).toLowerCase()}:${linkName || ""}:${linkUrl || ""}`;
+  if (avTrackingPending.has(key)) return;
+  avTrackingPending.add(key);
   try {
-    if (!username || AV_BOT_RE.test(navigator.userAgent || "") || navigator.webdriver) return;
-    if (!avViewerId) {
-      try { const r = await client.auth.getSession(); avViewerId = r?.data?.session?.user?.id || null; } catch {}
+    // Re-read the session so signing in/out cannot leave a stale owner ID.
+    const { data, error: sessionError } = await client.auth.getSession();
+    if (sessionError) return;
+    avViewerId = data?.session?.user?.id || null;
+    const profile = currentPublicProfile;
+    if (profile && String(profile.username).toLowerCase() === String(username).toLowerCase() && avViewerId === profile.data?.id) return;
+    let last = avSeenMemory.get(key) || 0;
+    try { last = Math.max(last, Number(localStorage.getItem(key)) || 0); } catch {}
+    if (!avShouldCount(last, Date.now(), eventType)) return;
+    const args = { p_username:username, p_event_type:eventType, p_link_name:linkName, p_link_url:linkUrl };
+    let result;
+    if (!avV2Missing) {
+      result = await client.rpc("track_analytics_event_v2", {...args, p_source:AV_SOURCE, p_device:AV_DEVICE});
+      if (avMissingRpc(result.error)) avV2Missing = true;
+      else if (result.error) return;
     }
-    const ownerId = currentPublicProfile?.data?.id || currentPublicProfile?.data?.profile_id || null;
-    if (avViewerId && ownerId && avViewerId === ownerId) return;
-    if (avViewerId && currentPublicProfile && window.__avMyUsername &&
-      String(window.__avMyUsername).toLowerCase() === String(username).toLowerCase()) return;
-
-    const win = AV_DEDUPE[eventType];
-    if (win) {
-      const key = `av:${eventType}:${String(username).toLowerCase()}:${linkName || ""}`;
-      const last = Number(localStorage.getItem(key) || 0);
-      if (Date.now() - last < win) return;
-      localStorage.setItem(key, String(Date.now()));
+    if (avV2Missing) {
+      if (!AV_LEGACY_EVENTS.has(eventType)) return;
+      result = await client.rpc("track_analytics_event", args);
     }
-
-    const base = { p_username: username, p_event_type: eventType, p_link_name: linkName, p_link_url: linkUrl };
-    let { error } = await client.rpc("track_analytics_event_v2", { ...base, p_source: AV_SOURCE, p_device: AV_DEVICE });
-    if (error) {
-      ({ error } = await client.rpc("track_analytics_event", base));
-      if (error) console.warn("Analytics tracking failed:", error.message);
-    }
-  } catch (error) {
-    console.warn("Analytics tracking failed:", error);
-  }
+    if (!result || result.error) return;
+    const now = Date.now(); avSeenMemory.set(key, now);
+    try { localStorage.setItem(key, String(now)); } catch {}
+  } catch (error) { console.warn("Analytics temporarily unavailable."); }
+  finally { avTrackingPending.delete(key); }
 }
 
 function avTrackCurrent(type, name = null, url = null) {
@@ -4539,10 +4600,10 @@ async function shareProfileLink() {
   if (!currentPublicProfile) return;
   const url = currentPublicProfile.url;
   const title = currentPublicProfile.data.full_name || currentPublicProfile.username;
-  avTrackCurrent("profile_share");
   if (navigator.share) {
     try {
       await navigator.share({ title, url });
+      avTrackCurrent("profile_share");
       return;
     } catch (error) {
       if (error?.name === "AbortError") return;
@@ -4550,6 +4611,7 @@ async function shareProfileLink() {
   }
   try {
     await navigator.clipboard.writeText(url);
+    avTrackCurrent("profile_share");
     notify("Link copied.", "success");
   } catch {
     notify(url, "success", "Profile link");
@@ -4862,7 +4924,6 @@ if (songTitle && songArtist) {
       return;
     }
     if (audio.paused) {
-      avTrackCurrent("song_play", "Favorite Song", parsedUrl?.href || null);
       const attempt = audio.play();
       if (attempt && typeof attempt.catch === "function") {
         attempt.catch(() => setPlaying(false));
@@ -4880,7 +4941,7 @@ if (songTitle && songArtist) {
     }
   });
 
-  audio.addEventListener("play", () => setPlaying(true));
+  audio.addEventListener("play", () => { setPlaying(true); avTrackCurrent("song_play", "Favorite Song", parsedUrl?.href || null); });
   audio.addEventListener("pause", () => setPlaying(false));
   audio.addEventListener("ended", () => {
     setPlaying(false);
@@ -5206,96 +5267,110 @@ contactSection.style.textAlign = "left";
    AVELIOR ANALYTICS LOGIC
 ========================= */
 
-let analyticsRange = "7";
-let analyticsLoading = false;
-let avLast = null;
+let analyticsRange = "7", analyticsRequest = 0, avLast = null;
 const AV_DAY = 864e5;
-
 function formatAnalyticsNumber(v) { return new Intl.NumberFormat().format(Number(v) || 0); }
 function setAnalyticsStatus(m) { const el = $("analyticsStatus"); if (el) el.textContent = m; }
-function avCount(ev, t) { let n = 0; for (const e of ev) if (e.event_type === t) n++; return n; }
-function avDelta(id, cur, prev, enabled) {
+function avCount(events, type) { return events.filter(e => e.event_type === type).length; }
+function avDelta(id, cur, prev, enabled, points = false) {
   const el = $(id); if (!el) return;
   el.className = "av-delta";
   if (!enabled) { el.textContent = ""; return; }
-  if (!prev) { el.textContent = cur ? "New" : "0%"; if (cur) el.classList.add("up"); return; }
-  const d = ((cur - prev) / prev) * 100;
-  el.textContent = `${d >= 0 ? "▲" : "▼"} ${Math.abs(d).toFixed(0)}%`;
-  el.classList.add(d >= 0 ? "up" : "down");
+  const d = points ? cur - prev : (prev ? (cur-prev)/prev*100 : 0);
+  el.textContent = !points && !prev && cur ? "New" : d === 0 ? "No change" : `${d > 0 ? "↑" : "↓"} ${Math.abs(d).toFixed(points ? 1 : 0)}${points ? " pp" : "%"}`;
+  el.classList.add(d < 0 ? "down" : "up");
 }
-
-async function avFetchAll(profileId, fromIso) {
-  const all = [];
-  for (let start = 0; ; start += 1000) {
-    let q = client.from("analytics_events").select("*").eq("profile_id", profileId)
-      .order("created_at", { ascending: true }).range(start, start + 999);
-    if (fromIso) q = q.gte("created_at", fromIso);
-    const { data, error } = await q;
+async function avFetchAll(profileId, period) {
+  let extended = true;
+  const fetchWith = async columns => avReadPages(async (start, end) => {
+    let q = client.from("analytics_events").select(columns).eq("profile_id", profileId)
+      .order("created_at", {ascending:true}).order("id", {ascending:true}).range(start, end).lt("created_at", period.end.toISOString());
+    if (period.previous) q = q.gte("created_at", period.previous.toISOString());
+    const {data, error} = await q;
     if (error) throw error;
-    all.push(...(data || []));
-    if (!data || data.length < 1000) break;
+    return data;
+  });
+  let events;
+  try { events = await fetchWith("id,event_type,link_name,link_url,created_at,source,device"); }
+  catch (error) {
+    if (error?.code !== "42703" && !/column.*(does not exist|schema cache)/i.test(error?.message || "")) throw error;
+    extended = false;
+    events = await fetchWith("id,event_type,link_name,link_url,created_at");
   }
-  return all;
+  return {events, extended};
 }
-
-function avBars(id, map, labels) {
+function avBars(id, events, key, labels, extended) {
   const el = $(id); if (!el) return;
-  const total = Object.values(map).reduce((a, b) => a + b, 0);
-  el.innerHTML = "";
-  for (const [k, label] of labels) {
-    const n = map[k] || 0, pct = total ? (n / total) * 100 : 0;
+  el.replaceChildren();
+  const visits = events.filter(e => e.event_type === "profile_view");
+  if (!extended || !visits.length) {
+    const p = document.createElement("p"); p.textContent = extended ? "No visits in this period." : "Available after extended tracking is connected.";
+    el.appendChild(p); return;
+  }
+  const known = new Set(labels.map(item => item[0])), map = {};
+  for (const e of visits) { const k = known.has(e[key]) ? e[key] : "unknown"; map[k] = (map[k] || 0) + 1; }
+  for (const [k,label] of [...labels, ["unknown","Unknown / earlier visits"]]) {
+    const n = map[k] || 0; if (!n) continue;
+    const pct = n/visits.length*100;
     const row = document.createElement("div"); row.className = "av-bar";
-    row.innerHTML = `<header><span></span><b></b></header><i><em style="width:${pct.toFixed(1)}%"></em></i>`;
-    row.querySelector("span").textContent = label;
-    row.querySelector("b").textContent = `${formatAnalyticsNumber(n)} · ${pct.toFixed(0)}%`;
-    el.appendChild(row);
+    const header = document.createElement("header"), name = document.createElement("span"), count = document.createElement("b"), bar = document.createElement("i"), fill = document.createElement("em");
+    name.textContent = label; count.textContent = `${formatAnalyticsNumber(n)} · ${pct.toFixed(0)}%`;
+    fill.style.width = `${pct}%`; header.append(name,count); bar.append(fill); row.append(header,bar); el.append(row);
   }
 }
-
 function renderAnalyticsChart(events, range) {
-  const canvas = $("analyticsChart"), labelsEl = $("analyticsChartLabels"), tip = $("avTip");
+  const canvas = $("analyticsChart"), labels = $("analyticsChartLabels"), tip = $("avTip");
   if (!canvas) return;
-  const today = new Date(); today.setHours(0, 0, 0, 0);
-  let days = range === "all" ? 0 : Number(range);
-  if (!days) {
-    const first = events.length ? new Date(events[0].created_at) : today;
-    first.setHours(0, 0, 0, 0);
-    days = Math.min(365, Math.max(7, Math.round((today - first) / AV_DAY) + 1));
+  const period = avWindow(range), buckets = [], monthly = range === "all";
+  let first = period.start;
+  if (monthly) {
+    const timestamps = events.map(e => new Date(e.created_at).getTime()).filter(Number.isFinite);
+    first = new Date(timestamps.length ? Math.min(...timestamps) : Date.now()); first.setDate(1); first.setHours(0,0,0,0);
   }
-  const buckets = Array.from({ length: days }, (_, i) => ({ date: new Date(today.getTime() - (days - 1 - i) * AV_DAY), v: 0, c: 0, s: 0 }));
-  const start = buckets[0].date.getTime();
+  const cursor = new Date(first);
+  while (cursor < period.end) {
+    buckets.push({date:new Date(cursor), v:0,c:0,s:0});
+    if (monthly) cursor.setMonth(cursor.getMonth()+1); else cursor.setDate(cursor.getDate()+1);
+  }
+  const key = d => monthly ? `${d.getFullYear()}-${d.getMonth()}` : `${d.getFullYear()}-${d.getMonth()}-${d.getDate()}`;
+  const lookup = new Map(buckets.map(b => [key(b.date), b]));
   for (const e of events) {
-    const d = new Date(e.created_at); d.setHours(0, 0, 0, 0);
-    const b = buckets[Math.round((d.getTime() - start) / AV_DAY)]; if (!b) continue;
-    if (e.event_type === "profile_view") b.v++; else if (e.event_type === "link_click") b.c++; else if (e.event_type === "contact_save") b.s++;
+    const b = lookup.get(key(new Date(e.created_at))); if (!b) continue;
+    if (e.event_type === "profile_view") b.v++;
+    else if (e.event_type === "link_click") b.c++;
+    else if (e.event_type === "contact_save") b.s++;
   }
-  const dpr = window.devicePixelRatio || 1, W = canvas.clientWidth || 600, H = 190;
-  canvas.width = W * dpr; canvas.height = H * dpr;
-  const ctx = canvas.getContext("2d"); ctx.setTransform(dpr, 0, 0, dpr, 0, 0); ctx.clearRect(0, 0, W, H);
-  const max = Math.max(1, ...buckets.map(b => Math.max(b.v, b.c, b.s)));
-  const pad = 10, x = i => pad + (days === 1 ? 0 : (i * (W - pad * 2)) / (days - 1)), y = v => H - 16 - (v / max) * (H - 34);
-  ctx.strokeStyle = "rgba(255,255,255,0.06)"; ctx.lineWidth = 1;
-  for (let g = 0; g <= 3; g++) { const gy = 18 + (g * (H - 34)) / 3; ctx.beginPath(); ctx.moveTo(0, gy); ctx.lineTo(W, gy); ctx.stroke(); }
-  const line = (k, color, fill) => {
-    ctx.beginPath(); buckets.forEach((b, i) => (i ? ctx.lineTo(x(i), y(b[k])) : ctx.moveTo(x(i), y(b[k]))));
-    ctx.strokeStyle = color; ctx.lineWidth = 2; ctx.stroke();
-    if (fill) { ctx.lineTo(x(days - 1), H - 16); ctx.lineTo(x(0), H - 16); ctx.closePath();
-      const gr = ctx.createLinearGradient(0, 0, 0, H); gr.addColorStop(0, "rgba(216,180,106,0.28)"); gr.addColorStop(1, "rgba(216,180,106,0)"); ctx.fillStyle = gr; ctx.fill(); }
+  if (!buckets.length) return;
+  const W = canvas.clientWidth || 600, H = 190, dpr = window.devicePixelRatio || 1;
+  canvas.width = Math.round(W*dpr); canvas.height = H*dpr;
+  const ctx = canvas.getContext("2d"); if (!ctx) return;
+  ctx.setTransform(dpr,0,0,dpr,0,0); ctx.clearRect(0,0,W,H);
+  const styles = getComputedStyle($("analyticsPanel")), color = name => styles.getPropertyValue(name).trim();
+  // Resolve nested theme variables through a probe for canvas color strings.
+  const probe = document.createElement("span"); $("analyticsPanel").append(probe);
+  const resolved = name => { probe.style.color = `var(${name})`; return getComputedStyle(probe).color; };
+  const colors = [resolved("--chart-visits"),resolved("--chart-clicks"),resolved("--chart-saves")], grid = resolved("--line"); probe.remove();
+  const max = Math.max(1, ...buckets.map(b => Math.max(b.v,b.c,b.s))), pad = 30;
+  const x = i => buckets.length === 1 ? W/2 : pad+i*(W-pad*2)/(buckets.length-1), y = v => H-18-v/max*(H-40);
+  ctx.strokeStyle = grid; ctx.lineWidth = 1;
+  for(let i=0;i<=3;i++) { const gy=y(max*i/3); ctx.beginPath(); ctx.moveTo(pad,gy); ctx.lineTo(W-pad,gy); ctx.stroke(); }
+  ["v","c","s"].forEach((k,idx) => {
+    ctx.beginPath(); ctx.setLineDash(idx === 2 ? [4,4] : []);
+    buckets.forEach((b,i) => i ? ctx.lineTo(x(i),y(b[k])) : ctx.moveTo(x(i),y(b[k])));
+    ctx.strokeStyle=colors[idx]; ctx.lineWidth=2; ctx.stroke();
+    if (buckets.length === 1) { ctx.beginPath(); ctx.arc(x(0),y(buckets[0][k]),3,0,Math.PI*2); ctx.fillStyle=colors[idx]; ctx.fill(); }
+  }); ctx.setLineDash([]);
+  const fmt = d => d.toLocaleDateString(undefined,monthly ? {month:"short",year:"numeric"} : {month:"short",day:"numeric"});
+  labels.replaceChildren();
+  for(const i of [...new Set([0,Math.floor((buckets.length-1)/2),buckets.length-1])]) { const span=document.createElement("span");span.textContent=fmt(buckets[i].date);labels.append(span); }
+  tip.hidden=false; tip.textContent=monthly ? "Monthly activity" : "Daily activity";
+  canvas.onpointermove = ev => {
+    const cx=ev.clientX-canvas.getBoundingClientRect().left;
+    const i=Math.max(0,Math.min(buckets.length-1,Math.round((cx-pad)/Math.max(1,W-pad*2)*(buckets.length-1)))), b=buckets[i];
+    tip.textContent=`${fmt(b.date)} · ${b.v} visits · ${b.c} link clicks · ${b.s} contact saves`;
   };
-  line("v", "#d8b46a", true); line("c", "#f3ead7"); line("s", "#7fae8f");
-  const fmt = d => d.toLocaleDateString(undefined, { month: "short", day: "numeric" });
-  if (labelsEl) labelsEl.innerHTML = `<span>${fmt(buckets[0].date)}</span><span>${fmt(buckets[Math.floor(days / 2)].date)}</span><span>${fmt(buckets[days - 1].date)}</span>`;
-  const move = ev => {
-    const r = canvas.getBoundingClientRect(), cx = (ev.touches ? ev.touches[0].clientX : ev.clientX) - r.left;
-    const i = Math.max(0, Math.min(days - 1, Math.round(((cx - pad) / (W - pad * 2)) * (days - 1))));
-    const b = buckets[i]; tip.hidden = false; tip.style.left = Math.max(60, Math.min(W - 60, x(i))) + "px";
-    tip.innerHTML = `<b>${fmt(b.date)}</b><br>Visits ${b.v} · Clicks ${b.c} · Saves ${b.s}`;
-  };
-  canvas.onmousemove = move; canvas.ontouchstart = move; canvas.ontouchmove = move;
-  canvas.onmouseleave = () => (tip.hidden = true); canvas.ontouchend = () => setTimeout(() => (tip.hidden = true), 1500);
 }
-
-function renderTopAnalyticsLinks(events, visits) {
+function renderTopAnalyticsLinks(events) {
   const c = $("analyticsTopLinks"); if (!c) return;
   const map = new Map();
   for (const e of events) {
@@ -5310,90 +5385,65 @@ function renderTopAnalyticsLinks(events, visits) {
     const row = document.createElement("div"); row.className = "analytics-link-row";
     const a = document.createElement("span"); a.className = "analytics-link-name"; a.textContent = name;
     const b = document.createElement("span"); b.className = "analytics-link-count";
-    b.textContent = `${formatAnalyticsNumber(n)} taps${visits ? ` · ${Math.round((n / visits) * 100)}%` : ""}`;
+    b.textContent = `${formatAnalyticsNumber(n)} taps · ${Math.round(n / Math.max(1, [...map.values()].reduce((a,b) => a+b, 0)) * 100)}% of clicks`;
     row.append(a, b); c.appendChild(row);
   }
 }
-
 function avRender() {
   if (!avLast) return;
-  const { cur, prev, hasPrev } = avLast;
-  const v = avCount(cur, "profile_view"), s = avCount(cur, "contact_save"), c = avCount(cur, "link_click"), lv = avCount(cur, "link_view");
-  $("analyticsProfileViews").textContent = formatAnalyticsNumber(v);
-  $("analyticsSaves").textContent = formatAnalyticsNumber(s);
-  $("analyticsLinkClicks").textContent = formatAnalyticsNumber(c);
-  $("analyticsSaveRate").textContent = v ? `${Math.min(100, (s / v) * 100).toFixed(1)}%` : "0%";
-  avDelta("dVisits", v, avCount(prev, "profile_view"), hasPrev);
-  avDelta("dSaves", s, avCount(prev, "contact_save"), hasPrev);
-  avDelta("dClicks", c, avCount(prev, "link_click"), hasPrev);
-  $("mQr").textContent = formatAnalyticsNumber(avCount(cur, "qr_open"));
-  $("mSong").textContent = formatAnalyticsNumber(avCount(cur, "song_play"));
-  $("mShare").textContent = formatAnalyticsNumber(avCount(cur, "profile_share"));
-  $("analyticsLinkViews").textContent = formatAnalyticsNumber(lv);
-  $("analyticsCtr").textContent = lv ? `${((c / lv) * 100).toFixed(1)}%` : "0%";
-  renderAnalyticsChart(cur, analyticsRange);
-  renderTopAnalyticsLinks(cur, v);
-  const src = {}, dev = {};
-  for (const e of cur) if (e.event_type === "profile_view") {
-    const k = e.source || "direct"; src[k] = (src[k] || 0) + 1;
-    const d = e.device === "tablet" ? "mobile" : (e.device || "unknown"); dev[d] = (dev[d] || 0) + 1;
-  }
-  avBars("avSources", src, [["nfc", "NFC Tap"], ["qr", "QR Scan"], ["social", "Social"], ["direct", "Direct"]]);
-  avBars("avDevices", dev, [["mobile", "Mobile"], ["desktop", "Desktop"], ...(dev.unknown ? [["unknown", "Unknown"]] : [])]);
+  const {cur,prev,extended,range} = avLast, hasPrev=range!=="all";
+  const v=avCount(cur,"profile_view"), s=avCount(cur,"contact_save"), c=avCount(cur,"link_click"), lv=avCount(cur,"link_view");
+  const pv=avCount(prev,"profile_view"), ps=avCount(prev,"contact_save");
+  const rate=v?s/v*100:0;
+  $("analyticsProfileViews").textContent=formatAnalyticsNumber(v);
+  $("analyticsSaves").textContent=extended?formatAnalyticsNumber(s):"—";
+  $("analyticsLinkClicks").textContent=formatAnalyticsNumber(c);
+  $("analyticsSaveRate").textContent=extended?(v?`${rate.toFixed(1)}%`:"—"):"—";
+  avDelta("dVisits",v,pv,hasPrev); avDelta("dSaves",s,ps,hasPrev&&extended); avDelta("dClicks",c,avCount(prev,"link_click"),hasPrev);
+  avDelta("dRate",rate,pv?ps/pv*100:0,hasPrev&&extended&&v>0&&pv>0,true);
+  for(const [id,type] of [["mQr","qr_open"],["mSong","song_play"],["mShare","profile_share"]]) $(id).textContent=extended?formatAnalyticsNumber(avCount(cur,type)):"—";
+  $("analyticsLinkViews").textContent=formatAnalyticsNumber(lv);
+  $("analyticsCtr").textContent=lv?`${(c/lv*100).toFixed(1)}%`:"—";
+  $("analyticsUpgradeNote").hidden=extended;
+  document.querySelectorAll("#analyticsPanel .analytics-stats article").forEach((article,i)=>{ const spans=article.querySelectorAll("span"); const last=spans[spans.length-1]; if(last&&i<3) last.textContent=hasPrev?`vs previous ${range} days`:"All-time total"; });
+  renderAnalyticsChart(cur,range); renderTopAnalyticsLinks(cur);
+  avBars("avSources",cur,"source",[["nfc","NFC tap"],["qr","QR scan"],["social","Social"],["website","Other website"],["direct","Direct"]],extended);
+  avBars("avDevices",cur,"device",[["mobile","Mobile"],["tablet","Tablet"],["desktop","Desktop"]],extended);
 }
-
 async function loadAnalytics() {
-  if (analyticsLoading) return;
-  analyticsLoading = true;
-  const panel = $("analyticsPanel"); panel?.classList.add("loading");
-  setAnalyticsStatus("Loading analytics...");
+  const request=++analyticsRequest, range=analyticsRange, panel=$("analyticsPanel");
+  panel?.classList.add("loading"); panel?.setAttribute("aria-busy","true");
+  $("analyticsRefresh").disabled=true; setAnalyticsStatus("Loading analytics...");
   try {
-    const { data: { user }, error: ue } = await client.auth.getUser();
-    if (ue) throw ue;
-    if (!user) throw new Error("Please log in to view analytics.");
-    const days = analyticsRange === "all" ? 0 : Number(analyticsRange);
-    const now = Date.now(), cutoff = days ? now - days * AV_DAY : 0;
-    const events = await avFetchAll(user.id, days ? new Date(now - days * 2 * AV_DAY).toISOString() : null);
-    const cur = [], prev = [];
-    for (const e of events) (new Date(e.created_at).getTime() >= cutoff ? cur : prev).push(e);
-    avLast = { cur, prev, hasPrev: !!days };
-    avRender();
-    setAnalyticsStatus(cur.length
-      ? `Showing ${formatAnalyticsNumber(cur.length)} events for ${days ? `the last ${days} days` : "all time"}.`
-      : "No activity for this period yet. Share your profile to start collecting data.");
-  } catch (error) {
-    console.error("Could not load analytics:", error);
-    setAnalyticsStatus(error.message || "Could not load analytics.");
+    const {data:{user},error} = await client.auth.getUser();
+    if(error || !user) throw new Error("Please sign in again to view your analytics.");
+    const period=avWindow(range), {events,extended}=await avFetchAll(user.id,period);
+    if(request!==analyticsRequest) return;
+    const {cur,prev}=avSplitEvents(events,period);
+    avLast={cur,prev,extended,range}; avRender();
+    setAnalyticsStatus(`${range==="all"?"All time":`Last ${range} calendar days`} · ${formatAnalyticsNumber(cur.length)} events · Updated ${new Date().toLocaleTimeString(undefined,{hour:"numeric",minute:"2-digit"})}${cur.length?"":" · No activity yet"}`);
+  } catch(error) {
+    if(request!==analyticsRequest) return;
+    avLast=null;
+    for(const id of ["analyticsProfileViews","analyticsSaves","analyticsLinkClicks","analyticsSaveRate","mQr","mSong","mShare","analyticsLinkViews","analyticsCtr"]) $(id).textContent="—";
+    for(const id of ["dVisits","dSaves","dClicks","dRate"]) $(id).textContent="";
+    $("analyticsChart").getContext("2d")?.clearRect(0,0,$("analyticsChart").width,$("analyticsChart").height);
+    $("analyticsChartLabels").replaceChildren(); $("avTip").textContent="";
+    for(const id of ["analyticsTopLinks","avSources","avDevices"]) $(id).textContent="Activity could not be loaded.";
+    $("analyticsUpgradeNote").hidden=true;
+    setAnalyticsStatus(error?.message === "Please sign in again to view your analytics." ? error.message : "Could not load your analytics. Check your connection and tap refresh.");
   } finally {
-    analyticsLoading = false;
-    panel?.classList.remove("loading");
+    if(request===analyticsRequest) { panel?.classList.remove("loading"); panel?.setAttribute("aria-busy","false"); $("analyticsRefresh").disabled=false; }
   }
 }
-
-$("analyticsRefresh")?.addEventListener("click", () => void loadAnalytics());
-
-// Date-range filter buttons.
-document.querySelectorAll("[data-analytics-range]").forEach(button => {
-  button.addEventListener("click", async () => {
-    analyticsRange = button.dataset.analyticsRange;
-
-    document.querySelectorAll("[data-analytics-range]").forEach(item => {
-      item.setAttribute(
-        "aria-pressed",
-        String(item === button)
-      );
-    });
-
-    await loadAnalytics();
-  });
-});
-
-// Redraw the chart if the window size changes.
-window.addEventListener("resize", () => {
-  if (!$("analyticsPanel").hidden) {
-    avRender();
-  }
-});
+$("analyticsRefresh")?.addEventListener("click",()=>void loadAnalytics());
+document.querySelectorAll("[data-analytics-range]").forEach(button=>button.addEventListener("click",()=>{
+  analyticsRange=button.dataset.analyticsRange;
+  document.querySelectorAll("[data-analytics-range]").forEach(item=>item.setAttribute("aria-pressed",String(item===button)));
+  void loadAnalytics();
+}));
+let avResizeTimer;
+window.addEventListener("resize",()=>{clearTimeout(avResizeTimer);avResizeTimer=setTimeout(()=>{if(!$("analyticsPanel").hidden)avRender();},120);});
 
 /* =========================
    AUTH — Sign in / Create account
@@ -6351,5 +6401,14 @@ if ("serviceWorker" in navigator) {
 }
 </script>
 
+<script>
+// Single-finger scrolling stays available; mobile pinch gestures are suppressed.
+for (const type of ["gesturestart", "gesturechange", "gestureend"]) {
+  document.addEventListener(type, event => event.preventDefault(), {passive:false});
+}
+document.addEventListener("touchmove", event => {
+  if (event.touches.length > 1) event.preventDefault();
+}, {passive:false});
+</script>
 </body>
 </html>
